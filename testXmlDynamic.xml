@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Test>
+   <Try int="123" string="hello">
+      3 petits cochons pendus au plafond
+   </Try>
+   <Try int="123" string="hello"/>
+   <Try int="123" string="hello"/>
+</Test>

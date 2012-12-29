@@ -1,0 +1,14 @@
+*.class
+*.pref
+3stones/*
+ConstantsAutogenerationTest.*
+Game/*
+JHelpPaint/*
+JHelpParallelServerPreferences
+JHelpSynthetizer/*
+Sauvel_humanité/*
+Scareandeat/*
+bin/*
+binSamples/*
+binTests/*
+

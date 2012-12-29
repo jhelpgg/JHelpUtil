@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="private" author="true" classpath="/usr/lib/eclipse/plugins/org.hamcrest.core_1.1.0.jar:/usr/lib/eclipse/plugins/org.junit4_4.5.0.v20090824/junit.jar:binTests" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="jhelp.util.text,jhelp.util.math.formal,jhelp.util.reflection,jhelp.util.gui,jhelp.util,jhelp.util.io.base64,jhelp.util.xml,jhelp.util.io,jhelp.util.list,jhelp.util.preference,jhelp.util.debug,jhelp.util.post" source="1.6" sourcefiles="src/jhelp/util/thread/PostProgress.java,src/jhelp/util/thread/ThreadElement.java,src/jhelp/util/thread/ThreadedTask.java,src/jhelp/util/thread/ThreadActor.java,src/jhelp/util/thread/ThreadManager.java,src/jhelp/util/thread/ThreadedVerySimpleTask.java,src/jhelp/util/math/UtilMath.java,src/jhelp/util/thread/ThreadedSimpleTask.java,src/jhelp/util/thread/WaitingManager.java" sourcepath="tests:src" splitindex="true" use="true" version="true">
+            <link href="http://java.sun.com/javase/6/docs/api/"/>
+        </javadoc>
+    </target>
+</project>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="jhelp.plugins.core.PluginDescription">
+   <methods/>
+   <needPlugins array="1">
+      "GUI" 
+   </needPlugins>
+   <pluginClass value="jhelp.plugin.test.JHelpPluginTest"/>
+   <pluginName value="Tests"/>
+</class>
