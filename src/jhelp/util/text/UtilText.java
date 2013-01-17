@@ -1332,6 +1332,54 @@ public final class UtilText
       return string.getBytes(UtilText.UTF8);
    }
 
+   /**
+    * Compute the upper case version of of string, and remove all accent.
+    * 
+    * @param text
+    *           Text to upper case
+    * @return Upper case result
+    */
+   public static String upperCaseWithoutAccent(final String text)
+   {
+      final char[] characters = text.toUpperCase().toCharArray();
+      final int lenght = characters.length;
+
+      for(int i = 0; i < lenght; i++)
+      {
+         switch(characters[i])
+         {
+            case 'Â':
+            case 'Ä':
+               characters[i] = 'A';
+            break;
+            case 'Ê':
+            case 'Ë':
+            case 'É':
+            case 'È':
+               characters[i] = 'E';
+            break;
+            case 'Î':
+            case 'Ï':
+               characters[i] = 'I';
+            break;
+            case 'Ô':
+            case 'Ö':
+               characters[i] = 'O';
+            break;
+            case 'Û':
+            case 'Ü':
+            case 'Ù':
+               characters[i] = 'U';
+            break;
+            case 'Ñ':
+               characters[i] = 'N';
+            break;
+         }
+      }
+
+      return new String(characters);
+   }
+
    /** To avoid instance */
    private UtilText()
    {

@@ -55,16 +55,17 @@ public final class SortedArray<TYPE>
    }
 
    /** Stored elements */
-   private TYPE[]           array;
+   private TYPE[]      array;
 
    /** Comparator to use */
-   private Comparator<TYPE> comparator;
+   @SuppressWarnings("rawtypes")
+   private Comparator  comparator;
    /** Actual array size */
-   private int              size;
+   private int         size;
    /** Type of element stored */
-   private Class<TYPE>      typeClass;
+   private Class<TYPE> typeClass;
    /** Indicates if we are in unique mode */
-   private boolean          unique;
+   private boolean     unique;
 
    /**
     * Create a new instance of SortedArray in not unique mode.<br>
@@ -211,6 +212,7 @@ public final class SortedArray<TYPE>
     *           Element search
     * @return Index of insertion
     */
+   @SuppressWarnings("unchecked")
    private int insertIn(final TYPE element)
    {
       if(this.size == 0)
@@ -422,6 +424,7 @@ public final class SortedArray<TYPE>
     * @throws NullPointerException
     *            if element is {@code null}
     */
+   @SuppressWarnings("unchecked")
    public int indexOf(final TYPE element)
    {
       if(element == null)
@@ -464,6 +467,7 @@ public final class SortedArray<TYPE>
     *           Element search
     * @return Couple (min, max)
     */
+   @SuppressWarnings("unchecked")
    public Pair<Integer, Integer> intervalOf(final TYPE element)
    {
       if(element == null)
@@ -524,6 +528,50 @@ public final class SortedArray<TYPE>
    public Iterator<TYPE> iterator()
    {
       return new EnumerationIterator<TYPE>(this.toArray());
+   }
+
+   /**
+    * Search an element similar to the object. Because it use the comparator, is the comparator say the object is the same of
+    * one element inside the array, they are declared similar
+    * 
+    * @param object
+    *           Object to be similar
+    * @return Element similar to the object, or {@code null} if no element are similar
+    */
+   @SuppressWarnings("unchecked")
+   public TYPE obtainElement(final Object object)
+   {
+      for(int index = 0; index < this.size; index++)
+      {
+         if(this.comparator.compare(this.array[index], object) == 0)
+         {
+            return this.array[index];
+         }
+      }
+
+      return null;
+   }
+
+   /**
+    * Search index of similar element. Because it use the comparator, is the comparator say the object is the same of one
+    * element inside the array, they are declared similar
+    * 
+    * @param object
+    *           Object to be similar
+    * @return Index of similar element, or -1 if not found
+    */
+   @SuppressWarnings("unchecked")
+   public int obtainIndex(final Object object)
+   {
+      for(int index = 0; index < this.size; index++)
+      {
+         if(this.comparator.compare(this.array[index], object) == 0)
+         {
+            return index;
+         }
+      }
+
+      return -1;
    }
 
    /**

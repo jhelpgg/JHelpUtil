@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
+import jhelp.util.debug.Debug;
+
 /**
  * File filter on extention.<br>
  * You can add a second filter to filter more<br>
@@ -109,13 +111,17 @@ public class FileFilter
    {
       try
       {
-         if(((this.acceptHidden == false) && (file.isHidden() == true)) || ((this.acceptVirtualLink == false) && (file.getCanonicalPath().equals(file.getAbsolutePath()) == false)))
+         if((file == null) || ((this.acceptHidden == false) && (file.isHidden() == true)) || ((this.acceptVirtualLink == false) && (file.getCanonicalPath().equals(file.getAbsolutePath()) == false)) || (file.exists() == false)
+               || (file.canRead() == false))
          {
             return false;
          }
       }
       catch(final Exception exception)
       {
+         Debug.printException(exception, "Issue while filter : ", file.getAbsolutePath());
+
+         return false;
       }
 
       if((this.secondFileFilter != null) && (this.secondFileFilter.accept(file) == false))

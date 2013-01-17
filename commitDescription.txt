@@ -1,0 +1,11 @@
+Add method for search character in character array
+Add method to upper case a string and remove accent, é becomes E
+Add the possiblily to acces resources outside the jar the a code lies
+Add string representation of throw set
+Add the possibility to search a similar object in sorted array
+Add color inversion
+Add the possibility to know a srite parent. That is to say, the image where a sprite is attached to
+Add the possibility to create a JHelpImage (or a thumb) from a BufferedImage
+Add extract a sub image from an other image
+Add rotation of 90,180 and 270 degree
+

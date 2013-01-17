@@ -1,5 +1,7 @@
 package jhelp.util.gui;
 
+import java.awt.Color;
+
 /**
  * Utilities for image manipulation
  * 
@@ -188,5 +190,17 @@ public class UtilImage
       {
          image.endDrawMode();
       }
+   }
+
+   /**
+    * Invert a color
+    * 
+    * @param color
+    *           Color to invert
+    * @return Inverted color
+    */
+   public static Color invertColor(final Color color)
+   {
+      return new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue(), color.getAlpha());
    }
 }
