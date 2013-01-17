@@ -340,6 +340,53 @@ public class JHelpImage
    }
 
    /**
+    * Create an image from a buffered image
+    * 
+    * @param bufferedImage
+    *           Buffered image source
+    * @return Created image
+    */
+   public static JHelpImage createImage(final BufferedImage bufferedImage)
+   {
+      final int width = bufferedImage.getWidth();
+      final int height = bufferedImage.getHeight();
+      int[] pixels = new int[width * height];
+
+      pixels = bufferedImage.getRGB(0, 0, width, height, pixels, 0, width);
+
+      return new JHelpImage(width, height, pixels);
+   }
+
+   /**
+    * Create an image resized to specify size from a buffered image
+    * 
+    * @param bufferedImage
+    *           Buffered image source
+    * @param width
+    *           Result image width
+    * @param height
+    *           Result image height
+    * @return Created image
+    */
+   public static JHelpImage createThumbImage(final BufferedImage bufferedImage, final int width, final int height)
+   {
+      final BufferedImage thumb = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+      final Graphics2D graphics2d = thumb.createGraphics();
+      graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      graphics2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      graphics2d.drawImage(bufferedImage, 0, 0, width, height, null);
+
+      final JHelpImage image = JHelpImage.createImage(thumb);
+
+      graphics2d.dispose();
+      thumb.flush();
+
+      return image;
+   }
+
+   /**
     * Extract the border of the objects inside the image. Width 1, step 1
     * 
     * @param source
@@ -633,8 +680,10 @@ public class JHelpImage
    private final int              height;
    /** Image for draw in a swing component */
    private Image                  image;
+
    /** Image source */
    private MemoryImageSource      memoryImageSource;
+
    /** Image name */
    private String                 name;
 
@@ -2822,6 +2871,57 @@ public class JHelpImage
       }
 
       this.update();
+   }
+
+   /**
+    * Extract a sub image from the image
+    * 
+    * @param x
+    *           X of upper left corner of the area to extract
+    * @param y
+    *           Y of upper left corner of the area to extract
+    * @param width
+    *           Area to extract width
+    * @param height
+    *           Area to extract height
+    * @return Extracted image
+    */
+   public JHelpImage extractSubImage(int x, int y, int width, int height)
+   {
+      if(x < 0)
+      {
+         width += x;
+         x = 0;
+      }
+
+      if(y < 0)
+      {
+         height += y;
+         y = 0;
+      }
+
+      if((x + width) > this.width)
+      {
+         width = this.width - x;
+      }
+
+      if((y + height) > this.height)
+      {
+         height = this.height - y;
+      }
+
+      if((width < 1) || (height < 1))
+      {
+         return new JHelpImage(1, 1);
+      }
+
+      final JHelpImage part = new JHelpImage(width, height);
+
+      part.startDrawMode();
+      part.drawImageOver(0, 0, this, x, y, width, height);
+      part.endDrawMode();
+
+      return part;
    }
 
    /**
@@ -5908,7 +6008,10 @@ public class JHelpImage
       if(this.sprites.remove(sprite) == true)
       {
          final int index = sprite.getSpriteIndex();
-         System.arraycopy(this.visibilities, index + 1, this.visibilities, index, this.visibilities.length - index - 1);
+         if((index >= 0) && (this.visibilities.length > index))
+         {
+            System.arraycopy(this.visibilities, index + 1, this.visibilities, index, this.visibilities.length - index - 1);
+         }
 
          for(int i = this.sprites.size() - 1; i >= 0; i--)
          {
@@ -5947,6 +6050,152 @@ public class JHelpImage
             this.pixels[i] = newColor;
          }
       }
+   }
+
+   /**
+    * Compute the image rotated from 180 degree
+    * 
+    * @return Rotated image
+    */
+   public JHelpImage rotate180()
+   {
+      final int width = this.width;
+      final int height = this.height;
+      final int length = width * height;
+      final int[] pixels = new int[length];
+
+      for(int pix = 0, pixR = length - 1; pixR >= 0; pix++, pixR--)
+      {
+         pixels[pixR] = this.pixels[pix];
+      }
+
+      return new JHelpImage(width, height, pixels);
+   }
+
+   /**
+    * Compute the image rotated from 270 degree
+    * 
+    * @return Rotated image
+    */
+   public JHelpImage rotate270()
+   {
+      final int width = this.height;
+      final int height = this.width;
+      final int[] pixels = new int[width * height];
+
+      int xr = width - 1;
+      final int yr = 0;
+      final int stepR = width;
+      final int startR = yr * width;
+      int pixR = startR + xr;
+
+      int pix = 0;
+
+      for(int y = 0; y < this.height; y++)
+      {
+         for(int x = 0; x < this.width; x++)
+         {
+            pixels[pixR] = this.pixels[pix];
+
+            pix++;
+            pixR += stepR;
+         }
+
+         xr--;
+         pixR = startR + xr;
+      }
+
+      return new JHelpImage(width, height, pixels);
+   }
+
+   /**
+    * Compute the image rotated from 90 degree
+    * 
+    * @return Rotated image
+    */
+   public JHelpImage rotate90()
+   {
+      final int width = this.height;
+      final int height = this.width;
+      final int[] pixels = new int[width * height];
+
+      int xr = 0;
+      final int yr = height - 1;
+      final int stepR = -width;
+      final int startR = yr * width;
+      int pixR = startR + xr;
+
+      int pix = 0;
+
+      for(int y = 0; y < this.height; y++)
+      {
+         for(int x = 0; x < this.width; x++)
+         {
+            pixels[pixR] = this.pixels[pix];
+
+            pix++;
+            pixR += stepR;
+         }
+
+         xr++;
+         pixR = startR + xr;
+      }
+
+      return new JHelpImage(width, height, pixels);
+   }
+
+   /**
+    * Extract a sub image and then rotate it from 180 degree
+    * 
+    * @param x
+    *           Upper left area corner X
+    * @param y
+    *           Upper left area corner Y
+    * @param width
+    *           Area to extract width
+    * @param height
+    *           Area to extract height
+    * @return Result image
+    */
+   public JHelpImage rotatedPart180(final int x, final int y, final int width, final int height)
+   {
+      return this.extractSubImage(x, y, width, height).rotate180();
+   }
+
+   /**
+    * Extract a sub image and then rotate it from 270 degree
+    * 
+    * @param x
+    *           Upper left area corner X
+    * @param y
+    *           Upper left area corner Y
+    * @param width
+    *           Area to extract width
+    * @param height
+    *           Area to extract height
+    * @return Result image
+    */
+   public JHelpImage rotatedPart270(final int x, final int y, final int width, final int height)
+   {
+      return this.extractSubImage(x, y, width, height).rotate270();
+   }
+
+   /**
+    * Extract a sub image and then rotate it from 90 degree
+    * 
+    * @param x
+    *           Upper left area corner X
+    * @param y
+    *           Upper left area corner Y
+    * @param width
+    *           Area to extract width
+    * @param height
+    *           Area to extract height
+    * @return Result image
+    */
+   public JHelpImage rotatedPart90(final int x, final int y, final int width, final int height)
+   {
+      return this.extractSubImage(x, y, width, height).rotate90();
    }
 
    /**

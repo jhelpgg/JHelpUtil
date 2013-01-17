@@ -1,8 +1,11 @@
 package jhelp.util.resources;
 
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -10,7 +13,9 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import jhelp.util.debug.Debug;
 import jhelp.util.gui.JHelpImage;
+import jhelp.util.io.UtilIO;
 
 /**
  * Access to internal resources.<br>
@@ -22,12 +27,26 @@ import jhelp.util.gui.JHelpImage;
  */
 public class Resources
 {
+   /** Indicates if resources are outside the jar */
+   private final boolean                         externalFiles;
    /** Reference class */
    private final Class<?>                        referenceClass;
    /** Path relative to Resources class */
    private final String                          relativePathFormClass;
    /** Map of already loaded resources text */
    private final Hashtable<String, ResourceText> resourcesTexts;
+
+   /**
+    * Create a new instance of Resources.<br>
+    * The given path are relative next to the jar that contains this class
+    */
+   public Resources()
+   {
+      this.referenceClass = null;
+      this.relativePathFormClass = null;
+      this.resourcesTexts = new Hashtable<String, ResourceText>();
+      this.externalFiles = true;
+   }
 
    /**
     * Create a new instance of Resources with a reference class.<br>
@@ -41,6 +60,7 @@ public class Resources
       this.referenceClass = referenceClass;
       this.relativePathFormClass = null;
       this.resourcesTexts = new Hashtable<String, ResourceText>();
+      this.externalFiles = false;
    }
 
    /**
@@ -100,6 +120,7 @@ public class Resources
       this.relativePathFormClass = stringBuilder.toString();
 
       this.resourcesTexts = new Hashtable<String, ResourceText>();
+      this.externalFiles = false;
    }
 
    /**
@@ -151,6 +172,20 @@ public class Resources
     */
    public InputStream obtainResourceStream(final String path)
    {
+      if(this.externalFiles == true)
+      {
+         try
+         {
+            return new FileInputStream(UtilIO.obtainExternalFile(path));
+         }
+         catch(final FileNotFoundException exception)
+         {
+            Debug.printException(exception);
+
+            return null;
+         }
+      }
+
       if(this.referenceClass != null)
       {
          return this.referenceClass.getResourceAsStream(path);
@@ -190,6 +225,20 @@ public class Resources
     */
    public URL obtainResourceURL(final String path)
    {
+      if(this.externalFiles == true)
+      {
+         try
+         {
+            return (UtilIO.obtainExternalFile(path)).toURI().toURL();
+         }
+         catch(final MalformedURLException exception)
+         {
+            Debug.printException(exception);
+
+            return null;
+         }
+      }
+
       if(this.referenceClass != null)
       {
          return this.referenceClass.getResource(path);

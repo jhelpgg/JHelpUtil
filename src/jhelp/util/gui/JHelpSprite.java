@@ -203,6 +203,16 @@ public final class JHelpSprite
    }
 
    /**
+    * The sprite parent. In other words, the {@link JHelpImage} where the sprite is attach to
+    * 
+    * @return The sprite parent
+    */
+   public JHelpImage getParent()
+   {
+      return this.parent;
+   }
+
+   /**
     * Sprite width
     * 
     * @return Sprite width

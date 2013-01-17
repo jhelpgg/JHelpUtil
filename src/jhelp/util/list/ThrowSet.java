@@ -2,6 +2,8 @@ package jhelp.util.list;
 
 import java.util.ArrayList;
 
+import jhelp.util.text.UtilText;
+
 /**
  * Set of elements, where elements have no order
  * 
@@ -95,5 +97,20 @@ public class ThrowSet<T>
    public T[] toArray(final T[] array)
    {
       return this.set.toArray(array);
+   }
+
+   /**
+    * String representation of the throw set <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return String representation
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString()
+   {
+      return UtilText.concatenate("ThrowSet:", this.set);
    }
 }

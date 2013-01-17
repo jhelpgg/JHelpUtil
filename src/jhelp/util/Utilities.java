@@ -138,6 +138,36 @@ public final class Utilities
    }
 
    /**
+    * Obtain a character index inside a character array. If the character doesn't contains the searched charcter, -1 is return
+    * 
+    * @param array
+    *           Array where search the character
+    * @param element
+    *           Searched character
+    * @return Character index or -1 if character not inside the array
+    */
+   public static int indexOf(final char[] array, final char element)
+   {
+      if(array == null)
+      {
+         return -1;
+      }
+
+      final int length = array.length;
+
+      for(int i = 0; i < length; i++)
+      {
+
+         if(array[i] == element)
+         {
+            return i;
+         }
+      }
+
+      return -1;
+   }
+
+   /**
     * Index of an element inside an array
     * 
     * @param <T>
