@@ -19,19 +19,35 @@ import jhelp.util.gui.JHelpTextLine;
 import jhelp.util.list.Pair;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 
+/**
+ * Frame for font size and text alignment sample
+ * 
+ * @author JHelp
+ */
 public class JHelpFontSampleFrame
       extends JFrame
       implements ChangeListener
 {
+   /** Image that draw the text height */
    private final static int            HEIGHT = 2000;
+   /** Text for test */
    private final static String         STRING = "Pseudopseudohypoparathyroidism is a long word. So Pseudopseudohypoparathyroidism is a good candidate for show how cut text work";
+   /** Image that draw the text height */
    private final static int            WIDTH  = 500;
+   /** Actual font */
    private JHelpFont                   font;
+   /** Image that draw the text */
    private final JHelpImage            imageMain;
+   /** Swing component that carry the image */
    private final SampleLabelJHelpImage sampleLabelJHelpImage;
+   /** Actual font size */
    private int                         size;
+   /** Spinner for change size */
    private final JSpinner              spinnerSize;
 
+   /**
+    * Create a new instance of JHelpFontSampleFrame
+    */
    public JHelpFontSampleFrame()
    {
       super("JHelpFont sample");
@@ -54,6 +70,9 @@ public class JHelpFontSampleFrame
       this.pack();
    }
 
+   /**
+    * Update the font and the text draw
+    */
    private void updateFont()
    {
       this.font = new JHelpFont("Arial", this.size);
@@ -72,6 +91,16 @@ public class JHelpFontSampleFrame
       this.imageMain.endDrawMode();
    }
 
+   /**
+    * Called when user change the value of the size spinner <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @param e
+    *           Event description
+    * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+    */
    @Override
    public void stateChanged(final ChangeEvent e)
    {

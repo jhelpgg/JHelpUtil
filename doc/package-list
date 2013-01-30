@@ -10,10 +10,17 @@ jhelp.util.io
 jhelp.util.io.base64
 jhelp.util.list
 jhelp.util.math
+jhelp.util.math.complex
 jhelp.util.math.formal
+jhelp.util.math.random
+jhelp.util.math.rational
 jhelp.util.post
 jhelp.util.preference
 jhelp.util.reflection
+jhelp.util.resources
+jhelp.util.samples.common.gui
+jhelp.util.samples.font
+jhelp.util.samples.font.gui
 jhelp.util.stateMachine
 jhelp.util.text
 jhelp.util.thread

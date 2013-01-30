@@ -2,13 +2,19 @@ package jhelp.util.samples.font;
 
 import jhelp.util.samples.font.gui.JHelpFontSampleFrame;
 
+/**
+ * Launch font size and text alignment sample
+ * 
+ * @author JHelp
+ */
 public class JHelpFontSample
 {
 
    /**
-    * TODO Explains what does the method main in jhelp.util.samples.font [JHelpUtil]
+    * Launch font size and text alignment sample
     * 
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
