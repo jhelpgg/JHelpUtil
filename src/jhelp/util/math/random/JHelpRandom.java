@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
+import jhelp.util.reflection.Reflector;
 import jhelp.util.text.UtilText;
 
 /**
@@ -98,6 +99,37 @@ public final class JHelpRandom<CHOICE>
    }
 
    /**
+    * Choose a value of an enum
+    * 
+    * @param <E>
+    *           Enum to get a value
+    * @param clas
+    *           Enum class
+    * @return An enum value or {@code null} if failed
+    */
+   @SuppressWarnings(
+   {
+         "rawtypes", "unchecked"
+   })
+   public static final <E extends Enum> E random(final Class<E> clas)
+   {
+      E[] array = null;
+
+      try
+      {
+         array = (E[]) Reflector.invokePublicMethod(clas, "values");
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception, "Failed to get values of ", clas.getName());
+
+         return null;
+      }
+
+      return JHelpRandom.random(array);
+   }
+
+   /**
     * Give a random value between 0 (include) and given limit (exclude)
     * 
     * @param limit
@@ -129,6 +161,26 @@ public final class JHelpRandom<CHOICE>
       final int max = Math.max(minimum, maximum);
 
       return min + (int) (Math.random() * ((max - min) + 1));
+   }
+
+   /**
+    * Return an element of an array.<br>
+    * {@code null} is return is the array is {@code null} or empty
+    * 
+    * @param <T>
+    *           Type of array's element
+    * @param array
+    *           Array to get one element
+    * @return Element get or {@code null} if array {@code null} or empty
+    */
+   public static final <T> T random(final T[] array)
+   {
+      if((array == null) || (array.length == 0))
+      {
+         return null;
+      }
+
+      return array[JHelpRandom.random(array.length)];
    }
 
    /** Registered limits */

@@ -1,0 +1,9 @@
+Add flip horizontal, vertical and both in image
+Avoid potential issue due sprite in allowing rotation and extract sub image only on draw mode
+Add comments in JHelpImage's methods to know the drawing mode constraints state need for their usage
+Add image comparison
+Add tests (rotation and flip) for image
+Add get randomly one element of an array
+Add get randomly one element of a enum
+Add comments in samples
+update javadoc

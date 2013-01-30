@@ -248,7 +248,8 @@ public class JHelpImage
    }
 
    /**
-    * Create a bump image with 0.75 contrast, 12 dark, 1 shift X and 1 shift Y
+    * Create a bump image with 0.75 contrast, 12 dark, 1 shift X and 1 shift Y<br>
+    * Note : If one of image is not in draw mode, all visible sprite (of this image) will be consider as a part of the image
     * 
     * @param source
     *           Image source
@@ -262,7 +263,8 @@ public class JHelpImage
    }
 
    /**
-    * Create a bump image
+    * Create a bump image<br>
+    * Note : If one of image is not in draw mode, all visible sprite (of this image) will be consider as a part of the image
     * 
     * @param source
     *           Image source
@@ -326,7 +328,8 @@ public class JHelpImage
    }
 
    /**
-    * Create a bump image with 0.75 contrast, 12 dark, -1 shift X and -1 shift Y
+    * Create a bump image with 0.75 contrast, 12 dark, -1 shift X and -1 shift Y<br>
+    * Note : If one of image is not in draw mode, all visible sprite (of this image) will be consider as a part of the image
     * 
     * @param source
     *           Image source
@@ -387,7 +390,205 @@ public class JHelpImage
    }
 
    /**
-    * Extract the border of the objects inside the image. Width 1, step 1
+    * Compare 2 images and compute if they "look" the same in compare the image border. That is to say if we obtain border of
+    * objects inside the image<br>
+    * The precision is to determine the accepted distance in border limit, and percent to know the percent of accepted pixels
+    * doesn't match to precision.<br>
+    * Note : if images have'nt same dimension, the smallest is firstly scale to fit to the biggest<br>
+    * Note : if one image is not in draw mode, the visible sprites of this image will be consider like a part of the image
+    * 
+    * @param image1
+    *           First image
+    * @param image2
+    *           Second image
+    * @param precision
+    *           Difference accepted in border limit
+    * @param percentDifferenceAccepted
+    *           Percent of accepted different pixels (Pixels doesn't match to the precision)
+    * @return {@code true} if images "look" the same
+    */
+   public static boolean doesImagesLookSamePerBorder(JHelpImage image1, JHelpImage image2, final int precision, final int percentDifferenceAccepted)
+   {
+      final int width1 = image1.width;
+      final int height1 = image1.height;
+      final int width2 = image2.width;
+      final int height2 = image2.height;
+
+      if((width1 != width2) || (height1 != height2))
+      {
+         if((width1 * height1) >= (width2 * height2))
+         {
+            final JHelpImage image = new JHelpImage(width1, height1);
+            image.startDrawMode();
+            image.fillRectangleScaleBetter(0, 0, width1, height1, image2);
+            image.endDrawMode();
+
+            image2 = image;
+         }
+         else
+         {
+            final JHelpImage image = new JHelpImage(width2, height2);
+            image.startDrawMode();
+            image.fillRectangleScaleBetter(0, 0, width2, height2, image1);
+            image.endDrawMode();
+
+            image1 = image;
+         }
+      }
+
+      final JHelpImage img1 = JHelpImage.extractBorder(image1, 3, 1);
+      final JHelpImage img2 = JHelpImage.extractBorder(image2, 3, 1);
+
+      return JHelpImage.doesImagesLookSamePerPixel(img1, img2, precision, percentDifferenceAccepted);
+   }
+
+   /**
+    * Compare 2 images and compute if they "look" the same in compare the image luminosity<br>
+    * The precision is to determine the accepted distance in luminosity part, and percent to know the percent of accepted pixels
+    * doesn't match to precision.<br>
+    * Note : if images have'nt same dimension, the smallest is firstly scale to fit to the biggest<br>
+    * Note : if one image is not in draw mode, the visible sprites of this image will be consider like a part of the image
+    * 
+    * @param image1
+    *           First image
+    * @param image2
+    *           Second image
+    * @param precision
+    *           Difference accepted in luminosity
+    * @param percentDifferenceAccepted
+    *           Percent of accepted different pixels (Pixels doesn't match to the precision)
+    * @return {@code true} if images "look" the same
+    */
+   public static boolean doesImagesLookSamePerLuminosity(JHelpImage image1, JHelpImage image2, final int precision, final int percentDifferenceAccepted)
+   {
+      final int width1 = image1.width;
+      final int height1 = image1.height;
+      final int width2 = image2.width;
+      final int height2 = image2.height;
+
+      if((width1 != width2) || (height1 != height2))
+      {
+         if((width1 * height1) >= (width2 * height2))
+         {
+            final JHelpImage image = new JHelpImage(width1, height1);
+            image.startDrawMode();
+            image.fillRectangleScaleBetter(0, 0, width1, height1, image2);
+            image.endDrawMode();
+
+            image2 = image;
+         }
+         else
+         {
+            final JHelpImage image = new JHelpImage(width2, height2);
+            image.startDrawMode();
+            image.fillRectangleScaleBetter(0, 0, width2, height2, image1);
+            image.endDrawMode();
+
+            image1 = image;
+         }
+      }
+
+      final JHelpImage img1 = image1.createCopy();
+      img1.startDrawMode();
+      img1.gray();
+      img1.endDrawMode();
+
+      final JHelpImage img2 = image1.createCopy();
+      img2.startDrawMode();
+      img2.gray();
+      img2.endDrawMode();
+
+      return JHelpImage.doesImagesLookSamePerPixel(img1, img2, precision, percentDifferenceAccepted);
+   }
+
+   /**
+    * Compare 2 images and compute if they "look" the same in compare the image pixels.<br>
+    * The precision is to determine the accepted distance in alpha, red, green and blue part, and percent to know the percent of
+    * accepted pixels doesn't match to precision.<br>
+    * Note : if images have'nt same dimension, the smallest is firstly scale to fit to the biggest<br>
+    * Note : if one image is not in draw mode, the visible sprites of this image will be consider like a part of the image
+    * 
+    * @param image1
+    *           First image
+    * @param image2
+    *           Second image
+    * @param colorPartPrecision
+    *           Difference accepted in pixel parts
+    * @param percentDifferenceAccepted
+    *           Percent of accepted different pixels (Pixels doesn't match to the precision)
+    * @return {@code true} if images "look" the same
+    */
+   public static boolean doesImagesLookSamePerPixel(JHelpImage image1, JHelpImage image2, int colorPartPrecision, int percentDifferenceAccepted)
+   {
+      colorPartPrecision = Math.max(0, Math.min(255, colorPartPrecision));
+      percentDifferenceAccepted = Math.max(0, Math.min(100, percentDifferenceAccepted));
+
+      int width1 = image1.width;
+      int height1 = image1.height;
+      final int width2 = image2.width;
+      final int height2 = image2.height;
+
+      if((width1 != width2) || (height1 != height2))
+      {
+         if((width1 * height1) >= (width2 * height2))
+         {
+            final JHelpImage image = new JHelpImage(width1, height1);
+            image.startDrawMode();
+            image.fillRectangleScaleBetter(0, 0, width1, height1, image2);
+            image.endDrawMode();
+
+            image2 = image;
+         }
+         else
+         {
+            final JHelpImage image = new JHelpImage(width2, height2);
+            image.startDrawMode();
+            image.fillRectangleScaleBetter(0, 0, width2, height2, image1);
+            image.endDrawMode();
+
+            image1 = image;
+            width1 = width2;
+            height1 = height2;
+         }
+      }
+
+      final int length = width1 * height1;
+      int color1;
+      int color2;
+      int difference = 0;
+
+      for(int pix = length - 1; pix >= 0; pix--)
+      {
+         color1 = image1.pixels[pix];
+         color2 = image2.pixels[pix];
+
+         if(Math.abs(((color1 >> 24) & 0xFF) - ((color2 >> 24) & 0xFF)) > colorPartPrecision)
+         {
+            difference++;
+         }
+
+         if(Math.abs(((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF)) > colorPartPrecision)
+         {
+            difference++;
+         }
+
+         if(Math.abs(((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF)) > colorPartPrecision)
+         {
+            difference++;
+         }
+
+         if(Math.abs((color1 & 0xFF) - (color2 & 0xFF)) > colorPartPrecision)
+         {
+            difference++;
+         }
+      }
+
+      return ((difference * 100) / (length << 2)) <= percentDifferenceAccepted;
+   }
+
+   /**
+    * Extract the border of the objects inside the image. Width 1, step 1<br>
+    * Note : If the image is not in draw mode, all visible sprite will be consider as a part of the image
     * 
     * @param source
     *           Image source
@@ -399,7 +600,8 @@ public class JHelpImage
    }
 
    /**
-    * Extract the border of the objects inside the image. Step 1
+    * Extract the border of the objects inside the image. Step 1<br>
+    * Note : If the image is not in draw mode, all visible sprite will be consider as a part of the image
     * 
     * @param source
     *           Image source
@@ -413,7 +615,8 @@ public class JHelpImage
    }
 
    /**
-    * Extract the border of the objects inside the image.
+    * Extract the border of the objects inside the image.<br>
+    * Note : If the image is not in draw mode, all visible sprite will be consider as a part of the image
     * 
     * @param source
     *           Image source
@@ -469,7 +672,8 @@ public class JHelpImage
    }
 
    /**
-    * Extract the border of the objects inside the image. Width 2, step 1
+    * Extract the border of the objects inside the image. Width 2, step 1<br>
+    * Note : If the image is not in draw mode, all visible sprite will be consider as a part of the image
     * 
     * @param source
     *           Image source
@@ -649,7 +853,8 @@ public class JHelpImage
    }
 
    /**
-    * Save an image to a stream
+    * Save an image to a stream<br>
+    * Note : If the image is not in draw mode, all visible sprite will be consider as a part of the image
     * 
     * @param outputStream
     *           Stream where write
@@ -777,7 +982,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a shape on center it
+    * Draw a shape on center it<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to draw
@@ -890,7 +1096,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a part of an image on this image
+    * Draw a part of an image on this image<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X on this image
@@ -1001,7 +1208,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a part of image on using a specific alpha value
+    * Draw a part of image on using a specific alpha value<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X to draw image
@@ -1106,7 +1314,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw apart of image over this image 'just override)
+    * Draw apart of image over this image 'just override)<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X on this image
@@ -1230,7 +1439,10 @@ public class JHelpImage
    }
 
    /**
-    * Add an other image
+    * Add an other image<br>
+    * This image and the given one MUST have same dimension<br>
+    * Note : if this image or given one not in draw mode, all visible sprites (of the image) are consider like a part of the
+    * image
     * 
     * @param image
     *           Image to add
@@ -1240,11 +1452,6 @@ public class JHelpImage
       if((this.width != image.width) || (this.height != image.height))
       {
          throw new IllegalArgumentException("We can only multiply with an image of same size");
-      }
-
-      if(this.drawMode == false)
-      {
-         throw new IllegalStateException("Must be in draw mode !");
       }
 
       int colorThis, colorImage;
@@ -1262,7 +1469,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill with the pallete different area
+    * Fill with the pallete different area<br>
+    * MUST be in draw mode
     * 
     * @param precision
     *           Precision to use for distinguish 2 area
@@ -1300,7 +1508,8 @@ public class JHelpImage
    }
 
    /**
-    * Put the image brighter
+    * Put the image brighter<br>
+    * MUST be in draw mode
     * 
     * @param factor
     *           Factor of bright
@@ -1326,7 +1535,8 @@ public class JHelpImage
    }
 
    /**
-    * Change image brightness
+    * Change image brightness<br>
+    * MUST be in draw mode
     * 
     * @param factor
     *           Brightness factor
@@ -1362,7 +1572,8 @@ public class JHelpImage
    }
 
    /**
-    * Colorize all near color with same color
+    * Colorize all near color with same color<br>
+    * MUST be in draw mode
     * 
     * @param precision
     *           Precision to use
@@ -1399,7 +1610,8 @@ public class JHelpImage
    }
 
    /**
-    * Colorize with 3 colors, one used for "dark" colors, one for "gray" colors and last for "white" colors
+    * Colorize with 3 colors, one used for "dark" colors, one for "gray" colors and last for "white" colors<br>
+    * MUST be in draw mode
     * 
     * @param colorLow
     *           Color for dark
@@ -1468,7 +1680,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill the entire image with same color
+    * Fill the entire image with same color<br>
+    * MUST be in draw mode
     * 
     * @param color
     *           Color to use
@@ -1487,7 +1700,8 @@ public class JHelpImage
    }
 
    /**
-    * Colorize with automatic palette
+    * Colorize with automatic palette<br>
+    * MUST be in draw mode
     * 
     * @param precision
     *           Precision to use
@@ -1567,7 +1781,8 @@ public class JHelpImage
    }
 
    /**
-    * Change image contrast by using the middle of the minmum and maximum
+    * Change image contrast by using the middle of the minmum and maximum<br>
+    * MUST be in draw mode
     * 
     * @param factor
     *           Factor to apply to the contrast
@@ -1627,7 +1842,8 @@ public class JHelpImage
    }
 
    /**
-    * Change image contrast by using the average of all values
+    * Change image contrast by using the average of all values<br>
+    * MUST be in draw mode
     * 
     * @param factor
     *           Factor to apply to the contrast
@@ -1684,7 +1900,10 @@ public class JHelpImage
    }
 
    /**
-    * Copy the image is this one
+    * Copy the image is this one<br>
+    * This image and the given one MUST have same dimension<br>
+    * Note : if this image or given one not in draw mode, all visible sprites (of the image) are consider like a part of the
+    * image
     * 
     * @param image
     *           Image to copy
@@ -1696,16 +1915,12 @@ public class JHelpImage
          throw new IllegalArgumentException("We can only multiply with an image of same size");
       }
 
-      if(this.drawMode == false)
-      {
-         throw new IllegalStateException("Must be in draw mode !");
-      }
-
       System.arraycopy(image.pixels, 0, this.pixels, 0, this.pixels.length);
    }
 
    /**
-    * Create a couple of sprite and associated animated image
+    * Create a couple of sprite and associated animated image<br>
+    * MUSN'T be in draw mode
     * 
     * @param x
     *           X position
@@ -1729,7 +1944,8 @@ public class JHelpImage
    }
 
    /**
-    * Create an image copy
+    * Create an image copy<br>
+    * Note : if this image is not in draw mode, al visible sprites will be consider like a part of this image
     * 
     * @return The copy
     */
@@ -1745,7 +1961,8 @@ public class JHelpImage
    }
 
    /**
-    * Create a sprite
+    * Create a sprite<br>
+    * MUSN'T be in draw mode
     * 
     * @param x
     *           Start X of sprite
@@ -1774,7 +1991,8 @@ public class JHelpImage
    }
 
    /**
-    * Create sprite with initial image inside
+    * Create sprite with initial image inside<br>
+    * MUSN'T be in draw mode
     * 
     * @param x
     *           X
@@ -1806,7 +2024,8 @@ public class JHelpImage
    }
 
    /**
-    * Make image darker
+    * Make image darker<br>
+    * MUST be in draw mode
     * 
     * @param factor
     *           Darker factor in [0, 255]
@@ -1832,7 +2051,10 @@ public class JHelpImage
    }
 
    /**
-    * Divide an other image
+    * Divide an other image<br>
+    * This image and the given one MUST have same dimension<br>
+    * Note : if this image or given one not in draw mode, all visible sprites (of the image) are consider like a part of the
+    * image
     * 
     * @param image
     *           Image to divide with
@@ -1842,11 +2064,6 @@ public class JHelpImage
       if((this.width != image.width) || (this.height != image.height))
       {
          throw new IllegalArgumentException("We can only multiply with an image of same size");
-      }
-
-      if(this.drawMode == false)
-      {
-         throw new IllegalStateException("Must be in draw mode !");
       }
 
       int colorThis, colorImage;
@@ -1864,7 +2081,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an ellipse
+    * Draw an ellipse<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of upper left corner
@@ -1883,7 +2101,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an ellipse
+    * Draw an ellipse<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of upper left corner
@@ -1909,7 +2128,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an horizontal line
+    * Draw an horizontal line<br>
+    * MUST be in draw mode
     * 
     * @param x1
     *           Start X
@@ -1926,7 +2146,8 @@ public class JHelpImage
    }
 
    /**
-    * Drzw horizontal line
+    * Draw horizontal line<br>
+    * MUST be in draw mode
     * 
     * @param x1
     *           X start
@@ -1998,7 +2219,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an image
+    * Draw an image<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -2013,7 +2235,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an image
+    * Draw an image<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -2035,7 +2258,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an image over this image with specific alpha
+    * Draw an image over this image with specific alpha<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X position
@@ -2057,7 +2281,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a part off image
+    * Draw a part off image<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X on this
@@ -2080,7 +2305,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a part off image
+    * Draw a part off image<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X on this
@@ -2110,7 +2336,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a part of image with a specific alpha
+    * Draw a part of image with a specific alpha<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X position
@@ -2140,7 +2367,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a line
+    * Draw a line<br>
+    * MUST be in draw mode
     * 
     * @param x1
     *           X of first point
@@ -2159,7 +2387,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a line
+    * Draw a line<br>
+    * MUST be in draw mode
     * 
     * @param x1
     *           X of first point
@@ -2350,7 +2579,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a polygon
+    * Draw a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           Polygon X list
@@ -2371,7 +2601,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a polygon
+    * Draw a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           Polygon X list
@@ -2440,7 +2671,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a polygon
+    * Draw a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -2455,7 +2687,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a polygon
+    * Draw a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -2477,7 +2710,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an empty rectangle
+    * Draw an empty rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of top-left
@@ -2496,7 +2730,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an empty rectangle
+    * Draw an empty rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of top-left
@@ -2535,7 +2770,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw round corner rectangle
+    * Draw round corner rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -2558,7 +2794,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw round corner rectangle
+    * Draw round corner rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -2588,7 +2825,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an empty shape
+    * Draw an empty shape<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to draw
@@ -2601,7 +2839,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw an empty shape
+    * Draw an empty shape<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to draw
@@ -2659,7 +2898,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a string
+    * Draw a string<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of top-left
@@ -2678,7 +2918,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a string
+    * Draw a string<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of top-left
@@ -2712,7 +2953,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a string center on given point
+    * Draw a string center on given point<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           String center X
@@ -2731,7 +2973,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a string center on given point
+    * Draw a string center on given point<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           String center X
@@ -2766,7 +3009,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a vertical line
+    * Draw a vertical line<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -2783,7 +3027,8 @@ public class JHelpImage
    }
 
    /**
-    * Draw a vertical line
+    * Draw a vertical line<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -2874,7 +3119,8 @@ public class JHelpImage
    }
 
    /**
-    * Extract a sub image from the image
+    * Extract a sub image from the image<br>
+    * Note : If one of image is not in draw mode, all visible sprite (of this image) will be consider as a part of the image
     * 
     * @param x
     *           X of upper left corner of the area to extract
@@ -2925,7 +3171,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill an ellipse
+    * Fill an ellipse<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of bounds top-left
@@ -2944,7 +3191,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill an ellipse
+    * Fill an ellipse<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of bounds top-left
@@ -2970,7 +3218,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill ellipse with a texture
+    * Fill ellipse with a texture<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of bounds top-left
@@ -2989,7 +3239,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill ellipse with a texture
+    * Fill ellipse with a texture<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X of bounds top-left
@@ -3015,7 +3267,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill an ellipse
+    * Fill an ellipse<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3034,7 +3287,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill an ellipse
+    * Fill an ellipse<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3081,7 +3335,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -3133,7 +3388,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -3154,7 +3411,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -3206,7 +3465,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X coordinates
@@ -3227,7 +3487,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X coordinates
@@ -3279,7 +3540,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -3294,7 +3556,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -3316,7 +3579,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -3331,7 +3596,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X list
@@ -3353,7 +3620,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X coordinates
@@ -3368,7 +3636,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a polygon
+    * Fill a polygon<br>
+    * MUST be in draw mode
     * 
     * @param xs
     *           X coordinates
@@ -3390,7 +3659,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a rectangle
+    * Fill a rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -3409,7 +3679,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a rectangle
+    * Fill a rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -3507,7 +3778,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a rectangle
+    * Fill a rectangle<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -3526,7 +3799,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a rectangle
+    * Fill a rectangle<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -3611,7 +3886,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a rectangle
+    * Fill a rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3630,7 +3906,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a rectangle
+    * Fill a rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3719,7 +3996,9 @@ public class JHelpImage
 
    /**
     * Fill a rectangle with an image.<br>
-    * The image is scaled to fit rectangle size
+    * The image is scaled to fit rectangle size<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3739,7 +4018,9 @@ public class JHelpImage
 
    /**
     * Fill a rectangle with an image.<br>
-    * The image is scaled to fit rectangle size
+    * The image is scaled to fit rectangle size<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3830,7 +4111,9 @@ public class JHelpImage
     * Fill a rectangle with an image.<br>
     * The image is scaled to fit rectangle size.<br>
     * The result is nicer than {@link #fillRectangleScale(int, int, int, int, JHelpImage)} but it is slower and take temporary
-    * more memory
+    * more memory<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3852,7 +4135,9 @@ public class JHelpImage
     * Fill a rectangle with an image.<br>
     * The image is scaled to fit rectangle size.<br>
     * The result is nicer than {@link #fillRectangleScale(int, int, int, int, JHelpImage, boolean)} but it is slower and take
-    * temporary more memory
+    * temporary more memory<br>
+    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3901,7 +4186,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a round rectangle
+    * Fill a round rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3924,7 +4210,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a round rectangle
+    * Fill a round rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3954,7 +4241,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a round rectangle
+    * Fill a round rectangle<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -3977,7 +4266,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a round rectangle
+    * Fill a round rectangle<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -4007,7 +4298,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a round rectangle
+    * Fill a round rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -4030,7 +4322,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a round rectangle
+    * Fill a round rectangle<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -4060,7 +4353,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a shape
+    * Fill a shape<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to fill
@@ -4073,7 +4367,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a shape
+    * Fill a shape<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to fill
@@ -4178,7 +4473,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a shape
+    * Fill a shape<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to fill
@@ -4191,7 +4488,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a shape
+    * Fill a shape<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to fill
@@ -4280,7 +4579,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a shape
+    * Fill a shape<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to fill
@@ -4293,7 +4593,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a shape
+    * Fill a shape<br>
+    * MUST be in draw mode
     * 
     * @param shape
     *           Shape to fill
@@ -4385,7 +4686,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a string
+    * Fill a string<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -4404,7 +4706,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a string
+    * Fill a string<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -4437,7 +4740,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a string
+    * Fill a string<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -4458,7 +4763,9 @@ public class JHelpImage
    }
 
    /**
-    * Fill a string
+    * Fill a string<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X top-left
@@ -4493,7 +4800,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a string
+    * Fill a string<br>
+    * MUST be on draw mode
     * 
     * @param x
     *           X
@@ -4514,7 +4822,8 @@ public class JHelpImage
    }
 
    /**
-    * Fill a string
+    * Fill a string<br>
+    * MUST be on draw mode
     * 
     * @param x
     *           X
@@ -4549,7 +4858,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter image on blue channel
+    * Filter image on blue channel<br>
+    * MUST be on draw mode
     */
    public void filterBlue()
    {
@@ -4570,7 +4880,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter image on green channel
+    * Filter image on green channel<br>
+    * MUST be on draw mode
     */
    public void filterGreen()
    {
@@ -4591,7 +4902,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter image on a specific color
+    * Filter image on a specific color<br>
+    * MUST be on draw mode
     * 
     * @param color
     *           Color search
@@ -4602,6 +4914,11 @@ public class JHelpImage
     */
    public void filterOn(final int color, final int colorOK, final int colorKO)
    {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
       for(int i = this.pixels.length - 1; i >= 0; i--)
       {
          if(color == this.pixels[i])
@@ -4616,7 +4933,8 @@ public class JHelpImage
    }
 
    /**
-    * filter image on a specific color
+    * filter image on a specific color<br>
+    * MUST be on draw mode
     * 
     * @param color
     *           Color search
@@ -4629,6 +4947,11 @@ public class JHelpImage
     */
    public void filterOn(final int color, final int precision, final int colorOK, final int colorKO)
    {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
       final Color refrence = new Color(color);
 
       for(int i = this.pixels.length - 1; i >= 0; i--)
@@ -4645,7 +4968,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter on using a palette color
+    * Filter on using a palette color<br>
+    * MUST be on draw mode
     * 
     * @param index
     *           Palette color indes
@@ -4660,7 +4984,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter image on red channel
+    * Filter image on red channel<br>
+    * MUST be on draw mode
     */
    public void filterRed()
    {
@@ -4681,7 +5006,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter image on U part
+    * Filter image on U part<br>
+    * MUST be on draw mode
     */
    public void filterU()
    {
@@ -4704,7 +5030,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter image on V part
+    * Filter image on V part<br>
+    * MUST be on draw mode
     */
    public void filterV()
    {
@@ -4727,7 +5054,8 @@ public class JHelpImage
    }
 
    /**
-    * Filter image on Y part
+    * Filter image on Y part<br>
+    * MUST be on draw mode
     */
    public void filterY()
    {
@@ -4746,6 +5074,96 @@ public class JHelpImage
          y = UtilMath.limit0_255((int) JHelpImage.computeY((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF));
 
          this.pixels[pix] = (color & 0xFF000000) | (y << 16) | (y << 8) | y;
+      }
+   }
+
+   /**
+    * Flip the image horizontally and vertically in same time. <br>
+    * Visually its same result as : <code lang="java">
+    * image.flipHorizontal();
+    * image.flipVertical();
+    * </code> But its done faster<br>
+    * MUST be on draw mode
+    */
+   public void flipBoth()
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      final int length = this.pixels.length;
+      final int mpix = length >> 1;
+      int color;
+
+      for(int pixS = 0, pixE = length - 1; pixS < mpix; pixS++, pixE--)
+      {
+         color = this.pixels[pixS];
+         this.pixels[pixS] = this.pixels[pixE];
+         this.pixels[pixE] = color;
+      }
+   }
+
+   /**
+    * Flip the image horizontally<br>
+    * MUST be on draw mode
+    */
+   public void flipHorizontal()
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      final int mx = this.width >> 1;
+      int line = 0;
+      int pixL;
+      int pixR;
+      int color;
+
+      for(int y = 0; y < this.height; y++)
+      {
+         pixL = line;
+         pixR = (line + this.width) - 1;
+
+         for(int x = 0; x < mx; x++)
+         {
+            color = this.pixels[pixL];
+            this.pixels[pixL] = this.pixels[pixR];
+            this.pixels[pixR] = color;
+
+            pixL++;
+            pixR--;
+         }
+
+         line += this.width;
+      }
+   }
+
+   /**
+    * Flip the image vertically<br>
+    * MUST be on draw mode
+    */
+   public void flipVertical()
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      final int my = this.height >> 1;
+      int lineU = 0;
+      int lineB = (this.height - 1) * this.width;
+      final int[] line = new int[this.width];
+
+      for(int y = 0; y < my; y++)
+      {
+         System.arraycopy(this.pixels, lineU, line, 0, this.width);
+         System.arraycopy(this.pixels, lineB, this.pixels, lineU, this.width);
+         System.arraycopy(line, 0, this.pixels, lineB, this.width);
+
+         lineU += this.width;
+         lineB -= this.width;
       }
    }
 
@@ -4790,7 +5208,8 @@ public class JHelpImage
    }
 
    /**
-    * Convert image in gray version
+    * Convert image in gray version<br>
+    * MUST be on draw mode
     */
    public void gray()
    {
@@ -4812,7 +5231,8 @@ public class JHelpImage
    }
 
    /**
-    * Convert image in gray invert version
+    * Convert image in gray invert version<br>
+    * MUST be on draw mode
     */
    public void grayInvert()
    {
@@ -4834,7 +5254,8 @@ public class JHelpImage
    }
 
    /**
-    * Invert image colors
+    * Invert image colors<br>
+    * MUST be on draw mode
     */
    public void invertColors()
    {
@@ -4856,7 +5277,8 @@ public class JHelpImage
    }
 
    /**
-    * Invert U and V parts
+    * Invert U and V parts<br>
+    * MUST be on draw mode
     */
    public void invertUV()
    {
@@ -4894,7 +5316,10 @@ public class JHelpImage
    }
 
    /**
-    * Take the maximum between this image and given one
+    * Take the maximum between this image and given one<br>
+    * Note : if the given image is not in draw mode, all of it's visible sprite will be consider like a part of the given image<br>
+    * Given image MUST have same dimension of this <br>
+    * MUST be in draw mode
     * 
     * @param image
     *           Image reference
@@ -4926,7 +5351,10 @@ public class JHelpImage
    }
 
    /**
-    * Take the middle between this image and given one
+    * Take the middle between this image and given one<br>
+    * Note : if the given image is not in draw mode, all of it's visible sprite will be consider like a part of the given image<br>
+    * Given image MUST have same dimension of this <br>
+    * MUST be in draw mode
     * 
     * @param image
     *           Image reference
@@ -4958,7 +5386,10 @@ public class JHelpImage
    }
 
    /**
-    * Take the minimum between this image and given one
+    * Take the minimum between this image and given one<br>
+    * Note : if the given image is not in draw mode, all of it's visible sprite will be consider like a part of the given image<br>
+    * Given image MUST have same dimension of this <br>
+    * MUST be in draw mode
     * 
     * @param image
     *           Image reference
@@ -4990,7 +5421,10 @@ public class JHelpImage
    }
 
    /**
-    * Multiply the image with an other one
+    * Multiply the image with an other one<br>
+    * Note : if the given image is not in draw mode, all of it's visible sprite will be consider like a part of the given image<br>
+    * Given image MUST have same dimension of this <br>
+    * MUST be in draw mode
     * 
     * @param image
     *           Image to multiply
@@ -5022,7 +5456,8 @@ public class JHelpImage
    }
 
    /**
-    * Paint a mask
+    * Paint a mask<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -5129,7 +5564,9 @@ public class JHelpImage
    }
 
    /**
-    * Paint a mask with unify foreground color and part of image in background
+    * Paint a mask with unify foreground color and part of image in background<br>
+    * Note : if the background is not in draw mode, all of it's visible sprite will be consider like a part of the background<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -5236,7 +5673,8 @@ public class JHelpImage
    }
 
    /**
-    * Paint a mask with unify color as foreground and paint as background
+    * Paint a mask with unify color as foreground and paint as background<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -5323,7 +5761,9 @@ public class JHelpImage
    }
 
    /**
-    * Paint a mask with part of image as foreground and unify color as background
+    * Paint a mask with part of image as foreground and unify color as background<br>
+    * Note : if the foreground is not in draw mode, all of it's visible sprite will be consider like a part of the foreground<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X
@@ -5430,7 +5870,10 @@ public class JHelpImage
    }
 
    /**
-    * Paint a mask with 2 images, one for "foreground" pixels, one for "background" ones
+    * Paint a mask with 2 images, one for "foreground" pixels, one for "background" ones<br>
+    * Note : if the foreground or background is not in draw mode, all of it's visible sprite will be consider like a part of the
+    * foreground or background<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X position for the mask
@@ -5559,7 +6002,9 @@ public class JHelpImage
    }
 
    /**
-    * Paint a mask with image in foreground and paint in background
+    * Paint a mask with image in foreground and paint in background<br>
+    * Note : if the foreground is not in draw mode, all of it's visible sprite will be consider like a part of the foreground<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X where paint the mask
@@ -5667,7 +6112,8 @@ public class JHelpImage
    }
 
    /**
-    * Paint mask with paint in foreground and color in background
+    * Paint mask with paint in foreground and color in background<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X where paint the mask
@@ -5753,7 +6199,9 @@ public class JHelpImage
    }
 
    /**
-    * Paint a mask with paint in foreground and image in background
+    * Paint a mask with paint in foreground and image in background<br>
+    * Note : if the background is not in draw mode, all of it's visible sprite will be consider like a part of the background<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X position for mask
@@ -5861,7 +6309,8 @@ public class JHelpImage
    }
 
    /**
-    * Paint mask with paint in foreground and background
+    * Paint mask with paint in foreground and background<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X position for mask
@@ -5948,7 +6397,8 @@ public class JHelpImage
    }
 
    /**
-    * Pick a color inside the image
+    * Pick a color inside the image<br>
+    * Note : if the image is not in draw mode, all visible sprite are consider as a part of image, so may obtain a sprite pixel
     * 
     * @param x
     *           X position
@@ -5991,7 +6441,8 @@ public class JHelpImage
 
    /**
     * Remove a sprite from linked sprites.<br>
-    * The sprite is no more usable
+    * The sprite is no more usable<br>
+    * MUSN'T be in draw mode
     * 
     * @param sprite
     *           Sprite to remove
@@ -6023,7 +6474,8 @@ public class JHelpImage
    }
 
    /**
-    * Replace all pixels near a color by an other color
+    * Replace all pixels near a color by an other color<br>
+    * MUST be in draw mode
     * 
     * @param colorToReplace
     *           Color searched
@@ -6053,7 +6505,8 @@ public class JHelpImage
    }
 
    /**
-    * Compute the image rotated from 180 degree
+    * Compute the image rotated from 180 degree<br>
+    * If the image is not in draw mode, visible sprites are consider like a part of image
     * 
     * @return Rotated image
     */
@@ -6073,7 +6526,8 @@ public class JHelpImage
    }
 
    /**
-    * Compute the image rotated from 270 degree
+    * Compute the image rotated from 270 degree<br>
+    * If the image is not in draw mode, visible sprites are consider like a part of image
     * 
     * @return Rotated image
     */
@@ -6109,7 +6563,8 @@ public class JHelpImage
    }
 
    /**
-    * Compute the image rotated from 90 degree
+    * Compute the image rotated from 90 degree<br>
+    * If the image is not in draw mode, visible sprites are consider like a part of image
     * 
     * @return Rotated image
     */
@@ -6145,7 +6600,8 @@ public class JHelpImage
    }
 
    /**
-    * Extract a sub image and then rotate it from 180 degree
+    * Extract a sub image and then rotate it from 180 degree<br>
+    * If the image is not in draw mode, visible sprites are consider like a part of image
     * 
     * @param x
     *           Upper left area corner X
@@ -6163,7 +6619,8 @@ public class JHelpImage
    }
 
    /**
-    * Extract a sub image and then rotate it from 270 degree
+    * Extract a sub image and then rotate it from 270 degree<br>
+    * If the image is not in draw mode, visible sprites are consider like a part of image
     * 
     * @param x
     *           Upper left area corner X
@@ -6181,7 +6638,8 @@ public class JHelpImage
    }
 
    /**
-    * Extract a sub image and then rotate it from 90 degree
+    * Extract a sub image and then rotate it from 90 degree<br>
+    * If the image is not in draw mode, visible sprites are consider like a part of image
     * 
     * @param x
     *           Upper left area corner X
@@ -6210,7 +6668,8 @@ public class JHelpImage
    }
 
    /**
-    * Shift (translate) the image
+    * Shift (translate) the image<br>
+    * MUST be in draw mode
     * 
     * @param x
     *           X shift
@@ -6278,7 +6737,10 @@ public class JHelpImage
    }
 
    /**
-    * Subtract the image by an other one
+    * Subtract the image by an other one<br>
+    * Note : if the given image is not in draw mode, all of it's visible sprite will be consider like a part of the given image<br>
+    * Given image MUST have same dimension of this <br>
+    * MUST be in draw mode
     * 
     * @param image
     *           Image to subtract
@@ -6317,9 +6779,11 @@ public class JHelpImage
     */
    public void transfertSpritesTo(final JHelpImage image)
    {
-      final boolean drawMode = this.drawMode;
+      final boolean drawMode = image.drawMode;
+      final boolean draw = this.drawMode;
 
       image.endDrawMode();
+      this.endDrawMode();
       boolean visible;
 
       for(final JHelpSprite sprite : this.sprites)
@@ -6338,6 +6802,11 @@ public class JHelpImage
       if(drawMode == true)
       {
          image.startDrawMode();
+      }
+
+      if(draw == true)
+      {
+         this.startDrawMode();
       }
    }
 
