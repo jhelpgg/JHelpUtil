@@ -1098,6 +1098,29 @@ public final class UtilIO
       return header;
    }
 
+   public static float readFloat(final InputStream inputStream) throws IOException
+   {
+      return Float.intBitsToFloat(UtilIO.readInteger(inputStream));
+   }
+
+   public static float[] readFloatArray(final InputStream inputStream) throws IOException
+   {
+      final int length = UtilIO.readInteger(inputStream);
+
+      if(length < 0)
+      {
+         return null;
+      }
+
+      final float[] array = new float[length];
+      for(int a = 0; a < length; a++)
+      {
+         array[a] = UtilIO.readFloat(inputStream);
+      }
+
+      return array;
+   }
+
    /**
     * Read an integer from stream
     * 
@@ -1655,6 +1678,29 @@ public final class UtilIO
    public static void writeDouble(final double d, final OutputStream outputStream) throws IOException
    {
       UtilIO.writeLong(Double.doubleToLongBits(d), outputStream);
+   }
+
+   public static void writeFloat(final float f, final OutputStream outputStream) throws IOException
+   {
+      UtilIO.writeInteger(Float.floatToIntBits(f), outputStream);
+   }
+
+   public static void writeFloatArray(final float[] array, final OutputStream outputStream) throws IOException
+   {
+      if(array == null)
+      {
+         UtilIO.writeInteger(-1, outputStream);
+
+         return;
+      }
+
+      final int length = array.length;
+      UtilIO.writeInteger(length, outputStream);
+
+      for(int a = 0; a < length; a++)
+      {
+         UtilIO.writeFloat(array[a], outputStream);
+      }
    }
 
    /**
