@@ -1868,6 +1868,8 @@ public final class UtilIO
    {
       ZipEntry zipEntry;
       final ZipOutputStream zipOutputStream = new ZipOutputStream(outputStreamZip);
+      // For the best compression
+      zipOutputStream.setLevel(9);
 
       Pair<String, File> pair = new Pair<String, File>(source.getName(), source);
       final Stack<Pair<String, File>> stack = new Stack<Pair<String, File>>();
@@ -1890,6 +1892,8 @@ public final class UtilIO
             else
             {
                zipEntry = new ZipEntry(pair.element1);
+               // For the best compression
+               zipEntry.setMethod(ZipEntry.DEFLATED);
 
                zipOutputStream.putNextEntry(zipEntry);
 
