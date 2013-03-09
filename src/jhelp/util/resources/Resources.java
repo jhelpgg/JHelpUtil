@@ -1,6 +1,7 @@
 package jhelp.util.resources;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import jhelp.util.io.UtilIO;
  */
 public class Resources
 {
+   private File                                  baseDirectory;
    /** Indicates if resources are outside the jar */
    private final boolean                         externalFiles;
    /** Reference class */
@@ -61,6 +63,26 @@ public class Resources
       this.relativePathFormClass = null;
       this.resourcesTexts = new Hashtable<String, ResourceText>();
       this.externalFiles = false;
+   }
+
+   /**
+    * Create a new instance of Resources based on directory
+    * 
+    * @param directory
+    *           Directory base
+    */
+   public Resources(final File directory)
+   {
+      if((directory.exists() == false) || (directory.isDirectory() == false))
+      {
+         throw new IllegalArgumentException(directory.getAbsolutePath() + " dosen't exits or not a directory");
+      }
+
+      this.referenceClass = null;
+      this.relativePathFormClass = null;
+      this.resourcesTexts = new Hashtable<String, ResourceText>();
+      this.externalFiles = true;
+      this.baseDirectory = directory;
    }
 
    /**
@@ -176,6 +198,11 @@ public class Resources
       {
          try
          {
+            if(this.baseDirectory != null)
+            {
+               return new FileInputStream(new File(this.baseDirectory, path));
+            }
+
             return new FileInputStream(UtilIO.obtainExternalFile(path));
          }
          catch(final FileNotFoundException exception)
@@ -229,6 +256,11 @@ public class Resources
       {
          try
          {
+            if(this.baseDirectory != null)
+            {
+               return (new File(this.baseDirectory, path)).toURI().toURL();
+            }
+
             return (UtilIO.obtainExternalFile(path)).toURI().toURL();
          }
          catch(final MalformedURLException exception)
