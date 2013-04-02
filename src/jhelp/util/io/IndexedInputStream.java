@@ -14,7 +14,7 @@ public class IndexedInputStream
    /** Indicates if we are at the end of the stream */
    private boolean           finish;
    /** Actual index */
-   private int               index;
+   private long              index;
    /** Stream to read */
    private final InputStream inputStream;
 
@@ -41,7 +41,7 @@ public class IndexedInputStream
     * 
     * @return Current index
     */
-   public int getCurrentIndex()
+   public long getCurrentIndex()
    {
       return this.index;
    }
@@ -161,5 +161,43 @@ public class IndexedInputStream
       this.index += read;
 
       return read;
+   }
+
+   /**
+    * Skip a number of bytes. It tries to fullfill the contract <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @param toSkip
+    *           Number of bytes to skip
+    * @return Number of really skipped bytes
+    * @throws IOException
+    *            On skipping issue
+    * @see java.io.InputStream#skip(long)
+    */
+   @Override
+   public long skip(long toSkip) throws IOException
+   {
+      if(toSkip <= 0)
+      {
+         return 0;
+      }
+
+      long skipped = 0;
+
+      long skip = this.inputStream.skip(toSkip);
+      while((skip >= 0) && (toSkip > 0))
+      {
+         skipped += skip;
+         toSkip -= skip;
+
+         if(toSkip > 0)
+         {
+            skip = this.inputStream.skip(toSkip);
+         }
+      }
+
+      return skipped;
    }
 }
