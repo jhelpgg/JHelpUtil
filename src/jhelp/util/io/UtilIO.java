@@ -1370,7 +1370,7 @@ public final class UtilIO
       while(zipEntry != null)
       {
          name = zipEntry.getName();
-         destination = UtilIO.obtainFile(directoryDestination, zipEntry.getName());
+         destination = UtilIO.obtainFile(directoryDestination, name);
 
          if(name.endsWith("/") == true)
          {

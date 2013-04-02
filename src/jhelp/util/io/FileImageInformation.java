@@ -61,45 +61,39 @@ public class FileImageInformation
 
       try
       {
-         final String name = file.getName();
-         final int index = name.lastIndexOf('.');
+         FileImageInputStream fileInputStream;
 
-         if(index > 0)
+         for(final ImageReader imageReader : FileImageInformation.IMAGES_READERS)
          {
-            FileImageInputStream fileInputStream;
+            fileInputStream = null;
 
-            for(final ImageReader imageReader : FileImageInformation.IMAGES_READERS)
+            try
             {
-               fileInputStream = null;
+               fileInputStream = new FileImageInputStream(file);
+               imageReader.setInput(fileInputStream, false, false);
+               final int nb = imageReader.getNumImages(true);
 
-               try
+               for(int i = 0; i < nb; i++)
                {
-                  fileInputStream = new FileImageInputStream(file);
-                  imageReader.setInput(fileInputStream, false, false);
-                  final int nb = imageReader.getNumImages(true);
+                  this.width = Math.max(this.width, imageReader.getWidth(i));
+                  this.height = Math.max(this.height, imageReader.getHeight(i));
+               }
 
-                  for(int i = 0; i < nb; i++)
+               break;
+            }
+            catch(final Exception exception)
+            {
+            }
+            finally
+            {
+               if(fileInputStream != null)
+               {
+                  try
                   {
-                     this.width = Math.max(this.width, imageReader.getWidth(i));
-                     this.height = Math.max(this.height, imageReader.getHeight(i));
+                     fileInputStream.close();
                   }
-
-                  break;
-               }
-               catch(final Exception exception)
-               {
-               }
-               finally
-               {
-                  if(fileInputStream != null)
+                  catch(final Exception exception)
                   {
-                     try
-                     {
-                        fileInputStream.close();
-                     }
-                     catch(final Exception exception)
-                     {
-                     }
                   }
                }
             }
