@@ -118,6 +118,7 @@ public class ArrayInt
    public void clear()
    {
       this.size = 0;
+      this.sorted = true;
    }
 
    /**
@@ -376,6 +377,23 @@ public class ArrayInt
       {
          this.sorted = true;
       }
+   }
+
+   /**
+    * Change an integer on the array
+    * 
+    * @param index
+    *           Index to change
+    * @param integer
+    *           New value
+    */
+   public void setInteger(final int index, final int integer)
+   {
+      this.checkIndex(index);
+
+      this.array[index] = integer;
+
+      this.sorted = (this.sorted == true) && ((index == 0) || (integer >= this.array[index - 1])) && ((index == (this.size - 1)) || (integer <= this.array[index + 1]));
    }
 
    /**

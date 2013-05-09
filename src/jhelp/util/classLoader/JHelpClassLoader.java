@@ -108,7 +108,7 @@ public class JHelpClassLoader
          tempFile = f;
          index = path.length - 1;
 
-         while(tempFile != null && tempFile.getName().equals(path[index]) == true)
+         while((tempFile != null) && (tempFile.getName().equals(path[index]) == true))
          {
             tempFile = tempFile.getParentFile();
             index--;
@@ -223,7 +223,7 @@ public class JHelpClassLoader
     */
    public void add(final File file)
    {
-      if(file.exists() == true && this.files.contains(file) == false)
+      if((file.exists() == true) && (this.files.contains(file) == false))
       {
          this.files.add(file);
       }
@@ -254,7 +254,7 @@ public class JHelpClassLoader
 
          if(tempFile.getName().equals(path[index]) == true)
          {
-            while(tempFile != null && tempFile.getName().equals(path[index]) == true)
+            while((tempFile != null) && (tempFile.getName().equals(path[index]) == true))
             {
                tempFile = tempFile.getParentFile();
                index--;
@@ -351,7 +351,7 @@ public class JHelpClassLoader
 
          if(tempFile.getName().equals(path[index]) == true)
          {
-            while(tempFile != null && tempFile.getName().equals(path[index]) == true)
+            while((tempFile != null) && (tempFile.getName().equals(path[index]) == true))
             {
                tempFile = tempFile.getParentFile();
                index--;
@@ -387,5 +387,16 @@ public class JHelpClassLoader
       }
 
       return new EnumerationIterator<URL>(urls.iterator());
+   }
+
+   /**
+    * Un load a class
+    * 
+    * @param name
+    *           Class complete name
+    */
+   public void unloadClass(final String name)
+   {
+      this.loadedClass.remove(name);
    }
 }
