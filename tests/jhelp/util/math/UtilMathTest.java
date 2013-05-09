@@ -11,7 +11,7 @@ public class UtilMathTest
    @Test
    public void testBernouilli()
    {
-      Assert.assertEquals(1.25, UtilMath.Bernouilli(3, 5, 0.5), UtilMath.EPSILON);
+      Assert.assertEquals(0.3125, UtilMath.Bernouilli(3, 5, 0.5), UtilMath.EPSILON);
    }
 
    /**
@@ -21,6 +21,10 @@ public class UtilMathTest
    public void testC()
    {
       Assert.assertEquals(56, UtilMath.C(5, 8));
+      Assert.assertEquals(7503, UtilMath.C(2, 123));
+      Assert.assertEquals(13983816, UtilMath.C(6, 49));
+      Assert.assertEquals(353697121050L, UtilMath.C(24, 42));
+      Assert.assertEquals(353697121050L, UtilMath.C(42 - 24, 42));
    }
 
    /**

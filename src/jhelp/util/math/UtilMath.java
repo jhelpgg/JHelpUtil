@@ -1,5 +1,7 @@
 package jhelp.util.math;
 
+import jhelp.util.list.ArrayInt;
+
 /**
  * Utilities for math.<br>
  * It complete the {@link Math} class
@@ -28,7 +30,7 @@ public final class UtilMath
     */
    public static double Bernouilli(final int n, final int m, final double t)
    {
-      return UtilMath.C(n, m) * Math.pow(t, m) * Math.pow(1d - t, n - m);
+      return UtilMath.C(n, m) * Math.pow(t, n) * Math.pow(1d - t, m - n);
    }
 
    /**
@@ -42,12 +44,61 @@ public final class UtilMath
     */
    public static long C(final int n, final int m)
    {
-      if((m == 0) || (n == m))
+      if((n <= 0) || (m <= 0) || (n >= m))
       {
          return 1;
       }
 
-      return UtilMath.factorial(m) / (UtilMath.factorial(n) * UtilMath.factorial(m - n));
+      final int diff = m - n;
+      final int min = Math.min(n, diff);
+      final int max = Math.max(n, diff);
+
+      final ArrayInt arrayInt = new ArrayInt();
+      for(int i = m; i > max; i--)
+      {
+         arrayInt.add(i);
+      }
+
+      int size = arrayInt.getSize();
+      int test;
+      int num, gcd;
+      long result = 1;
+
+      for(int i = min; i >= 2; i--)
+      {
+         num = i;
+
+         for(int j = 0; (j < size) && (num > 1); j++)
+         {
+            test = arrayInt.getInteger(j);
+            gcd = UtilMath.greaterCommonDivisor(num, test);
+
+            if(gcd > 1)
+            {
+               test /= gcd;
+
+               if(test == 1)
+               {
+                  arrayInt.remove(j);
+                  size--;
+                  j--;
+               }
+               else
+               {
+                  arrayInt.setInteger(j, test);
+               }
+
+               num /= gcd;
+            }
+         }
+      }
+
+      for(int i = 0; i < size; i++)
+      {
+         result *= arrayInt.getInteger(i);
+      }
+
+      return result;
    }
 
    /**
@@ -116,6 +167,37 @@ public final class UtilMath
       int max = Math.max(integer1, integer2);
 
       int temp;
+
+      while(min > 0)
+      {
+         temp = min;
+
+         min = max % min;
+         max = temp;
+      }
+
+      return max;
+   }
+
+   /**
+    * Compute the Greater Common Divisor of two integers.<br>
+    * If both integers are 0, 0 is return
+    * 
+    * @param integer1
+    *           First integer
+    * @param integer2
+    *           Second integer
+    * @return GCD
+    */
+   public static long greaterCommonDivisor(long integer1, long integer2)
+   {
+      integer1 = Math.abs(integer1);
+      integer2 = Math.abs(integer2);
+
+      long min = Math.min(integer1, integer2);
+      long max = Math.max(integer1, integer2);
+
+      long temp;
 
       while(min > 0)
       {
@@ -217,6 +299,28 @@ public final class UtilMath
    public static int lowerCommonMultiple(final int integer1, final int integer2)
    {
       final int gcd = UtilMath.greaterCommonDivisor(integer1, integer2);
+
+      if(gcd == 0)
+      {
+         return 0;
+      }
+
+      return integer1 * (integer2 / gcd);
+   }
+
+   /**
+    * Compute the Lower Common Multiple of two integers.<br>
+    * If both integers are 0, 0 is return
+    * 
+    * @param integer1
+    *           First integer
+    * @param integer2
+    *           Second integer
+    * @return LCM
+    */
+   public static long lowerCommonMultiple(final long integer1, final long integer2)
+   {
+      final long gcd = UtilMath.greaterCommonDivisor(integer1, integer2);
 
       if(gcd == 0)
       {
