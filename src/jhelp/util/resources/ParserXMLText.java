@@ -136,7 +136,7 @@ class ParserXMLText
 
       if(ParserXMLText.MARKUP_TEXT.equals(name) == true)
       {
-         this.texts.put(this.key, this.value.toString());
+         this.texts.put(this.key, this.value.toString().trim());
 
          this.value = null;
       }

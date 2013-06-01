@@ -205,7 +205,7 @@ public class Tree<INFORMATION>
             return tree;
          }
 
-         for(final Tree<INFORMATION> branch : this.branches)
+         for(final Tree<INFORMATION> branch : tree.branches)
          {
             stack.push(branch);
          }
@@ -237,7 +237,7 @@ public class Tree<INFORMATION>
             return tree;
          }
 
-         for(final Tree<INFORMATION> branch : this.branches)
+         for(final Tree<INFORMATION> branch : tree.branches)
          {
             queue.inQueue(branch);
          }
@@ -269,9 +269,9 @@ public class Tree<INFORMATION>
             return tree;
          }
 
-         for(int index = this.branches.size() - 1; index >= 0; index--)
+         for(int index = tree.branches.size() - 1; index >= 0; index--)
          {
-            stack.push(this.branches.get(index));
+            stack.push(tree.branches.get(index));
          }
       }
 
@@ -301,9 +301,9 @@ public class Tree<INFORMATION>
             return tree;
          }
 
-         for(int index = this.branches.size() - 1; index >= 0; index--)
+         for(int index = tree.branches.size() - 1; index >= 0; index--)
          {
-            queue.inQueue(this.branches.get(index));
+            queue.inQueue(tree.branches.get(index));
          }
       }
 

@@ -83,6 +83,82 @@ public final class Utilities
    }
 
    /**
+    * Extract sub array from an array from start index to the end of array<br>
+    * Start is automaticaly put inside source array, that is to say, if start is lower than 0, start will be considered as 0.<br>
+    * If source is {@code null}, {@code null} is return.<br>
+    * If start if upper or equal to array length or source array is empty then an empty array is return
+    * 
+    * @param <T>
+    *           Array component type
+    * @param array
+    *           Array to get elements
+    * @param start
+    *           Start index
+    * @return Extracted array
+    */
+   @SuppressWarnings("unchecked")
+   public static <T> T[] extractSubArray(final T[] array, final int start)
+   {
+      if(array == null)
+      {
+         return null;
+      }
+
+      return Utilities.extractSubArray(array, start, array.length);
+   }
+
+   /**
+    * Extract sub array from an array from start index to end, start and end inclusives<br>
+    * Start and end index are automaticaly put inside source array, that is to say, if start is lower than 0, start will be
+    * considered as 0, if end is upper the last array index end will be the last array index.<br>
+    * If source is {@code null}, {@code null} is return.<br>
+    * If end lower than start or source array is empty then an empty array is return
+    * 
+    * @param <T>
+    *           Array component type
+    * @param array
+    *           Array to get elements
+    * @param start
+    *           Start index
+    * @param end
+    *           End index
+    * @return Extracted array
+    */
+   @SuppressWarnings("unchecked")
+   public static <T> T[] extractSubArray(final T[] array, int start, int end)
+   {
+      if(array == null)
+      {
+         return null;
+      }
+
+      final int length = array.length;
+
+      if(start < 0)
+      {
+         start = 0;
+      }
+
+      if(end >= length)
+      {
+         end = length - 1;
+      }
+
+      final int size = (end - start) + 1;
+
+      if(size <= 0)
+      {
+         return (T[]) Array.newInstance(array.getClass().getComponentType(), 0);
+      }
+
+      final T[] result = (T[]) Array.newInstance(array.getClass().getComponentType(), size);
+
+      System.arraycopy(array, start, result, 0, size);
+
+      return result;
+   }
+
+   /**
     * Compute index of byte array inside an other byt array
     * 
     * @param container
@@ -95,7 +171,7 @@ public final class Utilities
     *           Number of byte to take care inside the content
     * @return Index where container starts contain the content or -1 if not found
     */
-   public static int indexOf(final byte[] container, final byte[] content, int offset, int length)
+   public static final int indexOf(final byte[] container, final byte[] content, int offset, int length)
    {
       if(offset < 0)
       {
@@ -146,7 +222,7 @@ public final class Utilities
     *           Searched character
     * @return Character index or -1 if character not inside the array
     */
-   public static int indexOf(final char[] array, final char element)
+   public static final int indexOf(final char[] array, final char element)
    {
       if(array == null)
       {
@@ -224,5 +300,5 @@ public final class Utilities
     */
    private Utilities()
    {
-   }
+   };
 }

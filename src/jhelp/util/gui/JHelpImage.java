@@ -185,6 +185,20 @@ public class JHelpImage
    }
 
    /**
+    * Comput distance betwwen 2 colors
+    * 
+    * @param color1
+    *           First color
+    * @param color2
+    *           Second color
+    * @return Color distance
+    */
+   private static int distanceColor(final int color1, final int color2)
+   {
+      return UtilMath.maxIntegers(Math.abs(((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF)), Math.abs(((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF)), Math.abs((color1 & 0xFF) - (color2 & 0xFF)));
+   }
+
+   /**
     * Load a buffered image
     * 
     * @param image
@@ -883,6 +897,7 @@ public class JHelpImage
    private boolean                drawMode;
    /** Image height */
    private final int              height;
+
    /** Image for draw in a swing component */
    private Image                  image;
 
@@ -3168,6 +3183,125 @@ public class JHelpImage
       part.endDrawMode();
 
       return part;
+   }
+
+   /**
+    * Fill pixels of image withc color.<br>
+    * The start point indicates the color to fill, and all neighboards pixels with color distance of precision will be colored<br>
+    * Must be in draw mode
+    * 
+    * @param x
+    *           Start X
+    * @param y
+    *           Start Y
+    * @param color
+    *           Color to use
+    * @param precision
+    *           Precision for color difference
+    * @param alphaMix
+    *           Indicates if alpha mix or replace
+    */
+   public void fillColor(final int x, final int y, final int color, int precision, final boolean alphaMix)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if((x < 0) || (x > this.width) || (y < 0) || (y >= this.height))
+      {
+         return;
+      }
+
+      final int alpha = (color >> 24) & 0xFF;
+      if((alpha == 0) && (alphaMix == true))
+      {
+         return;
+      }
+
+      precision = Math.max(0, precision);
+      final int start = this.pixels[x + (y * this.width)];
+      if(JHelpImage.distanceColor(start, color) <= precision)
+      {
+         return;
+      }
+
+      if((alpha == 255) || (alphaMix == false))
+      {
+         final Stack<Point> stack = new Stack<Point>();
+         stack.push(new Point(x, y));
+         Point point;
+
+         while(stack.isEmpty() == false)
+         {
+            point = stack.pop();
+            this.pixels[point.x + (point.y * this.width)] = color;
+
+            if((point.x > 0) && (JHelpImage.distanceColor(start, this.pixels[(point.x - 1) + (point.y * this.width)]) <= precision))
+            {
+               stack.push(new Point(point.x - 1, point.y));
+            }
+
+            if((point.x < (this.width - 1)) && (JHelpImage.distanceColor(start, this.pixels[point.x + 1 + (point.y * this.width)]) <= precision))
+            {
+               stack.push(new Point(point.x + 1, point.y));
+            }
+
+            if((point.y > 0) && (JHelpImage.distanceColor(start, this.pixels[point.x + ((point.y - 1) * this.width)]) <= precision))
+            {
+               stack.push(new Point(point.x, point.y - 1));
+            }
+
+            if((point.y < (this.height - 1)) && (JHelpImage.distanceColor(start, this.pixels[point.x + ((point.y + 1) * this.width)]) <= precision))
+            {
+               stack.push(new Point(point.x, point.y + 1));
+            }
+         }
+
+         return;
+      }
+
+      final Stack<Point> stack = new Stack<Point>();
+      stack.push(new Point(x, y));
+      Point point;
+      final int ahpla = 256 - alpha;
+      final int red = ((color >> 16) & 0xFF) * alpha;
+      final int green = ((color >> 8) & 0xFF) * alpha;
+      final int blue = (color & 0xFF) * alpha;
+      int col, pix;
+
+      while(stack.isEmpty() == false)
+      {
+         point = stack.pop();
+
+         pix = point.x + (point.y * this.width);
+         col = this.pixels[pix];
+         this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
+               (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
+               (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               ((blue + ((col & 0xFF) * ahpla)) >> 8);
+
+         if((point.x > 0) && (JHelpImage.distanceColor(start, this.pixels[(point.x - 1) + (point.y * this.width)]) <= precision))
+         {
+            stack.push(new Point(point.x - 1, point.y));
+         }
+
+         if((point.x < (this.width - 1)) && (JHelpImage.distanceColor(start, this.pixels[point.x + 1 + (point.y * this.width)]) <= precision))
+         {
+            stack.push(new Point(point.x + 1, point.y));
+         }
+
+         if((point.y > 0) && (JHelpImage.distanceColor(start, this.pixels[point.x + ((point.y - 1) * this.width)]) <= precision))
+         {
+            stack.push(new Point(point.x, point.y - 1));
+         }
+
+         if((point.y < (this.height - 1)) && (JHelpImage.distanceColor(start, this.pixels[point.x + ((point.y + 1) * this.width)]) <= precision))
+         {
+            stack.push(new Point(point.x, point.y + 1));
+         }
+      }
+
    }
 
    /**
@@ -6665,6 +6799,32 @@ public class JHelpImage
    public void setName(final String name)
    {
       this.name = name;
+   }
+
+   /**
+    * Change one pixel color.<br>
+    * Must be in draw mode
+    * 
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    * @param color
+    *           Color
+    */
+   public void setPixel(final int x, final int y, final int color)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if((x < 0) || (x >= this.width) || (y < 0) || (y >= this.height))
+      {
+         return;
+      }
+
+      this.pixels[x + (y * this.width)] = color;
    }
 
    /**

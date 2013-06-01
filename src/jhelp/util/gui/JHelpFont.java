@@ -325,6 +325,45 @@ public final class JHelpFont
    }
 
    /**
+    * Indicates if an object is equals to this font <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @param object
+    *           Compared object
+    * @return {@code true} if equals
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
+   @Override
+   public boolean equals(final Object object)
+   {
+      if(object == null)
+      {
+         return false;
+      }
+
+      if(object == this)
+      {
+         return true;
+      }
+
+      if((object instanceof JHelpFont) == false)
+      {
+         return false;
+      }
+
+      final JHelpFont font = (JHelpFont) object;
+
+      if(this.underline != font.underline)
+      {
+         return false;
+      }
+
+      return this.font.equals(font.font);
+   }
+
+   /**
     * Font family
     * 
     * @return Font family
@@ -361,7 +400,7 @@ public final class JHelpFont
     */
    public boolean isBold()
    {
-      return (this.font.getSize() & Font.BOLD) != 0;
+      return (this.font.getStyle() & Font.BOLD) != 0;
    }
 
    /**
@@ -371,7 +410,7 @@ public final class JHelpFont
     */
    public boolean isItalic()
    {
-      return (this.font.getSize() & Font.ITALIC) != 0;
+      return (this.font.getStyle() & Font.ITALIC) != 0;
    }
 
    /**

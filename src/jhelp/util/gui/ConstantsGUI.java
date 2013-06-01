@@ -13,7 +13,7 @@ public interface ConstantsGUI
    /** Identity transform */
    public static final AffineTransform   AFFINE_TRANSFORM    = new AffineTransform();
    /** Flatness to use */
-   public static final double            FLATNESS            = 1;
+   public static final double            FLATNESS            = 0.01;
    /** Font render context */
    public static final FontRenderContext FONT_RENDER_CONTEXT = new FontRenderContext(ConstantsGUI.AFFINE_TRANSFORM, true, false);
 }
