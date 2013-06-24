@@ -227,6 +227,14 @@ public abstract class MessageHandler<MESSAGE>
    protected abstract void messageArrived(MESSAGE message);
 
    /**
+    * Called just before handler will be destroyed, to do some safe stufs.<br>
+    * Do nothing be default
+    */
+   protected void willBeTerminated()
+   {
+   }
+
+   /**
     * Cancel a message.<br>
     * Usually used with message post with {@link #postDelayedMessage(Object, int)} to cancel it before it is called.<br>
     * If the message already delivered, this method does nothing<br>
@@ -333,6 +341,7 @@ public abstract class MessageHandler<MESSAGE>
       }
 
       this.alive = false;
+      this.willBeTerminated();
 
       synchronized(this.LOCK)
       {

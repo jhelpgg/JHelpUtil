@@ -148,6 +148,25 @@ public class ArrayInt
    }
 
    /**
+    * Create a copy of the array
+    * 
+    * @return The copy
+    */
+   public ArrayInt createCopy()
+   {
+      final ArrayInt copy = new ArrayInt();
+
+      final int length = this.array.length;
+      copy.array = new int[length];
+      System.arraycopy(this.array, 0, copy.array, 0, length);
+
+      copy.size = this.size;
+      copy.sorted = this.sorted;
+
+      return copy;
+   }
+
+   /**
     * Destroy properly the array int
     */
    public void destroy()

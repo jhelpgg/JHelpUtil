@@ -33,7 +33,8 @@ public final class JHelpFont
    private final Font        font;
    /** Metrics for measure strings */
    private final FontMetrics fontMetrics;
-
+   /** Font maximum character width */
+   private int               maximumWidth = -1;
    /** Underline information */
    private final boolean     underline;
 
@@ -164,7 +165,7 @@ public final class JHelpFont
     */
    public Pair<List<JHelpTextLine>, Dimension> computeTextLines(final String text, final JHelpTextAlign textAlign, final int limitWidth)
    {
-      return this.computeTextLines(text, textAlign, Integer.MAX_VALUE, Integer.MAX_VALUE);
+      return this.computeTextLines(text, textAlign, limitWidth, Integer.MAX_VALUE);
    }
 
    /**
@@ -182,6 +183,26 @@ public final class JHelpFont
     */
    public Pair<List<JHelpTextLine>, Dimension> computeTextLines(final String text, final JHelpTextAlign textAlign, final int limitWidth, final int limitHeight)
    {
+      return this.computeTextLines(text, textAlign, limitWidth, limitHeight, true);
+   }
+
+   /**
+    * Compute text lines representation with this font
+    * 
+    * @param text
+    *           Text to use
+    * @param textAlign
+    *           Align to use
+    * @param limitWidth
+    *           Number maximum of pixels in width
+    * @param limitHeight
+    *           Limit height in pixels
+    * @param trim
+    *           Indicates if have to trim lines
+    * @return The couple of the list of each computed lines and the total size of all lines together
+    */
+   public Pair<List<JHelpTextLine>, Dimension> computeTextLines(final String text, final JHelpTextAlign textAlign, final int limitWidth, final int limitHeight, final boolean trim)
+   {
       final int limit = Math.max(this.fontMetrics.getMaxAdvance() + 2, limitWidth);
 
       final ArrayList<JHelpTextLine> textLines = new ArrayList<JHelpTextLine>();
@@ -196,7 +217,10 @@ public final class JHelpFont
 
       while(line != null)
       {
-         line = line.trim();
+         if(trim == true)
+         {
+            line = line.trim();
+         }
 
          width = this.stringWidth(line);
          index = line.length() - 1;
@@ -211,8 +235,16 @@ public final class JHelpFont
 
             if(index >= 0)
             {
-               head = line.substring(0, index).trim();
-               tail = line.substring(index).trim();
+               if(trim == true)
+               {
+                  head = line.substring(0, index).trim();
+                  tail = line.substring(index).trim();
+               }
+               else
+               {
+                  head = line.substring(0, index);
+                  tail = line.substring(index);
+               }
             }
             else
             {
@@ -381,6 +413,24 @@ public final class JHelpFont
    public int getHeight()
    {
       return this.fontMetrics.getHeight();
+   }
+
+   /**
+    * Maximum character witdh
+    * 
+    * @return Biggest width of one character
+    */
+   public int getMaximumCharacterWidth()
+   {
+      if(this.maximumWidth < 0)
+      {
+         for(char car = 32; car < 128; car++)
+         {
+            this.maximumWidth = Math.max(this.maximumWidth, this.fontMetrics.charWidth(car));
+         }
+      }
+
+      return this.maximumWidth;
    }
 
    /**

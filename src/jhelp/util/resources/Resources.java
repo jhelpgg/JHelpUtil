@@ -28,6 +28,7 @@ import jhelp.util.io.UtilIO;
  */
 public class Resources
 {
+   /** Base directory */
    private File                                  baseDirectory;
    /** Indicates if resources are outside the jar */
    private final boolean                         externalFiles;

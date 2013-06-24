@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Stack;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.text.UtilText;
@@ -446,19 +447,37 @@ public final class Reflector
     */
    public final static boolean isInherit(Class<?> test, final Class<?> parent)
    {
+      if(test.equals(parent) == true)
+      {
+         return true;
+      }
+
       if((test.isPrimitive() == true) || (test.isArray() == true))
       {
          return false;
       }
 
-      while(test != null)
+      final Stack<Class<?>> stack = new Stack<Class<?>>();
+      stack.push(test);
+
+      while(stack.isEmpty() == false)
       {
+         test = stack.pop();
+
          if(test.equals(parent) == true)
          {
             return true;
          }
 
-         test = test.getSuperclass();
+         if(test.getSuperclass() != null)
+         {
+            stack.push(test.getSuperclass());
+         }
+
+         for(final Class<?> interf : test.getInterfaces())
+         {
+            stack.push(interf);
+         }
       }
 
       return false;
