@@ -29,7 +29,7 @@ public class JHelpFontSampleFrame
       implements ChangeListener
 {
    /** Image that draw the text height */
-   private final static int            HEIGHT = 2000;
+   private final static int            HEIGHT = 1000;
    /** Text for test */
    private final static String         STRING = "Pseudopseudohypoparathyroidism is a long word. So Pseudopseudohypoparathyroidism is a good candidate for show how cut text work";
    /** Image that draw the text height */

@@ -18,7 +18,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
 import jhelp.util.list.Pair;
 import jhelp.util.text.StringCutter;
 import jhelp.util.text.UtilText;
@@ -30,6 +29,7 @@ import jhelp.util.text.UtilText;
  */
 public final class UtilIO
 {
+   private static File        homeDirectory;
    /** Directory external of the code */
    private static File        outsideDirectory;
    /** Temporary directory */
@@ -46,6 +46,7 @@ public final class UtilIO
    public static final int    MEGA_BYTES         = 1024 * UtilIO.KILO_BYTES;
    /** Path separator used in URL, ZIP, JAR */
    public static final char   PATH_SEPARATOR     = '/';
+
    /** Path the represents the parent directory */
    public static final String PREVIOUS_DIRECTORY = "..";
 
@@ -803,8 +804,6 @@ public final class UtilIO
    public static File obtainFile(final File directory, final String path, final char separator)
    {
       File file = directory;
-      Debug.println(DebugLevel.DEBUG, file);
-      Debug.println(DebugLevel.DEBUG, path);
       final StringCutter stringCutter = new StringCutter(path, separator);
 
       String next = stringCutter.next();
@@ -814,18 +813,46 @@ public final class UtilIO
          if(UtilIO.PREVIOUS_DIRECTORY.equals(next) == true)
          {
             file = file.getParentFile();
-            Debug.println(DebugLevel.DEBUG, file);
          }
          else if((UtilIO.CURRENT_DIRECTORY.equals(next) == false) && (next.length() > 0))
          {
             file = new File(file, next);
-            Debug.println(DebugLevel.DEBUG, file);
          }
 
          next = stringCutter.next();
       }
-      Debug.println(DebugLevel.DEBUG, file);
+
       return file;
+   }
+
+   public static File obtainHomeDirectory()
+   {
+      if(UtilIO.homeDirectory != null)
+      {
+         return UtilIO.homeDirectory;
+      }
+
+      UtilIO.homeDirectory = UtilIO.obtainOutsideDirectory();
+
+      try
+      {
+         final String home = System.getProperty("user.home");
+
+         if(home != null)
+         {
+            final File directory = new File(home);
+            if((directory.exists() == true) && (directory.canRead() == true) && (directory.canWrite() == true))
+            {
+               UtilIO.homeDirectory = directory;
+            }
+         }
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception, "Failed to get home directory, use outside directory");
+      }
+
+      return UtilIO.homeDirectory;
    }
 
    /**
@@ -838,31 +865,21 @@ public final class UtilIO
       if(UtilIO.outsideDirectory == null)
       {
          String className = UtilIO.class.getName();
-         Debug.println(DebugLevel.DEBUG, "className=", className);
 
          int index = className.lastIndexOf('.');
-         Debug.println(DebugLevel.DEBUG, "index=", index);
          if(index >= 0)
          {
             className = className.substring(index + 1);
          }
-         Debug.println(DebugLevel.DEBUG, "className=", className);
 
          className += ".class";
-         Debug.println(DebugLevel.DEBUG, "className=", className);
 
          final URL url = UtilIO.class.getResource(className);
-         Debug.println(DebugLevel.DEBUG, "url=", url);
          final String path = url.getFile();
-         Debug.println(DebugLevel.DEBUG, "path=", path);
-
-         Debug.println(DebugLevel.VERBOSE, "path=", path);
 
          index = path.indexOf(".jar!");
-         Debug.println(DebugLevel.DEBUG, "index=", index);
 
          int start = 0;
-         Debug.println(DebugLevel.DEBUG, "start=", start);
          if(path.startsWith("file://") == true)
          {
             start = 7;
@@ -871,22 +888,15 @@ public final class UtilIO
          {
             start = 5;
          }
-         Debug.println(DebugLevel.DEBUG, "start=", start);
 
          if(index > 0)
          {
-            Debug.println(DebugLevel.VERBOSE, "Inside a jar");
-
             UtilIO.outsideDirectory = new File(path.substring(start, path.lastIndexOf('/', index - 1)));
          }
          else
          {
-            Debug.println(DebugLevel.VERBOSE, "Not in jar");
-
             UtilIO.outsideDirectory = (new File(path)).getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();
          }
-
-         Debug.println(DebugLevel.VERBOSE, "Outside directory=", UtilIO.outsideDirectory.getAbsolutePath());
       }
 
       return UtilIO.outsideDirectory;

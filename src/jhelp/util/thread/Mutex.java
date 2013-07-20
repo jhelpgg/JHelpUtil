@@ -1,5 +1,7 @@
 package jhelp.util.thread;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 import jhelp.util.text.UtilText;
@@ -12,21 +14,30 @@ import jhelp.util.text.UtilText;
 public class Mutex
 {
    /** For enable/disable mutex debugging */
-   private static final boolean DEBUG = false;
+   private static final boolean       DEBUG   = false;
+   /** Next mutex ID */
+   private static final AtomicInteger NEXT_ID = new AtomicInteger();
+   /** Mutex ID */
+   private final int                  id;
    /** Indicates if mutex already locked */
-   private boolean              isLocked;
+   private boolean                    isLocked;
    /** Last mutex information (For printing) */
-   private String               lastMutexInformation;
-   /** Lock link to the mutex */
-   private final Object         lock  = new Object();
+   private String                     lastMutexInformation;
+   /** Lock linked to the mutex */
+   private final Object               lock    = new Object();
    /** Thread ID that have locked the mutex */
-   private String               lockerThreadID;
+   private String                     lockerThreadID;
 
    /**
     * Create a new instance of Mutex
     */
    public Mutex()
    {
+      synchronized(Mutex.NEXT_ID)
+      {
+         this.id = Mutex.NEXT_ID.getAndIncrement();
+      }
+
       this.isLocked = false;
    }
 
@@ -39,7 +50,7 @@ public class Mutex
     */
    private String createMutexInformation(final StackTraceElement traceCaller)
    {
-      return UtilText.concatenate(traceCaller.getClassName(), '.', traceCaller.getMethodName(), " at ", traceCaller.getLineNumber(), " : ", this.createThreadID());
+      return UtilText.concatenate(" MUTEX ", this.id, " : ", traceCaller.getClassName(), '.', traceCaller.getMethodName(), " at ", traceCaller.getLineNumber(), " : ", this.createThreadID());
    }
 
    /**
@@ -55,10 +66,20 @@ public class Mutex
    }
 
    /**
+    * Mutex ID
+    * 
+    * @return Mutex ID
+    */
+   public final int getID()
+   {
+      return this.id;
+   }
+
+   /**
     * Lock the mutex
     */
    @SuppressWarnings("unused")
-   public void lock()
+   public final void lock()
    {
       String info;
 
@@ -73,7 +94,7 @@ public class Mutex
          {
             if(Mutex.DEBUG == true)
             {
-               Debug.println(DebugLevel.DEBUG, info, "have to wait, ", this.lastMutexInformation, " have the lock");
+               Debug.println(DebugLevel.DEBUG, info, " have to wait, ", this.lastMutexInformation, " have the lock");
             }
 
             try
@@ -97,10 +118,25 @@ public class Mutex
    }
 
    /**
+    * String representation <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return String representation
+    * @see java.lang.Object#toString()
+    */
+   @Override
+   public String toString()
+   {
+      return UtilText.concatenate("MUTEX ", this.id);
+   }
+
+   /**
     * Unlock the mutex
     */
    @SuppressWarnings("unused")
-   public void unlock()
+   public final void unlock()
    {
       String info;
 

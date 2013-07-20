@@ -35,7 +35,7 @@ public class Scramble
          return;
       }
       final int length = arrayList.size();
-      final int time = (length * 2) + (length / 10) + 1;
+      final int time = (length << 1) + (length >> 3) + 1;
       int first;
       int second;
       T temp;
@@ -66,7 +66,7 @@ public class Scramble
          return;
       }
       final int length = integers.length;
-      final int time = (length * 2) + (length / 10) + 1;
+      final int time = (length << 1) + (length >> 3) + 1;
       int first;
       int second;
       int temp;
@@ -98,7 +98,7 @@ public class Scramble
          return;
       }
       final int length = objects.length;
-      final int time = (length * 2) + (length / 10) + 1;
+      final int time = (length << 1) + (length >> 3) + 1;
       int first;
       int second;
       T temp;
@@ -131,7 +131,7 @@ public class Scramble
          return;
       }
       final int length = vector.size();
-      final int time = (length * 2) + (length / 10) + 1;
+      final int time = (length << 1) + (length >> 3) + 1;
       int first;
       int second;
       T temp;

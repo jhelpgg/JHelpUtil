@@ -1,7 +1,5 @@
 package jhelp.util.gui;
 
-import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
 
 /**
  * A sprite, in an other word an image can be show/hide/translate easily over an other image.<br>
@@ -176,8 +174,6 @@ public final class JHelpSprite
       this.back = null;
       this.image = null;
       this.parent = null;
-
-      Debug.println(DebugLevel.VERBOSE, "Delete from memory");
 
       super.finalize();
    }

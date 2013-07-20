@@ -55,8 +55,7 @@ public final class UtilText
          {
             for(final boolean element : (boolean[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -64,8 +63,7 @@ public final class UtilText
          {
             for(final byte element : (byte[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -73,8 +71,7 @@ public final class UtilText
          {
             for(final char element : (char[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -82,8 +79,7 @@ public final class UtilText
          {
             for(final double element : (double[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -91,8 +87,7 @@ public final class UtilText
          {
             for(final float element : (float[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -100,8 +95,7 @@ public final class UtilText
          {
             for(final int element : (int[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -109,8 +103,7 @@ public final class UtilText
          {
             for(final long element : (long[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -118,8 +111,7 @@ public final class UtilText
          {
             for(final short element : (short[]) object)
             {
-               UtilText.appendObject(stringBuffer, element);
-
+               stringBuffer.append(element);
                stringBuffer.append(", ");
             }
          }
@@ -129,7 +121,6 @@ public final class UtilText
          for(final Object element : (Object[]) object)
          {
             UtilText.appendObject(stringBuffer, element);
-
             stringBuffer.append(", ");
          }
       }

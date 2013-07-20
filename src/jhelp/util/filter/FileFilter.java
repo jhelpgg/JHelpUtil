@@ -12,6 +12,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 import jhelp.util.debug.Debug;
+import jhelp.util.io.FileImageInformation;
 
 /**
  * File filter on extention.<br>
@@ -54,6 +55,37 @@ public class FileFilter
       fileFilter.addExtension("jpg");
       fileFilter.addExtension("bmp");
 
+      fileFilter.setInformation("Images");
+
+      return fileFilter;
+   }
+
+   /**
+    * Create a file filter for image based on image information not on file extention.<br>
+    * Same as {@link #createFilterForImageByFileImageInformation(boolean, boolean)
+    * createFilterForImageByFileImageInformation(false, false)}
+    * 
+    * @return Created file filter
+    */
+   public static FileFilter createFilterForImageByFileImageInformation()
+   {
+      return FileFilter.createFilterForImageByFileImageInformation(false, false);
+   }
+
+   /**
+    * Create a file filter for image based on image information not on file extention.
+    * 
+    * @param acceptHidden
+    *           Indicates if hidden files are accepted
+    * @param acceptVirtualLink
+    *           In,dicates if virtual link are accepted
+    * @return Created file filter
+    */
+   public static FileFilter createFilterForImageByFileImageInformation(final boolean acceptHidden, final boolean acceptVirtualLink)
+   {
+      final FileFilter fileFilter = new FileFilter(acceptHidden, acceptVirtualLink);
+
+      fileFilter.setSecondFileFilter(FileImageInformation.FILTER_BY_FILE_INFORMATION);
       fileFilter.setInformation("Images");
 
       return fileFilter;
@@ -105,6 +137,7 @@ public class FileFilter
     *           File test
     * @return {@code true} if the file pass
     * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
+    * @see java.io.FileFilter#accept(java.io.File)
     */
    @Override
    public boolean accept(final File file)
@@ -150,18 +183,7 @@ public class FileFilter
    @Override
    public boolean accept(final File dir, final String name)
    {
-      try
-      {
-         if(((this.acceptHidden == false) && (dir.isHidden() == true)) || ((this.acceptVirtualLink == false) && (dir.getCanonicalPath().equals(dir.getAbsolutePath()) == false)))
-         {
-            return false;
-         }
-      }
-      catch(final Exception exception)
-      {
-      }
-
-      return this.isFiltered(name);
+      return this.accept(new File(dir, name));
    }
 
    /**

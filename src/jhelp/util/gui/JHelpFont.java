@@ -24,19 +24,22 @@ import jhelp.util.text.UtilText;
 public final class JHelpFont
       implements ConstantsGUI
 {
+   /** Default font */
+   public static final JHelpFont DEFAULT      = new JHelpFont("Monospaced", 18);
+
    /** Character unicode for the smiley :) */
-   public static final char  SMILEY_HAPPY = (char) 0x263A;
+   public static final char      SMILEY_HAPPY = (char) 0x263A;
    /** Character unicode for the smiley :( */
-   public static final char  SMILEY_SAD   = (char) 0x2639;
+   public static final char      SMILEY_SAD   = (char) 0x2639;
 
    /** Embeded font */
-   private final Font        font;
+   private final Font            font;
    /** Metrics for measure strings */
-   private final FontMetrics fontMetrics;
+   private final FontMetrics     fontMetrics;
    /** Font maximum character width */
-   private int               maximumWidth = -1;
+   private int                   maximumWidth = -1;
    /** Underline information */
-   private final boolean     underline;
+   private final boolean         underline;
 
    /**
     * Create a new instance of JHelpFont not bold, not italic, not underline
@@ -315,6 +318,8 @@ public final class JHelpFont
          }
       }
 
+      size.width = Math.max(1, size.width);
+      size.height = Math.max(1, size.height);
       return new Pair<List<JHelpTextLine>, Dimension>(Collections.unmodifiableList(textLines), size);
    }
 
@@ -327,8 +332,8 @@ public final class JHelpFont
     */
    public JHelpMask createMask(final String string)
    {
-      final int width = this.fontMetrics.stringWidth(string);
-      final int height = this.fontMetrics.getHeight();
+      final int width = Math.max(1, this.fontMetrics.stringWidth(string));
+      final int height = Math.max(1, this.fontMetrics.getHeight());
       final int ascent = this.fontMetrics.getAscent();
 
       int[] pixels = new int[width * height];
@@ -403,6 +408,16 @@ public final class JHelpFont
    public String getFamily()
    {
       return this.font.getFamily();
+   }
+
+   /**
+    * {@link Font} embed by this font
+    * 
+    * @return {@link Font} embed by this font
+    */
+   public Font getFont()
+   {
+      return this.font;
    }
 
    /**

@@ -7,8 +7,6 @@
  */
 package jhelp.util.gui;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -22,6 +20,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 import jhelp.util.io.IntegerArrayInputStream;
+import jhelp.util.list.ArrayInt;
 
 import com.sun.imageio.plugins.gif.GIFImageMetadata;
 import com.sun.imageio.plugins.gif.GIFImageReader;
@@ -64,12 +63,20 @@ public class GIF
       return null;
    }
 
+   /** Images delay */
+   private final ArrayInt delays;
    /** Image height */
-   private int             height;
+   private int            height;
    /** Images contains in the GIF */
-   private BufferedImage[] images;
+   private JHelpImage[]   images;
+   /** Last seen index in automatic show */
+   private int            previousIndex;
+   /** Start animation time */
+   private long           startTime;
+   /** Total animation time */
+   private int            totalTime;
    /** Image width */
-   private int             width;
+   private int            width;
 
    /**
     * Constructs GIF
@@ -87,6 +94,9 @@ public class GIF
          throw new NullPointerException("inputStream musn't be null");
       }
 
+      this.delays = new ArrayInt();
+      this.totalTime = 0;
+
       // Get stream to read the image
       ImageInputStream imageInputStream = ImageIO.createImageInputStream(inputStream);
       // Given the stream to the reader
@@ -96,16 +106,14 @@ public class GIF
       ImageReadParam imageReadParam = GIF.GIFReader.getDefaultReadParam();
 
       // Initialization
-      ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
-      BufferedImage cumulateImage = null;
-      BufferedImage readImage;
-      BufferedImage newImage;
-      Graphics2D graphics2D = null;
+      ArrayList<JHelpImage> images = new ArrayList<JHelpImage>();
+      JHelpImage cumulateImage = null;
+      JHelpImage readImage;
+      JHelpImage newImage;
       int index = 0;
       boolean oneMore = true;
-      int x, y, w, h;
+      int x, y, time;
       GIFImageMetadata imageMetadata;
-      int[] pixels = null;
       int disposalMethod = GIF.DISPOSE_METHOD_NONE;
 
       // While there are one image to extract
@@ -114,7 +122,7 @@ public class GIF
          try
          {
             // Read actual image
-            readImage = GIF.GIFReader.read(index, imageReadParam);
+            readImage = JHelpImage.createImage(GIF.GIFReader.read(index, imageReadParam));
             // Read actual informations
             imageMetadata = (GIFImageMetadata) GIF.GIFReader.getImageMetadata(index);
 
@@ -127,13 +135,11 @@ public class GIF
             {
                this.width = readImage.getWidth();
                this.height = readImage.getHeight();
-               cumulateImage = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_ARGB);
-               graphics2D = cumulateImage.createGraphics();
+               cumulateImage = new JHelpImage(this.width, this.height);
             }
 
-            // Get image parcel size
-            w = readImage.getWidth();
-            h = readImage.getHeight();
+            readImage.getWidth();
+            readImage.getHeight();
 
             // Switch the method to do with the previous
             switch(disposalMethod)
@@ -142,33 +148,35 @@ public class GIF
             // alpha)
                case GIF.DISPOSE_METHOD_RESTORE_BACKGROUND:
                case GIF.DISPOSE_METHOD_RESTORE_PREVIOUS:
-                  pixels = new int[w * h];
-                  pixels = readImage.getRGB(0, 0, w, h, pixels, 0, w);
-                  cumulateImage.setRGB(x, y, w, h, pixels, 0, w);
-                  pixels = null;
+                  cumulateImage.startDrawMode();
+                  cumulateImage.drawImage(x, y, readImage, false);
+                  cumulateImage.endDrawMode();
                break;
 
                // Just draw the image on the cumulative (alpha processing)
                case GIF.DISPOSE_METHOD_NOT_DISPOSE:
                case GIF.DISPOSE_METHOD_NONE:
                default:
-                  graphics2D.drawImage(readImage, x, y, null);
+                  cumulateImage.startDrawMode();
+                  cumulateImage.drawImage(x, y, readImage, true);
+                  cumulateImage.endDrawMode();
                break;
             }
 
             // Get method to use for next image
             disposalMethod = imageMetadata.disposalMethod;
 
-            // Flush last changes
-            cumulateImage.flush();
-
             // Create the final actual image
-            newImage = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_ARGB);
-            newImage.createGraphics().drawImage(cumulateImage, 0, 0, null);
-            newImage.flush();
+            newImage = new JHelpImage(this.width, this.height);
+            newImage.startDrawMode();
+            newImage.drawImage(0, 0, cumulateImage, false);
+            newImage.endDrawMode();
 
             // Add the image
             images.add(newImage);
+            time = Math.max(1, imageMetadata.delayTime);
+            this.delays.add(time);
+            this.totalTime += time;
 
             // Go to next image
             index++;
@@ -182,14 +190,12 @@ public class GIF
 
       // Free memory
       imageMetadata = null;
-      graphics2D = null;
-      pixels = null;
       cumulateImage = null;
       readImage = null;
       newImage = null;
 
       // Get extracted images
-      this.images = new BufferedImage[images.size()];
+      this.images = new JHelpImage[images.size()];
       this.images = images.toArray(this.images);
 
       // Free memory
@@ -200,6 +206,11 @@ public class GIF
       GIF.GIFReader.dispose();
       inputStream.close();
       inputStream = null;
+
+      if(this.images.length == 0)
+      {
+         throw new IOException("Failed to load GIF, no extracted image");
+      }
    }
 
    /**
@@ -218,32 +229,29 @@ public class GIF
       final int numberOfImages = this.images.length;
 
       byte[] temp = new byte[4096];
-      temp[0] = (byte) (numberOfImages >> 24 & 0xFF);
-      temp[1] = (byte) (numberOfImages >> 16 & 0xFF);
-      temp[2] = (byte) (numberOfImages >> 8 & 0xFF);
+      temp[0] = (byte) ((numberOfImages >> 24) & 0xFF);
+      temp[1] = (byte) ((numberOfImages >> 16) & 0xFF);
+      temp[2] = (byte) ((numberOfImages >> 8) & 0xFF);
       temp[3] = (byte) (numberOfImages & 0xFF);
 
       md5.update(temp, 0, 4);
 
       IntegerArrayInputStream inputStream;
-      BufferedImage bufferedImage;
+      JHelpImage bufferedImage;
       int[] pixels;
       int read, width, height;
 
       for(int image = 0; image < numberOfImages; image++)
       {
          bufferedImage = this.images[image];
-         bufferedImage.flush();
 
          width = bufferedImage.getWidth();
          height = bufferedImage.getHeight();
 
-         pixels = new int[width * height + 2];
-
+         pixels = bufferedImage.getPixels(0, 0, width, height, 2);
          pixels[0] = width;
          pixels[1] = height;
 
-         pixels = bufferedImage.getRGB(0, 0, width, height, pixels, 2, width);
          inputStream = new IntegerArrayInputStream(pixels);
          pixels = null;
 
@@ -264,7 +272,7 @@ public class GIF
       for(final byte b : temp)
       {
          read = b & 0xFF;
-         stringBuffer.append(Integer.toHexString(read >> 4 & 0xF));
+         stringBuffer.append(Integer.toHexString((read >> 4) & 0xF));
          stringBuffer.append(Integer.toHexString(read & 0xF));
       }
       temp = null;
@@ -286,6 +294,18 @@ public class GIF
    }
 
    /**
+    * Obtin an image delay
+    * 
+    * @param index
+    *           Image index
+    * @return Delay in millisecond
+    */
+   public int getDelay(final int index)
+   {
+      return this.delays.getInteger(index);
+   }
+
+   /**
     * Image height
     * 
     * @return Image height
@@ -302,9 +322,55 @@ public class GIF
     *           Image index
     * @return Desired image
     */
-   public BufferedImage getImage(final int index)
+   public JHelpImage getImage(final int index)
    {
       return this.images[index];
+   }
+
+   /**
+    * Get the image suggest between last time {@link #startAnimation()} was called and time this method is called based on
+    * images dellays
+    * 
+    * @return Image since last time {@link #startAnimation()} was called
+    */
+   public JHelpImage getImageFromStartAnimation()
+   {
+      final long time = (System.currentTimeMillis() - this.startTime) >> 3L;
+      final int max = this.images.length - 1;
+      final int relativeTime = (int) (time % this.totalTime);
+      int index = 0;
+      int actualTime = 0;
+      int delay;
+
+      for(; index < max; index++)
+      {
+         delay = this.delays.getInteger(index);
+         actualTime += delay;
+
+         if(actualTime >= relativeTime)
+         {
+            break;
+         }
+      }
+
+      final int nextIndex = ((this.previousIndex + 1) % this.images.length);
+      if(index != this.previousIndex)
+      {
+         index = nextIndex;
+      }
+
+      this.previousIndex = index;
+      return this.images[index];
+   }
+
+   /**
+    * Total animation time
+    * 
+    * @return Total animation time
+    */
+   public int getTotalTime()
+   {
+      return this.totalTime;
    }
 
    /**
@@ -336,5 +402,14 @@ public class GIF
    public int numberOfImage()
    {
       return this.images.length;
+   }
+
+   /**
+    * Satart/restart animation from begening, to follow evolution, use {@link #getImageFromStartAnimation()} to have current
+    * image of the animation
+    */
+   public void startAnimation()
+   {
+      this.startTime = System.currentTimeMillis();
    }
 }

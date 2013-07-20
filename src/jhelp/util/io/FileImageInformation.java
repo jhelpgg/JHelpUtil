@@ -1,6 +1,7 @@
 package jhelp.util.io;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -20,6 +21,58 @@ public class FileImageInformation
 {
    /** JVM known readers */
    private static final ImageReader[] IMAGES_READERS;
+   /** Filter of image, based on file information, not on file extention. Directory are allowed */
+   public static final FileFilter     FILTER_BY_FILE_INFORMATION              = new FileFilter()
+                                                                              {
+                                                                                 /**
+                                                                                  * Indicates if a file is an image or a
+                                                                                  * directory <br>
+                                                                                  * <br>
+                                                                                  * <b>Parent documentation:</b><br>
+                                                                                  * {@inheritDoc}
+                                                                                  * 
+                                                                                  * @param pathname
+                                                                                  *           Tested file
+                                                                                  * @return {@code true} if its an image or a
+                                                                                  *         directory
+                                                                                  * @see java.io.FileFilter#accept(java.io.File)
+                                                                                  */
+                                                                                 @Override
+                                                                                 public boolean accept(final File pathname)
+                                                                                 {
+                                                                                    if(pathname.isDirectory() == true)
+                                                                                    {
+                                                                                       return true;
+                                                                                    }
+
+                                                                                    return (new FileImageInformation(pathname)).getFormatName() != null;
+                                                                                 }
+                                                                              };
+   /** Filter of image, based on file information, not on file extention. Directory are forbiden */
+   public static final FileFilter     FILTER_BY_FILE_INFORMATION_NO_DIRECTORY = new FileFilter()
+                                                                              {
+                                                                                 /**
+                                                                                  * Indicates if a file is an image <br>
+                                                                                  * <br>
+                                                                                  * <b>Parent documentation:</b><br>
+                                                                                  * {@inheritDoc}
+                                                                                  * 
+                                                                                  * @param pathname
+                                                                                  *           Tested file
+                                                                                  * @return {@code true} if its an image
+                                                                                  * @see java.io.FileFilter#accept(java.io.File)
+                                                                                  */
+                                                                                 @Override
+                                                                                 public boolean accept(final File pathname)
+                                                                                 {
+                                                                                    if(pathname.isDirectory() == true)
+                                                                                    {
+                                                                                       return false;
+                                                                                    }
+
+                                                                                    return (new FileImageInformation(pathname)).getFormatName() != null;
+                                                                                 }
+                                                                              };
 
    static
    {
@@ -43,6 +96,8 @@ public class FileImageInformation
 
    /** Image file */
    private final File                 file;
+   /** File format name */
+   private String                     formatName;
    /** Image height */
    private int                        height;
    /** Image width */
@@ -58,6 +113,11 @@ public class FileImageInformation
    {
       this.file = file;
       this.width = this.height = -1;
+
+      if((file.exists() == false) || (file.isDirectory() == true) || (file.canRead() == false))
+      {
+         return;
+      }
 
       try
       {
@@ -79,6 +139,8 @@ public class FileImageInformation
                   this.height = Math.max(this.height, imageReader.getHeight(i));
                }
 
+               this.formatName = imageReader.getFormatName();
+
                break;
             }
             catch(final Exception exception)
@@ -96,6 +158,7 @@ public class FileImageInformation
                   {
                   }
                }
+               fileInputStream = null;
             }
          }
       }
@@ -113,6 +176,16 @@ public class FileImageInformation
    public File getFile()
    {
       return this.file;
+   }
+
+   /**
+    * File format name or {@code null} if it's not an image
+    * 
+    * @return File format name or {@code null} if it's not an image
+    */
+   public String getFormatName()
+   {
+      return this.formatName;
    }
 
    /**
@@ -147,6 +220,6 @@ public class FileImageInformation
    @Override
    public String toString()
    {
-      return UtilText.concatenate(this.file.getAbsolutePath(), " : ", this.width, "x", this.height);
+      return UtilText.concatenate(this.file.getAbsolutePath(), " : ", this.width, "x", this.height, " ", this.formatName);
    }
 }

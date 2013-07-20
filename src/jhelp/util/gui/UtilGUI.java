@@ -358,11 +358,7 @@ public final class UtilGUI
    {
       final Rectangle bounds = UtilGUI.GRAPHICS_DEVICES[screen].getDefaultConfiguration().getBounds();
 
-      Debug.println(DebugLevel.VERBOSE, "bounds=", bounds);
-
       final Insets insets = UtilGUI.TOOLKIT.getScreenInsets(UtilGUI.GRAPHICS_DEVICES[screen].getDefaultConfiguration());
-
-      Debug.println(DebugLevel.VERBOSE, "insets=", insets);
 
       if(bounds.x < insets.left)
       {
@@ -373,8 +369,6 @@ public final class UtilGUI
       bounds.y += insets.top;
       bounds.width -= insets.left + insets.right;
       bounds.height -= insets.top + insets.bottom;
-
-      Debug.println(DebugLevel.VERBOSE, "final bounds=", bounds);
 
       return bounds;
    }

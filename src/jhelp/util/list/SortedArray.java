@@ -625,6 +625,48 @@ public final class SortedArray<TYPE>
    }
 
    /**
+    * Seek first element that match a test
+    * 
+    * @param seekTest
+    *           Seek test
+    * @return First matches element or {@code null} if none match
+    */
+   public TYPE seekElement(final SeekTest<TYPE> seekTest)
+   {
+      for(int index = 0; index < this.size; index++)
+      {
+         if(seekTest.isElementSeek(this.array[index]) == true)
+         {
+            return this.array[index];
+         }
+      }
+
+      return null;
+   }
+
+   /**
+    * Collect all matches element is a sorted array list of same class element and unque value
+    * 
+    * @param seekTest
+    *           Test of seek elements
+    * @return List of all matches elements
+    */
+   public SortedArray<TYPE> seekElements(final SeekTest<TYPE> seekTest)
+   {
+      final SortedArray<TYPE> sortedArray = new SortedArray<TYPE>(this.typeClass, this.unique);
+
+      for(int index = 0; index < this.size; index++)
+      {
+         if(seekTest.isElementSeek(this.array[index]) == true)
+         {
+            sortedArray.add(this.array[index]);
+         }
+      }
+
+      return sortedArray;
+   }
+
+   /**
     * Transform the array to a an array with size the same as this array, with same element in same order
     * 
     * @return Extracted array

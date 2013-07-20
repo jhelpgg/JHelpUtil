@@ -30,7 +30,10 @@ import javax.imageio.stream.ImageInputStream;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.JHelpAnimatedImage.AnimationMode;
+import jhelp.util.io.FileImageInformation;
+import jhelp.util.list.HeavyObject;
 import jhelp.util.list.Pair;
+import jhelp.util.list.SizedObject;
 import jhelp.util.list.SortedArray;
 import jhelp.util.math.UtilMath;
 
@@ -44,11 +47,11 @@ import jhelp.util.math.UtilMath;
  * @author JHelp
  */
 public class JHelpImage
-      implements ConstantsGUI
+      implements ConstantsGUI, HeavyObject, SizedObject
 {
    /** Palette to use */
-   private static final int[] PALETTE      =
-                                           {
+   private static final int[]     PALETTE      =
+                                               {
          0xFFFFFFFF, 0xFFFFFFC0, 0xFFFFFF80, 0xFFFFFF40, 0xFFFFFF00,//
          0xFFFFC0FF, 0xFFFFC0C0, 0xFFFC0F80, 0xFFFFC040, 0xFFFFC000, //
          0xFFFF80FF, 0xFFFF80C0, 0xFFFF8080, 0xFFFF8040, 0xFFFF8000, //
@@ -78,9 +81,11 @@ public class JHelpImage
          0xFF0080FF, 0xFF0080C0, 0xFF008080, 0xFF008040, 0xFF008000, //
          0xFF0040FF, 0xFF0040C0, 0xFF004080, 0xFF004040, 0xFF004000, //
          0xFF0000FF, 0xFF0000C0, 0xFF000080, 0xFF000040, 0xFF000000
-                                           };
+                                               };
+   /** Dummy image 1x1 */
+   public static final JHelpImage DUMMY        = new JHelpImage(1, 1);
    /** Pallete size */
-   public static final int    PALETTE_SIZE = JHelpImage.PALETTE.length;
+   public static final int        PALETTE_SIZE = JHelpImage.PALETTE.length;
 
    /**
     * Compute blue part of color from YUV<br>
@@ -211,20 +216,30 @@ public class JHelpImage
    {
       final String name = image.getName().toLowerCase();
 
-      final int index = name.lastIndexOf('.');
+      final FileImageInformation fileImageInformation = new FileImageInformation(image);
+      String suffix = fileImageInformation.getFormatName();
 
-      if(index > 0)
+      if(suffix == null)
+      {
+         final int index = name.lastIndexOf('.');
+         if(index > 0)
+         {
+            suffix = name.substring(index + 1);
+         }
+      }
+
+      if(suffix != null)
       {
          ImageInputStream stream = null;
          ImageReader imageReader = null;
          BufferedImage bufferedImage;
-         try
-         {
-            stream = ImageIO.createImageInputStream(image);
-            final Iterator<ImageReader> imagesReaders = ImageIO.getImageReadersBySuffix(name.substring(index + 1));
+         final Iterator<ImageReader> imagesReaders = ImageIO.getImageReadersBySuffix(suffix);
 
-            while(imagesReaders.hasNext() == true)
+         while(imagesReaders.hasNext() == true)
+         {
+            try
             {
+               stream = ImageIO.createImageInputStream(image);
                imageReader = imagesReaders.next();
 
                imageReader.setInput(stream);
@@ -233,27 +248,29 @@ public class JHelpImage
 
                return bufferedImage;
             }
-         }
-         catch(final Exception exception)
-         {
-            Debug.printException(exception);
-         }
-         finally
-         {
-            if(stream != null)
+            catch(final Exception exception)
             {
-               try
-               {
-                  stream.close();
-               }
-               catch(final Exception exception)
-               {
-               }
+               Debug.printException(exception);
             }
-
-            if(imageReader != null)
+            finally
             {
-               imageReader.dispose();
+               if(stream != null)
+               {
+                  try
+                  {
+                     stream.close();
+                  }
+                  catch(final Exception exception)
+                  {
+                  }
+               }
+               stream = null;
+
+               if(imageReader != null)
+               {
+                  imageReader.dispose();
+               }
+               imageReader = null;
             }
          }
       }
@@ -867,7 +884,7 @@ public class JHelpImage
    }
 
    /**
-    * Save an image to a stream<br>
+    * Save an image to a stream in PNG format<br>
     * Note : If the image is not in draw mode, all visible sprite will be consider as a part of the image
     * 
     * @param outputStream
@@ -891,10 +908,15 @@ public class JHelpImage
       bufferedImage = null;
    }
 
+   /** Actual clip to apply */
+   private final Clip             clip;
+   /** Clips stack */
+   private final Stack<Clip>      clips;
    /** List of registered components to alert if image update */
    private ArrayList<Component>   componentsListeners;
    /** Actaul draw mode */
    private boolean                drawMode;
+
    /** Image height */
    private final int              height;
 
@@ -921,7 +943,6 @@ public class JHelpImage
     * {@link #endDrawMode()} is call
     */
    private boolean[]              visibilities;
-
    /** Image width */
    private final int              width;
 
@@ -993,7 +1014,31 @@ public class JHelpImage
       this.sprites = new ArrayList<JHelpSprite>();
       this.componentsListeners = new ArrayList<Component>();
 
+      this.clip = new Clip(0, this.width - 1, 0, this.height - 1);
+      this.clips = new Stack<Clip>();
+      this.clips.push(this.clip);
       this.drawMode = false;
+   }
+
+   /**
+    * Create a new instance of JHelpImage fill with a pixels array scales to fill al the image
+    * 
+    * @param width
+    *           Width of image inside pixels array
+    * @param height
+    *           Height of image inside pixels array
+    * @param pixels
+    *           Pixels array
+    * @param imageWidth
+    *           Image created width
+    * @param imageHeight
+    *           Image created height
+    */
+   public JHelpImage(final int width, final int height, final int[] pixels, final int imageWidth, final int imageHeight)
+   {
+      this(imageWidth, imageHeight);
+
+      this.fillRectangleScale(0, 0, imageWidth, imageHeight, pixels, width, height);
    }
 
    /**
@@ -1056,6 +1101,67 @@ public class JHelpImage
          }
 
          pathIterator.next();
+      }
+   }
+
+   /**
+    * Fill a rectangle with an array of pixels
+    * 
+    * @param x
+    *           X of up-left corner
+    * @param y
+    *           Y of up-left corner
+    * @param width
+    *           Rectangle width
+    * @param height
+    *           Rectngle height
+    * @param pixels
+    *           Pixels array
+    * @param pixelsWidth
+    *           Image width inside pixels array
+    * @param pixelsHeight
+    *           Image height inside pixels array
+    */
+   private void fillRectangleScale(final int x, final int y, final int width, final int height, final int[] pixels, final int pixelsWidth, final int pixelsHeight)
+   {
+      if((width <= 0) || (height <= 0))
+      {
+         return;
+      }
+
+      final int x1 = x;
+      final int y1 = y;
+      final int x2 = (x + width) - 1;
+      final int y2 = (y + height) - 1;
+
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
+
+      if((startX > endX) || (startY > endY))
+      {
+         return;
+      }
+
+      int line = startX + (startY * this.width);
+      int pix;
+      int yTexture = 0;
+      int pixTexture;
+      final int w = (endX - startX) + 1;
+      final int h = (endY - startY) + 1;
+
+      for(int yy = startY, yt = 0; yy <= endY; yy++, yt++, yTexture = (yt * pixelsHeight) / h)
+      {
+         pixTexture = yTexture * pixelsWidth;
+         pix = line;
+
+         for(int xx = startX, xt = 0, xTexture = 0; xx < endX; xx++, xt++, pix++, xTexture = (xt * pixelsWidth) / w)
+         {
+            this.pixels[pix] = pixels[pixTexture + xTexture];
+         }
+
+         line += this.width;
       }
    }
 
@@ -1139,13 +1245,6 @@ public class JHelpImage
          return;
       }
 
-      if(x < 0)
-      {
-         xImage -= x;
-         width += x;
-         x = 0;
-      }
-
       if(xImage < 0)
       {
          x -= xImage;
@@ -1153,11 +1252,11 @@ public class JHelpImage
          xImage = 0;
       }
 
-      if(y < 0)
+      if(x < this.clip.xMin)
       {
-         yImage -= y;
-         height += y;
-         y = 0;
+         xImage -= x - this.clip.xMin;
+         width += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
       if(yImage < 0)
@@ -1167,8 +1266,15 @@ public class JHelpImage
          yImage = 0;
       }
 
-      final int w = UtilMath.minIntegers(this.width - x, image.width - xImage, width);
-      final int h = UtilMath.minIntegers(this.height - y, image.height - yImage, height);
+      if(y < this.clip.yMin)
+      {
+         yImage -= y - this.clip.yMin;
+         height += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int w = UtilMath.minIntegers((this.clip.xMax + 1) - x, image.width - xImage, width);
+      final int h = UtilMath.minIntegers((this.clip.yMax + 1) - y, image.height - yImage, height);
 
       if((w <= 0) || (h <= 0))
       {
@@ -1256,13 +1362,6 @@ public class JHelpImage
          return;
       }
 
-      if(x < 0)
-      {
-         xImage -= x;
-         width += x;
-         x = 0;
-      }
-
       if(xImage < 0)
       {
          x -= xImage;
@@ -1270,11 +1369,11 @@ public class JHelpImage
          xImage = 0;
       }
 
-      if(y < 0)
+      if(x < this.clip.xMin)
       {
-         yImage -= y;
-         height += y;
-         y = 0;
+         xImage -= x - this.clip.xMin;
+         width += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
       if(yImage < 0)
@@ -1284,8 +1383,15 @@ public class JHelpImage
          yImage = 0;
       }
 
-      final int w = UtilMath.minIntegers(this.width - x, image.width - xImage, width);
-      final int h = UtilMath.minIntegers(this.height - y, image.height - yImage, height);
+      if(y < this.clip.yMin)
+      {
+         yImage -= y - this.clip.yMin;
+         height += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int w = UtilMath.minIntegers((this.clip.xMax + 1) - x, image.width - xImage, width);
+      final int h = UtilMath.minIntegers((this.clip.yMax + 1) - y, image.height - yImage, height);
 
       if((w <= 0) || (h <= 0))
       {
@@ -1349,13 +1455,6 @@ public class JHelpImage
     */
    void drawImageOver(int x, int y, final JHelpImage image, int xImage, int yImage, int width, int height)
    {
-      if(x < 0)
-      {
-         xImage -= x;
-         width += x;
-         x = 0;
-      }
-
       if(xImage < 0)
       {
          x -= xImage;
@@ -1363,11 +1462,11 @@ public class JHelpImage
          xImage = 0;
       }
 
-      if(y < 0)
+      if(x < this.clip.xMin)
       {
-         yImage -= y;
-         height += y;
-         y = 0;
+         xImage -= x - this.clip.xMin;
+         width += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
       if(yImage < 0)
@@ -1377,8 +1476,15 @@ public class JHelpImage
          yImage = 0;
       }
 
-      final int w = UtilMath.minIntegers(this.width - x, image.width - xImage, width);
-      final int h = UtilMath.minIntegers(this.height - y, image.height - yImage, height);
+      if(y < this.clip.yMin)
+      {
+         yImage -= y - this.clip.yMin;
+         height += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int w = UtilMath.minIntegers((this.clip.xMax + 1) - x, image.width - xImage, width);
+      final int h = UtilMath.minIntegers((this.clip.yMax + 1) - y, image.height - yImage, height);
 
       if((w <= 0) || (h <= 0))
       {
@@ -1480,6 +1586,123 @@ public class JHelpImage
                (UtilMath.limit0_255(((colorThis >> 16) & 0xFF) + ((colorImage >> 16) & 0xFF)) << 16) | //
                (UtilMath.limit0_255(((colorThis >> 8) & 0xFF) + ((colorImage >> 8) & 0xFF)) << 8) | //
                UtilMath.limit0_255((colorThis & 0xFF) + (colorImage & 0xFF));
+      }
+   }
+
+   /**
+    * Apply Gauss filter 3x3 in the image.<br>
+    * MUST be in draw mode<br>
+    * Note filter is
+    * <table border=1>
+    * <tr>
+    * <td>1</td>
+    * <td>2</td>
+    * <td>1</td>
+    * </tr>
+    * <tr>
+    * <td>2</td>
+    * <td>4</td>
+    * <td>2</td>
+    * </tr>
+    * <tr>
+    * <td>1</td>
+    * <td>2</td>
+    * <td>1</td>
+    * </tr>
+    * </table>
+    */
+   public void applyGauss3x3()
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      final int w = this.width + 2;
+      final int h = this.height + 2;
+      final int[] pix = new int[w * h];
+
+      int lineThis = 0;
+      int linePix = 1 + w;
+      for(int y = 0; y < this.height; y++)
+      {
+         pix[linePix - 1] = this.pixels[lineThis];
+         System.arraycopy(this.pixels, lineThis, pix, linePix, this.width);
+         lineThis += this.width;
+         linePix += w;
+         pix[linePix - 2] = this.pixels[lineThis - 1];
+      }
+
+      System.arraycopy(this.pixels, 0, pix, 1, this.width);
+      System.arraycopy(this.pixels, (this.width * this.height) - this.width, pix, ((w * h) - w) + 1, this.width);
+
+      int l0 = 0;
+      int l1 = w;
+      int l2 = w + w;
+      int p20;
+      int p21;
+      int p22;
+      int c00, c10, c20, c01, c11, c21, c02, c12, c22;
+      int p = 0;
+
+      for(int y = 0; y < this.height; y++)
+      {
+         p20 = l0 + 2;
+         p21 = l1 + 2;
+         p22 = l2 + 2;
+
+         c00 = pix[p20 - 2];
+         c10 = pix[p20 - 1];
+
+         c01 = pix[p21 - 2];
+         c11 = pix[p21 - 1];
+
+         c02 = pix[p22 - 2];
+         c12 = pix[p22 - 1];
+
+         for(int x = 0; x < this.width; x++)
+         {
+            c20 = pix[p20];
+            c21 = pix[p21];
+            c22 = pix[p22];
+
+            this.pixels[p] =
+            // Alpha
+            (((((c00 >> 24) & 0xFF) + (((c10 >> 24) & 0xFF) << 1) + ((c20 >> 24) & 0xFF) + //
+                  (((c01 >> 24) & 0xFF) << 1) + (((c11 >> 24) & 0xFF) << 2) + (((c21 >> 24) & 0xFF) << 1) + //
+                  ((c02 >> 24) & 0xFF) + (((c12 >> 24) & 0xFF) << 1) + ((c22 >> 24) & 0xFF)) >> 4) << 24) | //
+                  // Red
+                  (((((c00 >> 16) & 0xFF) + (((c10 >> 16) & 0xFF) << 1) + ((c20 >> 16) & 0xFF) + //
+                        (((c01 >> 16) & 0xFF) << 1) + (((c11 >> 16) & 0xFF) << 2) + (((c21 >> 16) & 0xFF) << 1) + //
+                        ((c02 >> 16) & 0xFF) + (((c12 >> 16) & 0xFF) << 1) + ((c22 >> 16) & 0xFF)) >> 4) << 16) | //
+                  // Green
+                  (((((c00 >> 8) & 0xFF) + (((c10 >> 8) & 0xFF) << 1) + ((c20 >> 8) & 0xFF) + //
+                        (((c01 >> 8) & 0xFF) << 1) + (((c11 >> 8) & 0xFF) << 2) + (((c21 >> 8) & 0xFF) << 1) + //
+                        ((c02 >> 8) & 0xFF) + (((c12 >> 8) & 0xFF) << 1) + ((c22 >> 8) & 0xFF)) >> 4) << 8) | //
+                  // Blue
+                  (((c00 & 0xFF) + ((c10 & 0xFF) << 1) + (c20 & 0xFF) + //
+                        ((c01 & 0xFF) << 1) + ((c11 & 0xFF) << 2) + ((c21 & 0xFF) << 1) + //
+                        (c02 & 0xFF) + ((c12 & 0xFF) << 1) + (c22 & 0xFF)) >> 4);
+
+            c00 = c10;
+            c10 = c20;
+
+            c01 = c11;
+            c11 = c21;
+
+            c02 = c12;
+            c12 = c22;
+
+            p20++;
+            p21++;
+            p22++;
+
+            p++;
+         }
+
+         l0 += w;
+         l1 += w;
+         l2 += w;
       }
    }
 
@@ -2182,13 +2405,13 @@ public class JHelpImage
          throw new IllegalStateException("Must be in draw mode !");
       }
 
-      if((y < 0) || (y >= this.height))
+      if((y < this.clip.xMin) || (y > this.clip.xMax))
       {
          return;
       }
 
-      int start = Math.max(0, Math.min(x1, x2));
-      int end = Math.min(this.width - 1, Math.max(x1, x2));
+      int start = Math.max(this.clip.xMin, Math.min(x1, x2));
+      int end = Math.min(this.clip.xMax, Math.max(x1, x2));
 
       if(start > end)
       {
@@ -2456,7 +2679,7 @@ public class JHelpImage
 
       if(dx >= dy)
       {
-         while(((x < 0) || (x >= this.width) || (y < 0) || (y >= this.height)) && ((x != x2) || (y != y2)))
+         while(((x < this.clip.xMin) || (x > this.clip.xMax) || (y < this.clip.yMin) || (y > this.clip.yMax)) && ((x != x2) || (y != y2)))
          {
             x += sx;
 
@@ -2471,7 +2694,7 @@ public class JHelpImage
       }
       else
       {
-         while(((x < 0) || (x >= this.width) || (y < 0) || (y >= this.height)) && ((x != x2) || (y != y2)))
+         while(((x < this.clip.xMin) || (x > this.clip.xMax) || (y < this.clip.yMin) || (y > this.clip.yMax)) && ((x != x2) || (y != y2)))
          {
             y += sy;
 
@@ -2485,7 +2708,7 @@ public class JHelpImage
          }
       }
 
-      if(((x < 0) || (x >= this.width) || (y < 0) || (y >= this.height)) && (x == x2) && (y == y2))
+      if(((x < this.clip.xMin) || (x > this.clip.xMax) || (y < this.clip.yMin) || (y > this.clip.yMax)) && (x == x2) && (y == y2))
       {
          return;
       }
@@ -2497,7 +2720,7 @@ public class JHelpImage
       {
          if(dx >= dy)
          {
-            while((x >= 0) && (x < this.width) && (x != x2) && (y >= 0) && (y < this.height) && (y != y2))
+            while((x >= this.clip.xMin) && (x <= this.clip.xMax) && (x != x2) && (y >= this.clip.yMin) && (y <= this.clip.yMax) && (y != y2))
             {
                this.pixels[pix] = color;
 
@@ -2516,7 +2739,7 @@ public class JHelpImage
          }
          else
          {
-            while((x >= 0) && (x < this.width) && (x != x2) && (y >= 0) && (y < this.height) && (y != y2))
+            while((x >= this.clip.xMin) && (x <= this.clip.xMax) && (x != x2) && (y >= this.clip.yMin) && (y <= this.clip.yMax) && (y != y2))
             {
                this.pixels[pix] = color;
 
@@ -2545,7 +2768,7 @@ public class JHelpImage
 
       if(dx >= dy)
       {
-         while((x >= 0) && (x < this.width) && (y >= 0) && (y < this.height) && ((x != x2) || (y != y2)))
+         while((x >= this.clip.xMin) && (x <= this.clip.xMax) && (x != x2) && (y >= this.clip.yMin) && (y <= this.clip.yMax) && ((x != x2) || (y != y2)))
          {
             col = this.pixels[pix];
 
@@ -2569,7 +2792,7 @@ public class JHelpImage
       }
       else
       {
-         while((x >= 0) && (x < this.width) && (y >= 0) && (y < this.height) && ((x != x2) || (y != y2)))
+         while((x >= this.clip.xMin) && (x <= this.clip.xMax) && (x != x2) && (y >= this.clip.yMin) && (y <= this.clip.yMax) && ((x != x2) || (y != y2)))
          {
             col = this.pixels[pix];
 
@@ -3063,13 +3286,13 @@ public class JHelpImage
          throw new IllegalStateException("Must be in draw mode !");
       }
 
-      if((x < 0) || (x >= this.width))
+      if((x < this.clip.xMin) || (x > this.clip.xMax))
       {
          return;
       }
 
-      final int start = (Math.max(0, Math.min(y1, y2)) * this.width) + x;
-      final int end = (Math.min(this.height - 1, Math.max(y1, y2)) * this.width) + x;
+      final int start = (Math.max(this.clip.yMin, Math.min(y1, y2)) * this.width) + x;
+      final int end = (Math.min(this.clip.yMax, Math.max(y1, y2)) * this.width) + x;
 
       if(start > end)
       {
@@ -3846,10 +4069,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(0, x1);
-      final int endX = Math.min(this.width - 1, x2);
-      final int startY = Math.max(0, y1);
-      final int endY = Math.min(this.height - 1, y2);
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
 
       if((startX > endX) || (startY > endY))
       {
@@ -3967,10 +4190,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(0, x1);
-      final int endX = Math.min(this.width - 1, x2);
-      final int startY = Math.max(0, y1);
-      final int endY = Math.min(this.height - 1, y2);
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
 
       if((startX > endX) || (startY > endY))
       {
@@ -4073,10 +4296,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(0, x1);
-      final int endX = Math.min(this.width - 1, x2);
-      final int startY = Math.max(0, y1);
-      final int endY = Math.min(this.height - 1, y2);
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
 
       if((startX > endX) || (startY > endY))
       {
@@ -4186,10 +4409,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(0, x1);
-      final int endX = Math.min(this.width - 1, x2);
-      final int startY = Math.max(0, y1);
-      final int endY = Math.min(this.height - 1, y2);
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
 
       if((startX > endX) || (startY > endY))
       {
@@ -4535,10 +4758,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(0, x1);
-      final int endX = Math.min(this.width - 1, x2);
-      final int startY = Math.max(0, y1);
-      final int endY = Math.min(this.height - 1, y2);
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
 
       if((startX > endX) || (startY > endY))
       {
@@ -4657,10 +4880,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(0, x1);
-      final int endX = Math.min(this.width - 1, x2);
-      final int startY = Math.max(0, y1);
-      final int endY = Math.min(this.height - 1, y2);
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
 
       if((startX > endX) || (startY > endY))
       {
@@ -4761,10 +4984,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(0, x1);
-      final int endX = Math.min(this.width - 1, x2);
-      final int startY = Math.max(0, y1);
-      final int endY = Math.min(this.height - 1, y2);
+      final int startX = Math.max(this.clip.xMin, x1);
+      final int endX = Math.min(this.clip.xMax, x2);
+      final int startY = Math.max(this.clip.yMin, y1);
+      final int endY = Math.min(this.clip.yMax, y2);
 
       if((startX > endX) || (startY > endY))
       {
@@ -5302,10 +5525,21 @@ public class JHelpImage
    }
 
    /**
+    * Current clip
+    * 
+    * @return Current clip
+    */
+   public Clip getClip()
+   {
+      return this.clip.copy();
+   }
+
+   /**
     * Image height
     * 
     * @return Image height
     */
+   @Override
    public int getHeight()
    {
       return this.height;
@@ -5332,10 +5566,118 @@ public class JHelpImage
    }
 
    /**
+    * Extract an array of pixels from the image.<br>
+    * If the image is no in draw mode, sprites will be consideras part of image
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Rectangle width
+    * @param height
+    *           Rectangle height
+    * @return Extracted pixels
+    */
+   public int[] getPixels(final int x, final int y, final int width, final int height)
+   {
+      return this.getPixels(x, y, width, height, 0);
+   }
+
+   /**
+    * Extract an array of pixels from the image.<br>
+    * The returned array will have somme additional free integer at start, the number depends on the given offset.<br>
+    * If the image is no in draw mode, sprites will be consideras part of image
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Rectangle width
+    * @param height
+    *           Rectangle height
+    * @param offset
+    *           Offset where start copy the pixels, so before integers are "free", so it could be see also as the number of free
+    *           integers
+    * @return Extracted pixels
+    */
+   public int[] getPixels(int x, int y, int width, int height, final int offset)
+   {
+      if(offset < 0)
+      {
+         throw new IllegalArgumentException("offset must be >=0 not " + offset);
+      }
+
+      if(x < 0)
+      {
+         width += x;
+         x = 0;
+      }
+
+      if((x + width) > this.width)
+      {
+         width = this.width - x;
+      }
+
+      if((x > this.width) || (width < 1))
+      {
+         return new int[0];
+      }
+
+      if(y < 0)
+      {
+         height += y;
+         y = 0;
+      }
+
+      if((y + height) > this.height)
+      {
+         height = this.height - y;
+      }
+
+      if((y > this.height) || (height < 1))
+      {
+         return new int[0];
+      }
+
+      final int size = width * height;
+      final int[] result = new int[size + offset];
+      int pix = x + (y * this.width);
+      int pixImg = offset;
+
+      for(int yy = 0; yy < height; yy++)
+      {
+         System.arraycopy(this.pixels, pix, result, pixImg, width);
+
+         pix += this.width;
+         pixImg += width;
+      }
+
+      return result;
+   }
+
+   /**
+    * Image weight <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return Image weight
+    * @see jhelp.util.list.HeavyObject#getWeight()
+    */
+   @Override
+   public long getWeight()
+   {
+      return this.width * this.height;
+   }
+
+   /**
     * Image width
     * 
     * @return Image width
     */
+   @Override
    public int getWidth()
    {
       return this.width;
@@ -5613,22 +5955,22 @@ public class JHelpImage
          throw new IllegalStateException("Must be in draw mode !");
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth());
@@ -5740,22 +6082,22 @@ public class JHelpImage
          backgroundY = 0;
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth(), bw - backgroundX);
@@ -5830,22 +6172,22 @@ public class JHelpImage
          throw new IllegalStateException("Must be in draw mode !");
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth());
@@ -5937,22 +6279,22 @@ public class JHelpImage
          foregroundY = 0;
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth(), fw - foregroundX);
@@ -6065,22 +6407,22 @@ public class JHelpImage
          backgroundY = 0;
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth(), fw - foregroundX, bw - backgroundX);
@@ -6178,22 +6520,22 @@ public class JHelpImage
          foregroundY = 0;
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth(), fw - foregroundX);
@@ -6269,22 +6611,22 @@ public class JHelpImage
          throw new IllegalStateException("Must be in draw mode !");
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth());
@@ -6375,22 +6717,22 @@ public class JHelpImage
          backgroundY = 0;
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth(), bw - backgroundX);
@@ -6466,22 +6808,22 @@ public class JHelpImage
          throw new IllegalStateException("Must be in draw mode !");
       }
 
-      int w = this.width;
+      int w = this.clip.xMax + 1;
       int xx = 0;
-      if(x < 0)
+      if(x < this.clip.xMin)
       {
-         xx = -x;
-         w += x;
-         x = 0;
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
       }
 
-      int h = this.height;
+      int h = this.clip.yMax + 1;
       int yy = 0;
-      if(y < 0)
+      if(y < this.clip.yMin)
       {
-         yy = -y;
-         h += y;
-         y = 0;
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
       }
 
       final int width = UtilMath.minIntegers(w - x, mask.getWidth());
@@ -6548,6 +6890,85 @@ public class JHelpImage
       }
 
       return this.pixels[x + (y * this.width)];
+   }
+
+   /**
+    * Pop clip from the stack
+    */
+   public void popClip()
+   {
+      if(this.clips.size() > 1)
+      {
+         this.clip.set(this.clips.pop());
+      }
+      else
+      {
+         this.clip.set(this.clips.peek());
+      }
+   }
+
+   /**
+    * Push clip in the stack
+    * 
+    * @param clip
+    *           Clip to push
+    */
+   public void pushClip(final Clip clip)
+   {
+      if(clip == null)
+      {
+         throw new NullPointerException("clip musn't be null");
+      }
+
+      this.clips.push(clip);
+      this.clip.set(clip);
+   }
+
+   /**
+    * Push clip to stack
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Clip width
+    * @param height
+    *           Clip height
+    */
+   public void pushClip(final int x, final int y, final int width, final int height)
+   {
+      this.pushClip(new Clip(x, (x + width) - 1, y, (y + height) - 1));
+   }
+
+   /**
+    * Push intersection of current clip and given one
+    * 
+    * @param clip
+    *           Given clip
+    */
+   public void pushClipIntersect(final Clip clip)
+   {
+      final Clip intersect = new Clip(Math.max(this.clip.xMin, clip.xMin), Math.min(this.clip.xMax, clip.xMax), Math.max(this.clip.yMin, clip.yMin), Math.min(this.clip.yMax, clip.yMax));
+      this.clips.push(intersect);
+      this.clip.set(intersect);
+   }
+
+   /**
+    * Push intersection of current clip and given one
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Clip width
+    * @param height
+    *           Clip height
+    */
+   public void pushClipIntersect(final int x, final int y, final int width, final int height)
+   {
+      this.pushClipIntersect(new Clip(x, (x + width) - 1, y, (y + height) - 1));
    }
 
    /**
@@ -6825,6 +7246,60 @@ public class JHelpImage
       }
 
       this.pixels[x + (y * this.width)] = color;
+   }
+
+   /**
+    * Change a pixels area.<br>
+    * MUST be in draw mode
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Width of image in pixels array
+    * @param height
+    *           Height of image in pixels array
+    * @param pixels
+    *           Pixels array
+    */
+   public void setPixels(int x, int y, int width, int height, final int[] pixels)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(x < 0)
+      {
+         width += x;
+         x = 0;
+      }
+
+      if(y < 0)
+      {
+         height += y;
+         y = 0;
+      }
+
+      final int w = UtilMath.minIntegers(this.width - x, width);
+      final int h = UtilMath.minIntegers(this.height - y, height);
+
+      if((w <= 0) || (h <= 0))
+      {
+         return;
+      }
+
+      int lineThis = x + (y * this.width);
+      int lineImage = 0;
+
+      for(int yy = 0; yy < h; yy++)
+      {
+         System.arraycopy(pixels, lineImage, this.pixels, lineThis, w);
+
+         lineThis += this.width;
+         lineImage += width;
+      }
    }
 
    /**

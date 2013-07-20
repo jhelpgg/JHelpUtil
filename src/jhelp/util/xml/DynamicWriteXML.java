@@ -180,6 +180,36 @@ public class DynamicWriteXML
    }
 
    /**
+    * Append a double parameter at current markup
+    * 
+    * @param name
+    *           Parameter name
+    * @param value
+    *           Parameter value
+    * @throws IOException
+    *            On writing issue
+    */
+   public void appendParameter(final String name, final double value) throws IOException
+   {
+      this.appendParameter(name, String.valueOf(value));
+   }
+
+   /**
+    * Append a float parameter at current markup
+    * 
+    * @param name
+    *           Parameter name
+    * @param value
+    *           Parameter value
+    * @throws IOException
+    *            On writing issue
+    */
+   public void appendParameter(final String name, final float value) throws IOException
+   {
+      this.appendParameter(name, String.valueOf(value));
+   }
+
+   /**
     * Append a int parameter at current markup
     * 
     * @param name
