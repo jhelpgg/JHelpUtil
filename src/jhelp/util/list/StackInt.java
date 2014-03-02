@@ -52,6 +52,15 @@ public class StackInt
    }
 
    /**
+    * Clear the stack.<br>
+    * The stack will be empty after this.
+    */
+   public void clear()
+   {
+      this.size = 0;
+   }
+
+   /**
     * Stack size
     * 
     * @return Stack size
@@ -69,6 +78,21 @@ public class StackInt
    public boolean isEmpty()
    {
       return this.size == 0;
+   }
+
+   /**
+    * Just look the integer at the top
+    * 
+    * @return Integer at the top
+    */
+   public int peek()
+   {
+      if(this.size <= 0)
+      {
+         throw new IllegalStateException("Stack is empty");
+      }
+
+      return this.stack[this.size - 1];
    }
 
    /**

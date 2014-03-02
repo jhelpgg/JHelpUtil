@@ -14,7 +14,7 @@ public abstract class UnaryOperator
     */
    private final static String OPERATORS[] =
                                            {
-         "-", "exp", "ln", "cos", "sin", "tan"
+         "-", "exp", "ln", "cos", "sin", "tan", "%"
                                            };
 
    /**
@@ -70,6 +70,8 @@ public abstract class UnaryOperator
                return new Sinus(f);
             case 5: // Tangent
                return new Tangent(f);
+            case 6: // Percent
+               return new Percent(f);
          }
       }
       return null;

@@ -56,7 +56,7 @@ public abstract class ThreadedTask<PARAMETER, RESULT, PROGRESS>
    }
 
    /**
-    * It is call when a cancel is requested.<br>
+    * Called when a cancel is requested.<br>
     * Override it to do something on cancel, do nothing by default
     */
    protected void canceled()
@@ -64,7 +64,7 @@ public abstract class ThreadedTask<PARAMETER, RESULT, PROGRESS>
    }
 
    /**
-    * It is call when a progression information arrive.<br>
+    * Called when a progression information arrive.<br>
     * Override it to do something on progression, do nothing by default
     * 
     * @param progress
@@ -75,7 +75,7 @@ public abstract class ThreadedTask<PARAMETER, RESULT, PROGRESS>
    }
 
    /**
-    * Call when the turn of this thread comes.<br>
+    * Called when the turn of this thread comes.<br>
     * It does the action and compute the result
     * 
     * @param parameter
@@ -102,7 +102,7 @@ public abstract class ThreadedTask<PARAMETER, RESULT, PROGRESS>
    }
 
    /**
-    * Call when task is finish.<br>
+    * Called when task is finish.<br>
     * Override this method to do something when computing is finish, do nothing by default
     * 
     * @param result

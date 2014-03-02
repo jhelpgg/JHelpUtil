@@ -408,6 +408,20 @@ public class Subtraction
       }
 
       /**
+       * Simplification: X-P% -> X-((X*P)/100)
+       * 
+       * @param function1
+       *           Function argument X
+       * @param percent2
+       *           Precent argument P
+       * @return Simplification
+       */
+      private Function simplify(final Function function1, final Percent percent2)
+      {
+         return new Subtraction(function1, new Division(Function.createMultiplication(percent2.parameter, function1), Constant.HUNDRED));
+      }
+
+      /**
        * Simplification : X-(Y-Z) -> X+(Z-Y)
        * 
        * @param function
@@ -731,6 +745,34 @@ public class Subtraction
          }
 
          return this.simplifySubtractionOfMultiplications(multiplication1.parameter1, multiplication1.parameter2, multiplication2.parameter1, multiplication2.parameter2);
+      }
+
+      /**
+       * Simplification : P% - X -> -X + ((P*(-X))/100)
+       * 
+       * @param percent1
+       *           Percent argument P
+       * @param function2
+       *           Function argument X
+       * @return Simplification
+       */
+      private Function simplify(final Percent percent1, final Function function2)
+      {
+         return Function.createAddition(new MinusUnary(function2), new Division(Function.createMultiplication(percent1.parameter, new MinusUnary(function2)), Constant.HUNDRED));
+      }
+
+      /**
+       * Simplification : P1% - P2% -> (P1-(P2+((P1*P2)/100)))%
+       * 
+       * @param percent1
+       *           Precent P1 argument
+       * @param percent2
+       *           Percent P2 argument
+       * @return Simplification
+       */
+      private Function simplify(final Percent percent1, final Percent percent2)
+      {
+         return new Percent(new Subtraction(percent1.parameter, new Addition(percent2.parameter, new Division(new Multiplication(percent1.parameter, percent2.parameter), Constant.HUNDRED))));
       }
 
       /**
@@ -1254,6 +1296,21 @@ public class Subtraction
          if((function2 instanceof MinusUnary) == true)
          {
             return this.simplify(function1, (MinusUnary) function2);
+         }
+
+         if((function1 instanceof Percent) == true)
+         {
+            if((function2 instanceof Percent) == true)
+            {
+               return this.simplify((Percent) function1, (Percent) function2);
+            }
+
+            return this.simplify((Percent) function1, function2);
+         }
+
+         if((function2 instanceof Percent) == true)
+         {
+            return this.simplify(function1, (Percent) function2);
          }
 
          if((function1 instanceof Constant) == true)

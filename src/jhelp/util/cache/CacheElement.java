@@ -33,6 +33,17 @@ public abstract class CacheElement<ELEMENT>
    }
 
    /**
+    * Called when element is cleared.<br>
+    * Does nothing by default
+    * 
+    * @param element
+    *           Cleared value
+    */
+   protected void clearElement(final ELEMENT element)
+   {
+   }
+
+   /**
     * Create the element
     * 
     * @return Created element
@@ -46,6 +57,13 @@ public abstract class CacheElement<ELEMENT>
    {
       if(this.softReference != null)
       {
+         final ELEMENT element = this.softReference.get();
+
+         if(element != null)
+         {
+            this.clearElement(element);
+         }
+
          this.softReference.clear();
       }
 

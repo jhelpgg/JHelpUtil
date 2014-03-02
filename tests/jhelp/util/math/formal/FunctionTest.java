@@ -156,6 +156,22 @@ public class FunctionTest
       Assert.assertEquals(Function.parse("1320*a*b*x*y*z").simplifyMaximum(), Function.parse("x*5*3*y*8*z*a*11*b").simplifyMaximum(System.out));
    }
 
+   @Test
+   public void testPercent()
+   {
+      Assert.assertEquals(new Constant(220), Function.parse("200+10%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Constant(132), Function.parse("100+10%+20%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Constant(180), Function.parse("200-10%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Constant(30), Function.parse("300*10%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Constant(3000), Function.parse("300/10%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Percent(new Constant(32)), Function.parse("10%+20%").simplifyMaximum(System.out));
+      Assert.assertEquals(Function.parse("x+(x*p)/100").simplifyMaximum(System.out), Function.parse("x+p%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Percent(new Constant(30)), Function.parse("(10+20)%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Percent(new Constant(30)), Function.parse("%(10+20)").simplifyMaximum(System.out));
+      Assert.assertEquals(Function.parse("2%").simplifyMaximum(System.out), Function.parse("10%*20%").simplifyMaximum(System.out));
+      Assert.assertEquals(new Constant(0.5), Function.parse("10%/20%").simplifyMaximum(System.out));
+   }
+
    /**
     * Simplification test
     */

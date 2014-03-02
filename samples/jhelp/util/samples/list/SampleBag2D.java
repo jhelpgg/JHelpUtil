@@ -127,5 +127,89 @@ public class SampleBag2D
 
          Scramble.scramble(sizes);
       }
+
+      System.out.println("----------------------------");
+      bag2d = new Bag2D<Sized>(5, 4);
+      sizes[0] = new Sized(3, 3);
+      sizes[1] = new Sized(1, 4);
+      sizes[2] = new Sized(4, 1);
+      sizes[3] = new Sized(1, 1);
+
+      for(int test = 1; test <= number; test++)
+      {
+         bag2d.clearBag();
+         System.out.println("--- Test " + test + "/" + number + " ---");
+         System.out.println(bag2d);
+
+         for(final Sized sized : sizes)
+         {
+            System.out.println("Add " + sized);
+            if(bag2d.put(sized) == null)
+            {
+               System.err.println("Warning we fall in a bad case !");
+               return;
+            }
+
+            System.out.println(bag2d);
+         }
+
+         Scramble.scramble(sizes);
+      }
+
+      System.out.println("----------------------------");
+      bag2d = new Bag2D<Sized>(4, 5);
+      sizes[0] = new Sized(3, 3);
+      sizes[1] = new Sized(1, 4);
+      sizes[2] = new Sized(4, 1);
+      sizes[3] = new Sized(1, 1);
+
+      for(int test = 1; test <= number; test++)
+      {
+         bag2d.clearBag();
+         System.out.println("--- Test " + test + "/" + number + " ---");
+         System.out.println(bag2d);
+
+         for(final Sized sized : sizes)
+         {
+            System.out.println("Add " + sized);
+            if(bag2d.put(sized) == null)
+            {
+               System.err.println("Warning we fall in a bad case !");
+               return;
+            }
+
+            System.out.println(bag2d);
+         }
+
+         Scramble.scramble(sizes);
+      }
+
+      System.out.println("----------------------------");
+      bag2d = new Bag2D<Sized>(3, 5);
+      sizes[0] = new Sized(1, 1);
+      sizes[1] = new Sized(2, 1);
+      sizes[2] = new Sized(1, 2);
+      sizes[3] = new Sized(3, 3);
+
+      for(int test = 1; test <= number; test++)
+      {
+         bag2d.clearBag();
+         System.out.println("--- Test " + test + "/" + number + " ---");
+         System.out.println(bag2d);
+
+         for(final Sized sized : sizes)
+         {
+            System.out.println("Add " + sized);
+            if(bag2d.put(sized) == null)
+            {
+               System.err.println("Warning we fall in a bad case !");
+               return;
+            }
+
+            System.out.println(bag2d);
+         }
+
+         Scramble.scramble(sizes);
+      }
    }
 }

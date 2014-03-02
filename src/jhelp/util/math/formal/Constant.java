@@ -15,6 +15,9 @@ public class Constant
     * e
     */
    public static final Constant E         = new Constant(2.7182818284590451D);
+   /** 100 */
+   public static final Constant HUNDRED   = new Constant(100.0D);
+
    /**
     * -1
     */

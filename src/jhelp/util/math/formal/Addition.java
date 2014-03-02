@@ -474,6 +474,34 @@ public class Addition
       }
 
       /**
+       * p% + f => f + (p*f)/100
+       * 
+       * @param percent1
+       *           p
+       * @param function2
+       *           f
+       * @return f + (p*f)/100
+       */
+      private Function simplify(final Percent percent1, final Function function2)
+      {
+         return Function.createAddition(function2, new Division(Function.createMultiplication(percent1.parameter, function2), Constant.HUNDRED));
+      }
+
+      /**
+       * p1% + p2% => (p1 + p2 + (p1*p2)/100)%
+       * 
+       * @param percent1
+       *           p1
+       * @param percent2
+       *           p2
+       * @return (p1 + p2 + (p1*p2)/100)%
+       */
+      private Function simplify(final Percent percent1, final Percent percent2)
+      {
+         return new Percent(Function.createAddition(percent1.parameter, percent2.parameter, new Division(Function.createMultiplication(percent1.parameter, percent2.parameter), Constant.HUNDRED)));
+      }
+
+      /**
        * (f1 - f2) + f3 => (f3 - f2) + f1
        * 
        * @param subtraction
@@ -799,6 +827,21 @@ public class Addition
          if((function2 instanceof MinusUnary) == true)
          {
             return this.simplify(function1, (MinusUnary) function2);
+         }
+
+         if((function1 instanceof Percent) == true)
+         {
+            if((function2 instanceof Percent) == true)
+            {
+               return this.simplify((Percent) function1, (Percent) function2);
+            }
+
+            return this.simplify((Percent) function1, function2);
+         }
+
+         if((function2 instanceof Percent) == true)
+         {
+            return this.simplify((Percent) function2, function1);
          }
 
          if((function1 instanceof Constant) == true)

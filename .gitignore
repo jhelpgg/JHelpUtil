@@ -12,4 +12,11 @@ bin/*
 binSamples/*
 binTests/*
 game/
-
+media/
+video/
+*~
+Pico.dic
+border*
+jx*
+JHelp/
+JHelpEditorGame3DFrame.preferences

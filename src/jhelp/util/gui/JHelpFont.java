@@ -262,7 +262,7 @@ public final class JHelpFont
             {
                size.width = Math.max(size.width, width);
 
-               textLines.add(new JHelpTextLine(head, 0, size.height, width, height, this.createMask(head)));
+               textLines.add(new JHelpTextLine(head, 0, size.height, width, height, this.createMask(head), false));
 
                size.height += height;
 
@@ -290,7 +290,7 @@ public final class JHelpFont
 
          size.width = Math.max(size.width, width);
 
-         textLines.add(new JHelpTextLine(line, 0, size.height, width, height, this.createMask(line)));
+         textLines.add(new JHelpTextLine(line, 0, size.height, width, height, this.createMask(line), true));
 
          size.height += height;
 

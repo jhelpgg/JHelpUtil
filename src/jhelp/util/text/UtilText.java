@@ -1,12 +1,15 @@
 package jhelp.util.text;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import jhelp.util.Utilities;
+import jhelp.util.list.Pair;
 import jhelp.util.reflection.Reflector;
 
 /**
@@ -129,6 +132,123 @@ public final class UtilText
       stringBuffer.delete(length - 2, length);
 
       stringBuffer.append(']');
+   }
+
+   /**
+    * Return a list of indexes pairs. Each pair contains a start index and a end index. Each couple delimit where an integer is
+    * inside a string.
+    * 
+    * @param string
+    *           String where search all integers inside
+    * @return List of couple information to know where find the integers inside the given string
+    */
+   private static List<Pair<Integer, Integer>> extractIntegersPair(final String string)
+   {
+      final char[] chars = string.toCharArray();
+      final int length = chars.length;
+      boolean valid = false;
+      int start = -1;
+      char car;
+      final List<Pair<Integer, Integer>> pairs = new ArrayList<Pair<Integer, Integer>>();
+
+      for(int i = 0; i < length; i++)
+      {
+         car = chars[i];
+
+         if(((car == '-') && (start < 0)) || ((car >= '0') && (car <= '9')))
+         {
+            if(start < 0)
+            {
+               start = i;
+            }
+
+            if((car >= '0') && (car <= '9'))
+            {
+               valid = true;
+            }
+         }
+         else if((start >= 0) && (start < i) && (valid == true))
+         {
+            pairs.add(new Pair<Integer, Integer>(start, i));
+
+            start = -1;
+            valid = false;
+         }
+      }
+
+      if((start >= 0) && (valid == true))
+      {
+         pairs.add(new Pair<Integer, Integer>(start, length));
+      }
+
+      return pairs;
+   }
+
+   /**
+    * Return a list of indexes pairs. Each pair contains a start index and a end index. Each couple delimit where a real is
+    * inside a string.
+    * 
+    * @param string
+    *           String where search all reals inside
+    * @return List of couple information to know where find the reals inside the given string
+    */
+   private static List<Pair<Integer, Integer>> extractRealsPair(final String string)
+   {
+      final char[] chars = string.toCharArray();
+      final int length = chars.length;
+      boolean valid = false;
+      boolean havePoint = false;
+      int start = -1;
+      char car;
+      final List<Pair<Integer, Integer>> pairs = new ArrayList<Pair<Integer, Integer>>();
+
+      for(int i = 0; i < length; i++)
+      {
+         car = chars[i];
+
+         if(((car == '-') && (start < 0)) || ((car == '.') && ((havePoint == false) || (start == (i - 1)))) || ((car >= '0') && (car <= '9')))
+         {
+            if(start < 0)
+            {
+               start = i;
+            }
+
+            if(car == '.')
+            {
+               if((havePoint == true) && (start == (i - 1)))
+               {
+                  start = i;
+               }
+
+               havePoint = true;
+            }
+
+            if((car >= '0') && (car <= '9'))
+            {
+               valid = true;
+            }
+         }
+         else if((start >= 0) && (start < i) && (valid == true))
+         {
+            pairs.add(new Pair<Integer, Integer>(start, i));
+
+            start = -1;
+            valid = false;
+            havePoint = false;
+
+            if((car == '.') && (chars[i - 1] == '.'))
+            {
+               i--;
+            }
+         }
+      }
+
+      if((start >= 0) && (valid == true))
+      {
+         pairs.add(new Pair<Integer, Integer>(start, length));
+      }
+
+      return pairs;
    }
 
    /**
@@ -588,6 +708,118 @@ public final class UtilText
       else
       {
          array[index] = "";
+      }
+
+      return array;
+   }
+
+   /**
+    * Extract all double inside a string
+    * 
+    * @param string
+    *           String where extract the doubles
+    * @return Doubles founds inside the given string
+    */
+   public static double[] extractDoubleFrom(final String string)
+   {
+      if(string == null)
+      {
+         return null;
+      }
+
+      final List<Pair<Integer, Integer>> pairs = UtilText.extractRealsPair(string);
+      final int size = pairs.size();
+      final double[] array = new double[size];
+      Pair<Integer, Integer> pair;
+
+      for(int i = 0; i < size; i++)
+      {
+         pair = pairs.get(i);
+         array[i] = Double.parseDouble(string.substring(pair.element1, pair.element2));
+      }
+
+      return array;
+   }
+
+   /**
+    * Extract all float inside a string
+    * 
+    * @param string
+    *           String where extract the floats
+    * @return Floats founds inside the given string
+    */
+   public static float[] extractFloatFrom(final String string)
+   {
+      if(string == null)
+      {
+         return null;
+      }
+
+      final List<Pair<Integer, Integer>> pairs = UtilText.extractRealsPair(string);
+      final int size = pairs.size();
+      final float[] array = new float[size];
+      Pair<Integer, Integer> pair;
+
+      for(int i = 0; i < size; i++)
+      {
+         pair = pairs.get(i);
+         array[i] = Float.parseFloat(string.substring(pair.element1, pair.element2));
+      }
+
+      return array;
+   }
+
+   /**
+    * Extract all integers inside a string
+    * 
+    * @param string
+    *           String where extract the integers
+    * @return Integers founds inside the given string
+    */
+   public static int[] extractIntFrom(final String string)
+   {
+      if(string == null)
+      {
+         return null;
+      }
+
+      final List<Pair<Integer, Integer>> pairs = UtilText.extractIntegersPair(string);
+      final int size = pairs.size();
+      final int[] array = new int[size];
+      Pair<Integer, Integer> pair;
+
+      for(int i = 0; i < size; i++)
+      {
+         pair = pairs.get(i);
+         array[i] = Integer.parseInt(string.substring(pair.element1, pair.element2));
+      }
+
+      return array;
+   }
+
+   /**
+    * Extract all longs inside a string
+    * 
+    * @param string
+    *           String where extract the longs
+    * @return Longs founds inside the given string
+    */
+   public static long[] extractLongFrom(final String string)
+   {
+      if(string == null)
+      {
+         return null;
+      }
+
+      final List<Pair<Integer, Integer>> pairs = UtilText.extractIntegersPair(string);
+      final int size = pairs.size();
+      final long[] array = new long[size];
+      Pair<Integer, Integer> pair;
+
+      for(int i = 0; i < size; i++)
+      {
+         pair = pairs.get(i);
+         array[i] = Long.parseLong(string.substring(pair.element1, pair.element2));
       }
 
       return array;
@@ -1283,6 +1515,31 @@ public final class UtilText
       stringBuffer.append(originalString.substring(start));
 
       return stringBuffer.toString();
+   }
+
+   /**
+    * Replace all white characters by a given characters
+    * 
+    * @param text
+    *           Text where replace white characters
+    * @param c
+    *           Character used for replacement
+    * @return Modified string
+    */
+   public static String replaceWhiteCharactersBy(final String text, final char c)
+   {
+      final char[] array = text.toCharArray();
+      final int length = array.length;
+
+      for(int i = 0; i < length; i++)
+      {
+         if(array[i] <= 32)
+         {
+            array[i] = c;
+         }
+      }
+
+      return new String(array);
    }
 
    /**

@@ -29,6 +29,7 @@ import jhelp.util.text.UtilText;
  */
 public final class UtilIO
 {
+   /** "Home" directory */
    private static File        homeDirectory;
    /** Directory external of the code */
    private static File        outsideDirectory;
@@ -825,6 +826,11 @@ public final class UtilIO
       return file;
    }
 
+   /**
+    * Obtain "home" directory
+    * 
+    * @return "Home" directory
+    */
    public static File obtainHomeDirectory()
    {
       if(UtilIO.homeDirectory != null)
@@ -1017,8 +1023,15 @@ public final class UtilIO
    {
       try
       {
+         final String name = UtilIO.readString(inputStream);
+
+         if(name == null)
+         {
+            return null;
+         }
+
          @SuppressWarnings("unchecked")
-         final Class<B> clas = (Class<B>) Class.forName(UtilIO.readString(inputStream));
+         final Class<B> clas = (Class<B>) Class.forName(name);
 
          return UtilIO.readBinarizable(clas, inputStream);
       }
@@ -1296,6 +1309,11 @@ public final class UtilIO
    {
       final byte[] utf8 = UtilIO.readByteArray(inputStream);
 
+      if(utf8 == null)
+      {
+         return null;
+      }
+
       return UtilText.readUTF8(utf8, 0, utf8.length);
    }
 
@@ -1506,14 +1524,6 @@ public final class UtilIO
             {
             }
          }
-
-         try
-         {
-            outputStream.flush();
-         }
-         catch(final Exception exception)
-         {
-         }
       }
    }
 
@@ -1591,8 +1601,6 @@ public final class UtilIO
 
          read = inputStream.read(buffer);
       }
-
-      outputStream.flush();
    }
 
    /**
@@ -1612,8 +1620,6 @@ public final class UtilIO
 
       UtilIO.writeInteger(temp.length, outputStream);
       outputStream.write(temp);
-
-      outputStream.flush();
    }
 
    /**
@@ -1674,7 +1680,6 @@ public final class UtilIO
 
       UtilIO.writeInteger(len, outputStream);
       outputStream.write(array, offset, len);
-      outputStream.flush();
    }
 
    /**
@@ -1767,8 +1772,6 @@ public final class UtilIO
       outputStream.write((integer >> 16) & 0xFF);
       outputStream.write((integer >> 8) & 0xFF);
       outputStream.write(integer & 0xFF);
-
-      outputStream.flush();
    }
 
    /**
@@ -1791,8 +1794,6 @@ public final class UtilIO
       outputStream.write((int) ((integer >> 16) & 0xFF));
       outputStream.write((int) ((integer >> 8) & 0xFF));
       outputStream.write((int) (integer & 0xFF));
-
-      outputStream.flush();
    }
 
    /**

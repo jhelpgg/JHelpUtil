@@ -112,6 +112,18 @@ public final class ResourceText
    }
 
    /**
+    * Indicates if a key exists
+    * 
+    * @param key
+    *           Tested key
+    * @return {@code true} if the key exists
+    */
+   public boolean isDefined(final String key)
+   {
+      return this.keysText.get(key) != null;
+   }
+
+   /**
     * Register a listener to be alert when language change
     * 
     * @param resourceTextListener

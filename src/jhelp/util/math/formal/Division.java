@@ -240,6 +240,20 @@ public class Division
       }
 
       /**
+       * Simplification : X/(P%) -> (X*100)/P
+       * 
+       * @param function1
+       *           Function X argument
+       * @param percent2
+       *           Percent P argument
+       * @return Simplification
+       */
+      private Function simplify(final Function function1, final Percent percent2)
+      {
+         return new Division(new Multiplication(function1, Constant.HUNDRED), percent2.parameter);
+      }
+
+      /**
        * (-f1)/f2 -> -(f1/f2)
        * 
        * @param minusUnary
@@ -260,7 +274,7 @@ public class Division
        *           -f1
        * @param minusUnaryDenominator
        *           -f2
-       * @return f1*f2
+       * @return f1/f2
        */
       private Function simplify(final MinusUnary minusUnaryNumerator, final MinusUnary minusUnaryDenominator)
       {
@@ -297,6 +311,34 @@ public class Division
          }
 
          return this.simplifyDivisionOfMultiplicationConstant(function1, function2, constant);
+      }
+
+      /**
+       * Simplification : (P%)/X -> (P/X)/100
+       * 
+       * @param percent1
+       *           Percent P argument
+       * @param function2
+       *           Function X argument
+       * @return Simpilfication
+       */
+      private Function simplify(final Percent percent1, final Function function2)
+      {
+         return new Division(new Division(percent1.parameter, function2), Constant.HUNDRED);
+      }
+
+      /**
+       * (P1%)/(P2%) -> P1/P2
+       * 
+       * @param percent1
+       *           P1
+       * @param percent2
+       *           P2
+       * @return Simplified
+       */
+      private Function simplify(final Percent percent1, final Percent percent2)
+      {
+         return new Division(percent1.parameter, percent2.parameter);
       }
 
       /**
@@ -469,6 +511,21 @@ public class Division
             return this.simplify(numerator, (MinusUnary) denominator);
          }
 
+         if((numerator instanceof Percent) == true)
+         {
+            if((denominator instanceof Percent) == true)
+            {
+               return this.simplify((Percent) numerator, (Percent) denominator);
+            }
+
+            return this.simplify((Percent) numerator, denominator);
+         }
+
+         if((denominator instanceof Percent) == true)
+         {
+            return this.simplify(numerator, (Percent) denominator);
+         }
+
          if((numerator instanceof Constant) == true)
          {
             if((denominator instanceof Constant) == true)
@@ -523,7 +580,6 @@ public class Division
          {
             return this.simplify(numerator, (Division) denominator);
          }
-
          return this.simplify(numerator, denominator);
       }
    }

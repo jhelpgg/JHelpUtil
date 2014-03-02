@@ -1,6 +1,8 @@
 package jhelp.util;
 
 import java.lang.reflect.Array;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Divers utilities
@@ -9,6 +11,9 @@ import java.lang.reflect.Array;
  */
 public final class Utilities
 {
+   /** Regular expression for detect separators in locale string */
+   private static final Pattern PATERN_LOCALE = Pattern.compile("-|_");
+
    /**
     * Indicates if a character is inside an array
     * 
@@ -29,6 +34,33 @@ public final class Utilities
       }
 
       return false;
+   }
+
+   /**
+    * Convert string to locale
+    * 
+    * @param string
+    *           String that represents a locale
+    * @return Locale created
+    */
+   public static Locale convertStringToLocale(final String string)
+   {
+      if(string == null)
+      {
+         return null;
+      }
+
+      final String[] split = Utilities.PATERN_LOCALE.split(string, 3);
+
+      switch(split.length)
+      {
+         case 1:
+            return new Locale(split[0]);
+         case 2:
+            return new Locale(split[0], split[1]);
+      }
+
+      return new Locale(split[0], split[1], split[2]);
    }
 
    /**
@@ -300,5 +332,5 @@ public final class Utilities
     */
    private Utilities()
    {
-   };
+   }
 }

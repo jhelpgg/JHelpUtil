@@ -732,6 +732,60 @@ public final class Reflector
    }
 
    /**
+    * Obatin the class corresponds to a full name (package + name or primitive name like int, byte, ...)
+    * 
+    * @param className
+    *           Class name
+    * @return Correspoing class
+    * @throws ClassNotFoundException
+    *            If the class can't be found
+    */
+   public static final Class<?> obtainClass(final String className) throws ClassNotFoundException
+   {
+      if(Reflector.PRIMITIVE_BOOLEAN.equals(className) == true)
+      {
+         return boolean.class;
+      }
+
+      if(Reflector.PRIMITIVE_BYTE.equals(className) == true)
+      {
+         return byte.class;
+      }
+
+      if(Reflector.PRIMITIVE_CHAR.equals(className) == true)
+      {
+         return char.class;
+      }
+
+      if(Reflector.PRIMITIVE_DOUBLE.equals(className) == true)
+      {
+         return double.class;
+      }
+
+      if(Reflector.PRIMITIVE_FLOAT.equals(className) == true)
+      {
+         return float.class;
+      }
+
+      if(Reflector.PRIMITIVE_INT.equals(className) == true)
+      {
+         return int.class;
+      }
+
+      if(Reflector.PRIMITIVE_LONG.equals(className) == true)
+      {
+         return long.class;
+      }
+
+      if(Reflector.PRIMITIVE_SHORT.equals(className) == true)
+      {
+         return short.class;
+      }
+
+      return Class.forName(className);
+   }
+
+   /**
     * Obtain a field
     * 
     * @param object

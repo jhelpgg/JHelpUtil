@@ -245,6 +245,11 @@ public abstract class Function
                {
                   sb.append(character);
                }
+               else if(((i + 1) < nb) && (string.charAt(i + 1) == '%'))
+               {
+                  sb.insert(0, '(');
+                  sb.append(")%");
+               }
             break;
             default:
                sb.append(character);
@@ -467,6 +472,11 @@ public abstract class Function
       if(binairy != null)
       {
          return binairy;
+      }
+
+      if(function.charAt(function.length() - 1) == '%')
+      {
+         return new Percent(Function.parse(function.substring(0, function.length() - 1)));
       }
 
       // If all fails, this is a variable

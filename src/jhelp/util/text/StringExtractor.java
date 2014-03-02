@@ -24,6 +24,8 @@ import jhelp.util.list.Pair;
  */
 public class StringExtractor
 {
+   /** ndicates if empty string result is allowaed */
+   private boolean                                     canReturnEmptyString;
    /** Escape characters */
    private final char[]                                escapeCharacters;
    /** Current read index */
@@ -112,6 +114,7 @@ public class StringExtractor
       this.length = string.length();
 
       this.openCloseIgnore = new ArrayList<Pair<Character, Character>>();
+      this.canReturnEmptyString = true;
    }
 
    /**
@@ -138,6 +141,16 @@ public class StringExtractor
       }
 
       this.openCloseIgnore.add(new Pair<Character, Character>(open, close));
+   }
+
+   /**
+    * Indicates if empty strings may be return
+    * 
+    * @return Indicates if empty strings may be return
+    */
+   public boolean isCanReturnEmptyString()
+   {
+      return this.canReturnEmptyString;
    }
 
    /**
@@ -240,6 +253,22 @@ public class StringExtractor
       }
       while(this.index < this.length);
 
+      if((this.canReturnEmptyString == false) && (end == start))
+      {
+         return this.next();
+      }
+
       return new String(this.string, start, end - start);
+   }
+
+   /**
+    * Change the possibility to return empty string
+    * 
+    * @param canReturnEmptyString
+    *           Use {@code true} to allow empty strings, {@code false} to forbid them
+    */
+   public void setCanReturnEmptyString(final boolean canReturnEmptyString)
+   {
+      this.canReturnEmptyString = canReturnEmptyString;
    }
 }

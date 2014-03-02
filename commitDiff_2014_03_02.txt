@@ -1,0 +1,54 @@
+New class :
+	Percent in formal computing (ex: 120+10% -> 132)
+	ResourcesSystem, ResourceElement, ResouceFile, ResourceDirectory : for represents resources like a folder tree
+	OutputStreamCopy for write in 2 streams in same time
+	HashInt has table with int as keys
+	jhelp.util.list.foreach : Classes for do action on each element inside a list in paralell
+	Size represents a size in bytes
+	DateBinarizable and TimeBinarizable for carry date and time throw Binarization
+
+New features :
+	New cases in sample for Bag2D
+	Parse string  to locale in Utilities
+	List of keys in Cache
+	Signal when element is cleared in CacheElement
+	Create filter for sounds in FileFilter
+	Add information of end of line in JHelpTextLine
+	Add capacity to put a sprite over others in JHelpImage
+	Simulate mouse click in UtilGUI
+	Obtain list of elements in Queue
+	Clear the StackInt
+	Peek an elemnt in StackInt
+	New PreferenceType Locale in Preferences
+	Convert a String to Class in Relflector (More than Class.forName(String), because it also support primitive names like "in", "boolean", ...)
+	Know if a key exists in ResourceText
+	Possibility to choose return or not empty strings in StringExtractor
+	Extract ints, longs, float or doubles inside a String in UtilText
+	Replace all white characters by an other one in UtilText
+	Return thread id in delayed thread to be able cancel it before it plays in ThreadManager
+	Add unit of time in LapsTime
+	Able to reset time to 0 in LapsTime
+	Able to set the time (in microseconds or milliseconds) in LapsTime
+	Short String representation in LapsTime
+	Add tests for Bag2D
+	Add tests for Percent in Function tests
+	Add tests for int, long, float and double array extraction from String in UtilText test
+
+Modifications :
+	Put public access for compute blue, green, red, y, u and v in JHelpImage
+	Remove not necessary log informations in SortedArrayList
+
+Bugs fix :
+	Correction of computing size to draw in drawImageInternal of JHelpImage
+	Better clip management in JHelpImage
+	Better algorithm for FileImageInformation
+	Add comments in UtilIO
+	Null name management in readBinarizableNamed of UtilIO
+	Null UTF-8 array management in readString of UtilIO
+	Removes some automatic flush to let user do it when he want in UtilIO
+	Replace the buggy StringOutputStream and StringInputStream by ByteArrayOutputStream and ByteArrayInputStream in Base64Common
+	Comments correction in Bag2D
+	Correction of error text in StateMachine
+	Add and correct comments in ThreadManager
+	Correct comments in ThreadedTask
+	Correct message of exception in LapsTime

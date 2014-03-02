@@ -4,8 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
 import jhelp.util.reflection.Reflector;
 
 /**
@@ -313,8 +311,6 @@ public final class SortedArray<TYPE>
       this.typeClass = null;
 
       this.size = 0;
-
-      Debug.println(DebugLevel.VERBOSE, "Delete from memory");
 
       super.finalize();
    }

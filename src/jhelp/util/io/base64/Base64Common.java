@@ -1,9 +1,10 @@
 package jhelp.util.io.base64;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 import jhelp.util.debug.Debug;
 import jhelp.util.io.ByteArray;
-import jhelp.util.io.StringInputStream;
-import jhelp.util.io.StringOutputStream;
 import jhelp.util.io.UtilIO;
 
 /**
@@ -28,7 +29,7 @@ public final class Base64Common
    {
       try
       {
-         final StringInputStream stringInputStream = new StringInputStream(base64);
+         final ByteArrayInputStream stringInputStream = new ByteArrayInputStream(base64.getBytes("UTF-8"));
          final Base64InputStream base64InputStream = new Base64InputStream(stringInputStream);
          final ByteArray byteArray = new ByteArray();
 
@@ -142,14 +143,14 @@ public final class Base64Common
    {
       try
       {
-         final StringOutputStream stringOutputStream = new StringOutputStream();
+         final ByteArrayOutputStream stringOutputStream = new ByteArrayOutputStream();
          final Base64OutputStream base64OutputStream = new Base64OutputStream(stringOutputStream);
 
          base64OutputStream.write(array);
          base64OutputStream.flush();
          base64OutputStream.close();
 
-         return stringOutputStream.getString();
+         return new String(stringOutputStream.toByteArray(), "UTF-8");
       }
       catch(final Exception exception)
       {

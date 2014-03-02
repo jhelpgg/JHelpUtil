@@ -292,7 +292,7 @@ public class LapsTime
       this(minute, second, millisecond, microsecond);
       if(hour < 0)
       {
-         throw new IllegalArgumentException("minute musn't be <0");
+         throw new IllegalArgumentException("hour musn't be <0");
       }
       this.hour = hour;
       this.updateMicroSeconds();
@@ -338,6 +338,83 @@ public class LapsTime
    {
       this.microseconds = this.microsecond + (1000L * (this.millisecond + (1000L * (this.second + (60L * (this.minute + (60L * this.hour)))))));
       this.update();
+   }
+
+   /**
+    * Add some hour to the time
+    * 
+    * @param hour
+    *           Numbre of hour to add
+    */
+   public void addHour(final int hour)
+   {
+      this.setHour(hour + this.hour);
+   }
+
+   /**
+    * Add some microseconds to the time
+    * 
+    * @param microsecond
+    *           Microseconds to add
+    */
+   public void addMicrosecond(final int microsecond)
+   {
+      this.setMicrosecond(microsecond + this.microsecond);
+   }
+
+   /**
+    * Add some microseconds to the time
+    * 
+    * @param microseconds
+    *           Microseconds to add
+    */
+   public void addMicroseconds(final long microseconds)
+   {
+      this.setMicroseconds(microseconds + this.microseconds);
+   }
+
+   /**
+    * Add some milliseconds to the time
+    * 
+    * @param millisecond
+    *           Microseconds to add
+    */
+   public void addMillisecond(final int millisecond)
+   {
+      this.setMillisecond(millisecond + this.millisecond);
+   }
+
+   /**
+    * Add some milliseconds to the time
+    * 
+    * @param milliseconds
+    *           Milliseconds to add
+    */
+   public void addMilliseconds(final long milliseconds)
+   {
+      this.setMicroseconds((milliseconds * 1000L) + this.microseconds);
+   }
+
+   /**
+    * Add some minites to the time
+    * 
+    * @param minute
+    *           Minutes to add
+    */
+   public void addMinute(final int minute)
+   {
+      this.setMinute(minute + this.minute);
+   }
+
+   /**
+    * Add some seconds to the time
+    * 
+    * @param second
+    *           Seconds to add
+    */
+   public void addSecond(final int second)
+   {
+      this.setSecond(second + this.second);
    }
 
    /**
@@ -480,6 +557,15 @@ public class LapsTime
    }
 
    /**
+    * Reset the time to 0
+    */
+   public void resetTime()
+   {
+      this.microseconds = 0;
+      this.microsecond = this.millisecond = this.second = this.minute = this.hour = 0;
+   }
+
+   /**
     * Modify hour
     * 
     * @param hour
@@ -512,6 +598,23 @@ public class LapsTime
    }
 
    /**
+    * Modify the time, precise the new time in micorseconds
+    * 
+    * @param microseconds
+    *           Neww time in microseconds
+    */
+   public void setMicroseconds(final long microseconds)
+   {
+      if(microseconds < 0)
+      {
+         throw new IllegalArgumentException("microsenconds musn't be < 0");
+      }
+
+      this.microseconds = microseconds;
+      this.update();
+   }
+
+   /**
     * Modify millisecond
     * 
     * @param millisecond
@@ -525,6 +628,23 @@ public class LapsTime
       }
       this.millisecond = millisecond;
       this.updateMicroSeconds();
+   }
+
+   /**
+    * Set the new time in millseconds
+    * 
+    * @param milliseconds
+    *           New time in millsenconds
+    */
+   public void setMilliseconds(final long milliseconds)
+   {
+      if(this.microseconds < 0)
+      {
+         throw new IllegalArgumentException("microsenconds musn't be < 0");
+      }
+
+      this.microseconds = milliseconds * 1000L;
+      this.update();
    }
 
    /**
@@ -557,6 +677,118 @@ public class LapsTime
       }
       this.second = second;
       this.updateMicroSeconds();
+   }
+
+   /**
+    * Short string representation
+    * 
+    * @return Short string representation
+    */
+   public String shortString()
+   {
+      final StringBuilder stringBuilder = new StringBuilder(33);
+
+      boolean force = false;
+      int hour = this.hour;
+
+      if(hour >= 24)
+      {
+         stringBuilder.append(hour / 24);
+         stringBuilder.append("d");
+
+         force = true;
+         hour %= 24;
+      }
+
+      if((force == true) || (hour > 0))
+      {
+         if((force == true) && (hour < 10))
+         {
+            stringBuilder.append('0');
+         }
+
+         stringBuilder.append(hour);
+         stringBuilder.append("h");
+
+         if(force == true)
+         {
+            return stringBuilder.toString();
+         }
+
+         force = true;
+      }
+
+      if((force == true) || (this.minute > 0))
+      {
+         if((force == true) && (this.minute < 10))
+         {
+            stringBuilder.append('0');
+         }
+
+         stringBuilder.append(this.minute);
+         stringBuilder.append("m");
+
+         if(force == true)
+         {
+            return stringBuilder.toString();
+         }
+
+         force = true;
+      }
+
+      if((force == true) || (this.second > 0))
+      {
+         if((force == true) && (this.second < 10))
+         {
+            stringBuilder.append('0');
+         }
+
+         stringBuilder.append(this.second);
+         stringBuilder.append("s");
+
+         if(force == true)
+         {
+            return stringBuilder.toString();
+         }
+
+         force = true;
+      }
+
+      if((force == true) || (this.millisecond > 0))
+      {
+         if((force == true) && (this.millisecond < 100))
+         {
+            stringBuilder.append('0');
+         }
+
+         if((force == true) && (this.millisecond < 10))
+         {
+            stringBuilder.append('0');
+         }
+
+         stringBuilder.append(this.millisecond);
+         stringBuilder.append("ms");
+
+         if(force == true)
+         {
+            return stringBuilder.toString();
+         }
+      }
+
+      if((force == true) && (this.microsecond < 100))
+      {
+         stringBuilder.append('0');
+      }
+
+      if((force == true) && (this.microsecond < 10))
+      {
+         stringBuilder.append('0');
+      }
+
+      stringBuilder.append(this.microsecond);
+      stringBuilder.append("micros");
+
+      return stringBuilder.toString();
    }
 
    /**

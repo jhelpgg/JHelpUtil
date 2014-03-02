@@ -68,7 +68,7 @@ public abstract class StateMachine
    {
       if(this.canDoMoreState() == false)
       {
-         throw new IllegalStateException("Can wait more thread than " + this.numberMaxOfWaitingState);
+         throw new IllegalStateException("Can't wait more thread than " + this.numberMaxOfWaitingState);
       }
 
       final boolean launch = this.head == this.queue;

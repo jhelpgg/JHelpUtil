@@ -126,6 +126,8 @@ public class FileImageInformation
          for(final ImageReader imageReader : FileImageInformation.IMAGES_READERS)
          {
             fileInputStream = null;
+            this.width = this.height = -1;
+            this.formatName = null;
 
             try
             {
@@ -139,12 +141,16 @@ public class FileImageInformation
                   this.height = Math.max(this.height, imageReader.getHeight(i));
                }
 
-               this.formatName = imageReader.getFormatName();
-
-               break;
+               if((this.width > 0) && (this.height > 0) && (nb > 0))
+               {
+                  this.formatName = imageReader.getFormatName();
+                  break;
+               }
             }
             catch(final Exception exception)
             {
+               this.width = this.height = -1;
+               this.formatName = null;
             }
             finally
             {

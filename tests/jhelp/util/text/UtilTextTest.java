@@ -1,5 +1,7 @@
 package jhelp.util.text;
 
+import jhelp.util.math.UtilMath;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -60,5 +62,55 @@ public class UtilTextTest
                "test"
             }
       }, ""));
+   }
+
+   @Test
+   public void testExtractFromDouble()
+   {
+      Assert.assertArrayEquals(new double[]
+      {
+            3.14, 5
+      }, UtilText.extractDoubleFrom("3.14.5"), UtilMath.EPSILON);
+      Assert.assertArrayEquals(new double[]
+      {
+         0.1
+      }, UtilText.extractDoubleFrom(".1"), UtilMath.EPSILON);
+      Assert.assertArrayEquals(new double[]
+      {
+         0.1
+      }, UtilText.extractDoubleFrom("..1"), UtilMath.EPSILON);
+      Assert.assertArrayEquals(new double[]
+      {
+            2, 0.1
+      }, UtilText.extractDoubleFrom("2..1"), UtilMath.EPSILON);
+      Assert.assertArrayEquals(new double[]
+      {
+            2, 0.1
+      }, UtilText.extractDoubleFrom("2...1"), UtilMath.EPSILON);
+   }
+
+   @Test
+   public void testExtractFromInt()
+   {
+      Assert.assertArrayEquals(new int[]
+      {
+            3, 14, 5
+      }, UtilText.extractIntFrom("3.14.5"));
+      Assert.assertArrayEquals(new int[]
+      {
+         1
+      }, UtilText.extractIntFrom(".1"));
+      Assert.assertArrayEquals(new int[]
+      {
+         1
+      }, UtilText.extractIntFrom("..1"));
+      Assert.assertArrayEquals(new int[]
+      {
+            2, 1
+      }, UtilText.extractIntFrom("2..1"));
+      Assert.assertArrayEquals(new int[]
+      {
+            2, 1
+      }, UtilText.extractIntFrom("2...1"));
    }
 }

@@ -1,6 +1,7 @@
 package jhelp.util.preference;
 
 import java.io.File;
+import java.util.Locale;
 
 /**
  * Preference type
@@ -17,6 +18,8 @@ public enum PreferenceType
    FILE,
    /** Type int */
    INTEGER,
+   /** Type {@link Locale} */
+   LOCALE,
    /** Type {@link String} */
    STRING
 }

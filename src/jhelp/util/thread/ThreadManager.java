@@ -208,6 +208,7 @@ public final class ThreadManager
       {
          threadElement = null;
 
+         // Obtain next task to do
          while(threadElement == null)
          {
             synchronized(ThreadManager.LOCK)
@@ -217,6 +218,7 @@ public final class ThreadManager
 
             if(threadElement == null)
             {
+               // If no task waiting, just wait for next task
                synchronized(ThreadManager.LOCK)
                {
                   try
@@ -233,6 +235,7 @@ public final class ThreadManager
             }
             else if(threadElement.isAlive() == false)
             {
+               // If the task is dead, remove it from the list and not use it
                synchronized(ThreadManager.LOCK)
                {
                   this.priorityQueue.remove(threadElement);
@@ -249,16 +252,19 @@ public final class ThreadManager
             }
          }
 
+         // Test if task can be do now
          this.haveToActAsSoonAsPossible = false;
          time = threadElement.getTimeToAct() - System.currentTimeMillis();
          if(time <= 0)
          {
+            // Task have to be play, try find a free thread
             threadLaunch = false;
 
             for(final ThreadActor threadActor : this.threads)
             {
                if(threadActor.setThreadElement(threadElement) == true)
                {
+                  // We found a free thread, so play it and remove it from waiting queue
                   threadLaunch = true;
 
                   synchronized(ThreadManager.LOCK)
@@ -272,6 +278,7 @@ public final class ThreadManager
 
             if(threadLaunch == false)
             {
+               // No free thread, wait the next free one
                this.haveToActAsSoonAsPossible = true;
                synchronized(ThreadManager.LOCK)
                {
@@ -290,6 +297,7 @@ public final class ThreadManager
          }
          else
          {
+            // Task have to wait, before play, wait the time
             synchronized(ThreadManager.LOCK)
             {
                try
@@ -344,8 +352,8 @@ public final class ThreadManager
 
    /**
     * Do a task in a delayed time. <br>
-    * When task turn comes, the given parameter is given to it, so you can can this method several times with the same instance
-    * of task, but different parameter.
+    * When task turn comes, the given parameter is given to it, so you can do this method several times with the same instance
+    * of task, and different parameter.
     * 
     * @param <PARAMETER>
     *           Parameter type
@@ -359,17 +367,20 @@ public final class ThreadManager
     *           Parameter to give to the task, when its turn comes
     * @param delay
     *           Number of milliseconds to wait before do the task
+    * @return Task ID to able cancel it later with {@link #cancelTask(int)}
     */
-   public <PARAMETER, RESULT, PROGRESS> void delayedThread(final ThreadedTask<PARAMETER, RESULT, PROGRESS> threadedTask, final PARAMETER parameter, final long delay)
+   public <PARAMETER, RESULT, PROGRESS> int delayedThread(final ThreadedTask<PARAMETER, RESULT, PROGRESS> threadedTask, final PARAMETER parameter, final long delay)
    {
       synchronized(ThreadManager.LOCK)
       {
+         // Create and add the thread element
          final ThreadElement<PARAMETER, RESULT, PROGRESS> threadElement = new ThreadElement<PARAMETER, RESULT, PROGRESS>(threadedTask, parameter, Math.max(ThreadManager.MINIMUM_WAIT, delay) + System.currentTimeMillis());
 
          this.priorityQueue.add(threadElement);
 
          try
          {
+            // If thread manager waiting, wake it up
             if(this.waitCount > 0)
             {
                ThreadManager.LOCK.notify();
@@ -378,6 +389,8 @@ public final class ThreadManager
          catch(final Exception exception)
          {
          }
+
+         return threadElement.getID();
       }
    }
 

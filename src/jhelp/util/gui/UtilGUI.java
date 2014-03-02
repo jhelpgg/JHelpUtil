@@ -694,6 +694,24 @@ public final class UtilGUI
    }
 
    /**
+    * Simulate (If system allow it) a mouse click
+    * 
+    * @param time
+    *           Duration of down state
+    */
+   public static void simulateMouseClick(final int time)
+   {
+      if(UtilGUI.ROBOT == null)
+      {
+         return;
+      }
+
+      UtilGUI.ROBOT.mousePress(InputEvent.BUTTON1_MASK);
+      Utilities.sleep(time);
+      UtilGUI.ROBOT.mouseRelease(InputEvent.BUTTON1_MASK | InputEvent.BUTTON2_MASK | InputEvent.BUTTON3_MASK);
+   }
+
+   /**
     * Simulate a mouse press
     * 
     * @param button

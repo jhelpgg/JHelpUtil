@@ -91,6 +91,39 @@ public class FileFilter
       return fileFilter;
    }
 
+   /**
+    * Create a file filter for sounds (Supported by JHelpSounds) that didn't accepts hidden files netheir virtual links
+    * 
+    * @return Created filter
+    */
+   public static FileFilter createFilterForSound()
+   {
+      return FileFilter.createFilterForSound(false, false);
+   }
+
+   /**
+    * Create a file filter for sounds (Supported by JHelpSounds)
+    * 
+    * @param acceptHidden
+    *           Indicates if hidden files or directory are allowed
+    * @param acceptVirtualLink
+    *           Indicated if virtual links are allowed
+    * @return Created filter
+    */
+   public static FileFilter createFilterForSound(final boolean acceptHidden, final boolean acceptVirtualLink)
+   {
+      final FileFilter fileFilter = new FileFilter(acceptHidden, acceptVirtualLink);
+
+      fileFilter.addExtension("mp3");
+      fileFilter.addExtension("au");
+      fileFilter.addExtension("wav");
+      fileFilter.addExtension("mid");
+
+      fileFilter.setInformation("Sounds");
+
+      return fileFilter;
+   }
+
    /** Indicates if directories are accepted */
    private boolean                 acceptDirectory;
    /** Indicates if hidden files are accepted */

@@ -7,6 +7,8 @@ package jhelp.util.gui;
  */
 public class JHelpTextLine
 {
+   /** Indicates if the part is a end of line */
+   private final boolean   endOfLine;
    /** Part height */
    private final int       height;
    /** Mask to use */
@@ -35,8 +37,10 @@ public class JHelpTextLine
     *           Part height
     * @param mask
     *           Mask to use
+    * @param endOfLine
+    *           Indicates if the part is a end of line
     */
-   public JHelpTextLine(final String text, final int x, final int y, final int width, final int height, final JHelpMask mask)
+   public JHelpTextLine(final String text, final int x, final int y, final int width, final int height, final JHelpMask mask, final boolean endOfLine)
    {
       this.text = text;
       this.x = x;
@@ -44,6 +48,7 @@ public class JHelpTextLine
       this.width = width;
       this.height = height;
       this.mask = mask;
+      this.endOfLine = endOfLine;
    }
 
    /**
@@ -104,5 +109,15 @@ public class JHelpTextLine
    public int getY()
    {
       return this.y;
+   }
+
+   /**
+    * Indicates if the part is a end of line
+    * 
+    * @return {@code true} if the part is a end of line
+    */
+   public boolean isEndOfLine()
+   {
+      return this.endOfLine;
    }
 }

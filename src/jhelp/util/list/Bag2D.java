@@ -14,7 +14,7 @@ import jhelp.util.text.UtilText;
  * It can contains objects that have a size (width and height) that occupied cells of the bag.<br>
  * Two objects can't itersect each other,.<br>
  * Each time an object is add, free space are use to put it, if not enough room for put the object, then the bag will be
- * reorderes=d automatically to try to add the new object, if its not possible to add the new object, it is not added
+ * reordered automatically to try to add the new object, if its not possible to add the new object, it is not added
  * 
  * @author JHelp
  * @param <OBJECT>
@@ -177,7 +177,7 @@ public class Bag2D<OBJECT extends SizedObject>
     *           Object width
     * @param h
     *           Object height
-    * @return The bet location or {@code null} if not enough room for put the object (Mat have to reorder the bag before try
+    * @return The bet location or {@code null} if not enough room for put the object (May have to reorder the bag before try
     *         again)
     */
    private Point searchBestFreeSpace(final int w, final int h)

@@ -1,5 +1,8 @@
 package jhelp.util.list;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Queue of element
  * 
@@ -145,7 +148,7 @@ public class Queue<TYPE>
 
       while(elt != null)
       {
-         if((elt.element == null && element == null) || (elt.element != null && elt.element.equals(element) == true))
+         if(((elt.element == null) && (element == null)) || ((elt.element != null) && (elt.element.equals(element) == true)))
          {
             if(prev == null)
             {
@@ -162,6 +165,25 @@ public class Queue<TYPE>
          prev = elt;
          elt = elt.next;
       }
+   }
+
+   /**
+    * Create a list of elements
+    * 
+    * @return List of elements
+    */
+   public List<TYPE> toList()
+   {
+      final List<TYPE> list = new ArrayList<TYPE>();
+      Element<TYPE> current = this.head;
+
+      while(current != null)
+      {
+         list.add(current.element);
+         current = current.next;
+      }
+
+      return list;
    }
 
    /**

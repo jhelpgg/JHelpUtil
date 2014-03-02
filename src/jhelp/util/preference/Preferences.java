@@ -2,7 +2,9 @@ package jhelp.util.preference;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 
+import jhelp.util.Utilities;
 import jhelp.util.io.UtilIO;
 import jhelp.util.io.base64.Base64Common;
 import jhelp.util.list.Pair;
@@ -52,6 +54,8 @@ public class Preferences
             return Integer.parseInt(serializedValue);
          case STRING:
             return serializedValue;
+         case LOCALE:
+            return Utilities.convertStringToLocale(serializedValue);
       }
 
       return null;
@@ -84,6 +88,8 @@ public class Preferences
             return String.valueOf(((Integer) value).intValue());
          case STRING:
             return (String) value;
+         case LOCALE:
+            return value.toString();
       }
 
       return null;
@@ -281,6 +287,39 @@ public class Preferences
    }
 
    /**
+    * Get a locale value from preferences
+    * 
+    * @param name
+    *           Preference name
+    * @param defaultValue
+    *           Value to store and return if preference not already exists
+    * @return Preference value or default value
+    */
+   public Locale getValue(final String name, final Locale defaultValue)
+   {
+      if(name == null)
+      {
+         throw new NullPointerException("name musn't be null");
+      }
+
+      final Pair<PreferenceType, Object> pair = this.preferences.get(name);
+
+      if(pair == null)
+      {
+         this.setValue(name, defaultValue);
+
+         return defaultValue;
+      }
+
+      if(pair.element1 != PreferenceType.LOCALE)
+      {
+         throw new IllegalArgumentException("The value of" + name + " isn't a " + PreferenceType.LOCALE + " but a " + pair.element1);
+      }
+
+      return (Locale) pair.element2;
+   }
+
+   /**
     * Get a String value from preferences
     * 
     * @param name
@@ -468,6 +507,49 @@ public class Preferences
       if(pair.element1 != PreferenceType.INTEGER)
       {
          throw new IllegalArgumentException("The preference " + name + " is not a " + PreferenceType.INTEGER + " but a " + pair.element1);
+      }
+
+      pair.element2 = value;
+
+      this.savePreferences();
+   }
+
+   /**
+    * Define/change a locale value
+    * 
+    * @param name
+    *           Preference name
+    * @param value
+    *           New value
+    */
+   public void setValue(final String name, final Locale value)
+   {
+      if(name == null)
+      {
+         throw new NullPointerException("name musn't be null");
+      }
+
+      if(value == null)
+      {
+         throw new NullPointerException("value musn't be null");
+      }
+
+      Pair<PreferenceType, Object> pair = this.preferences.get(name);
+
+      if(pair == null)
+      {
+         pair = new Pair<PreferenceType, Object>(PreferenceType.LOCALE, value);
+
+         this.preferences.put(name, pair);
+
+         this.savePreferences();
+
+         return;
+      }
+
+      if(pair.element1 != PreferenceType.LOCALE)
+      {
+         throw new IllegalArgumentException("The preference " + name + " is not a " + PreferenceType.LOCALE + " but a " + pair.element1);
       }
 
       pair.element2 = value;

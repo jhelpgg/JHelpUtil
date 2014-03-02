@@ -88,108 +88,6 @@ public class JHelpImage
    public static final int        PALETTE_SIZE = JHelpImage.PALETTE.length;
 
    /**
-    * Compute blue part of color from YUV<br>
-    * B = Y + 1.7790 * (U - 128)
-    * 
-    * @param y
-    *           Y
-    * @param u
-    *           U
-    * @param v
-    *           V
-    * @return Blue part
-    */
-   private static int computeBlue(final double y, final double u, final double v)
-   {
-      return UtilMath.limit0_255((int) (y + (1.7721604 * (u - 128)) + (0.0009902 * (v - 128))));
-   }
-
-   /**
-    * Compute green part of color from YUV<br>
-    * G = Y - 0.3455 * (U - 128) - (0.7169 * (V - 128))
-    * 
-    * @param y
-    *           Y
-    * @param u
-    *           U
-    * @param v
-    *           V
-    * @return Green part
-    */
-   private static int computeGreen(final double y, final double u, final double v)
-   {
-      return UtilMath.limit0_255((int) (y - (0.3436954 * (u - 128)) - (0.7141690 * (v - 128))));
-   }
-
-   /**
-    * Compute red part of color from YUV<br>
-    * R = Y + 1.4075 * (V - 128)
-    * 
-    * @param y
-    *           Y
-    * @param u
-    *           U
-    * @param v
-    *           V
-    * @return Red part
-    */
-   private static int computeRed(final double y, final double u, final double v)
-   {
-      return UtilMath.limit0_255((int) ((y - (0.0009267 * (u - 128))) + (1.4016868 * (v - 128))));
-   }
-
-   /**
-    * Compute U of a color<br>
-    * U = R * -.168736 + G * -.331264 + B * .500000 + 128
-    * 
-    * @param red
-    *           Red part
-    * @param green
-    *           Green part
-    * @param blue
-    *           Blue part
-    * @return U
-    */
-   private static double computeU(final int red, final int green, final int blue)
-   {
-      return ((-0.169 * red) - (0.331 * green)) + (0.500 * blue) + 128.0;
-   }
-
-   /**
-    * Compute V of a color<br>
-    * V = R * .500000 + G * -.418688 + B * -.081312 + 128
-    * 
-    * @param red
-    *           Red part
-    * @param green
-    *           Green part
-    * @param blue
-    *           Blue part
-    * @return V
-    */
-   private static double computeV(final int red, final int green, final int blue)
-   {
-      return ((0.500 * red) - (0.419 * green) - (0.081 * blue)) + 128.0;
-   }
-
-   /**
-    * Compute Y of a color<br>
-    * Y = R * .299000 + G * .587000 + B * .114000
-    * 
-    * @param red
-    *           Red part
-    * @param green
-    *           Green part
-    * @param blue
-    *           Blue part
-    * @return Y
-    */
-   private static double computeY(final int red, final int green, final int blue)
-   {
-      return (red * 0.299) + (green * 0.587) + (blue * 0.114);
-   }
-
-   /**
     * Comput distance betwwen 2 colors
     * 
     * @param color1
@@ -276,6 +174,108 @@ public class JHelpImage
       }
 
       return ImageIO.read(image);
+   }
+
+   /**
+    * Compute blue part of color from YUV<br>
+    * B = Y + 1.7790 * (U - 128)
+    * 
+    * @param y
+    *           Y
+    * @param u
+    *           U
+    * @param v
+    *           V
+    * @return Blue part
+    */
+   public static int computeBlue(final double y, final double u, final double v)
+   {
+      return UtilMath.limit0_255((int) (y + (1.7721604 * (u - 128)) + (0.0009902 * (v - 128))));
+   }
+
+   /**
+    * Compute green part of color from YUV<br>
+    * G = Y - 0.3455 * (U - 128) - (0.7169 * (V - 128))
+    * 
+    * @param y
+    *           Y
+    * @param u
+    *           U
+    * @param v
+    *           V
+    * @return Green part
+    */
+   public static int computeGreen(final double y, final double u, final double v)
+   {
+      return UtilMath.limit0_255((int) (y - (0.3436954 * (u - 128)) - (0.7141690 * (v - 128))));
+   }
+
+   /**
+    * Compute red part of color from YUV<br>
+    * R = Y + 1.4075 * (V - 128)
+    * 
+    * @param y
+    *           Y
+    * @param u
+    *           U
+    * @param v
+    *           V
+    * @return Red part
+    */
+   public static int computeRed(final double y, final double u, final double v)
+   {
+      return UtilMath.limit0_255((int) ((y - (0.0009267 * (u - 128))) + (1.4016868 * (v - 128))));
+   }
+
+   /**
+    * Compute U of a color<br>
+    * U = R * -.168736 + G * -.331264 + B * .500000 + 128
+    * 
+    * @param red
+    *           Red part
+    * @param green
+    *           Green part
+    * @param blue
+    *           Blue part
+    * @return U
+    */
+   public static double computeU(final int red, final int green, final int blue)
+   {
+      return ((-0.169 * red) - (0.331 * green)) + (0.500 * blue) + 128.0;
+   }
+
+   /**
+    * Compute V of a color<br>
+    * V = R * .500000 + G * -.418688 + B * -.081312 + 128
+    * 
+    * @param red
+    *           Red part
+    * @param green
+    *           Green part
+    * @param blue
+    *           Blue part
+    * @return V
+    */
+   public static double computeV(final int red, final int green, final int blue)
+   {
+      return ((0.500 * red) - (0.419 * green) - (0.081 * blue)) + 128.0;
+   }
+
+   /**
+    * Compute Y of a color<br>
+    * Y = R * .299000 + G * .587000 + B * .114000
+    * 
+    * @param red
+    *           Red part
+    * @param green
+    *           Green part
+    * @param blue
+    *           Blue part
+    * @return Y
+    */
+   public static double computeY(final int red, final int green, final int blue)
+   {
+      return (red * 0.299) + (green * 0.587) + (blue * 0.114);
    }
 
    /**
@@ -1273,8 +1273,8 @@ public class JHelpImage
          y = this.clip.yMin;
       }
 
-      final int w = UtilMath.minIntegers((this.clip.xMax + 1) - x, image.width - xImage, width);
-      final int h = UtilMath.minIntegers((this.clip.yMax + 1) - y, image.height - yImage, height);
+      final int w = UtilMath.minIntegers((this.clip.xMax + 1) - x, image.width - xImage, width, this.width - x);
+      final int h = UtilMath.minIntegers((this.clip.yMax + 1) - y, image.height - yImage, height, this.height - y);
 
       if((w <= 0) || (h <= 0))
       {
@@ -2405,7 +2405,7 @@ public class JHelpImage
          throw new IllegalStateException("Must be in draw mode !");
       }
 
-      if((y < this.clip.xMin) || (y > this.clip.xMax))
+      if((y < this.clip.yMin) || (y > this.clip.yMax))
       {
          return;
       }
@@ -4069,10 +4069,10 @@ public class JHelpImage
       final int x2 = (x + width) - 1;
       final int y2 = (y + height) - 1;
 
-      final int startX = Math.max(this.clip.xMin, x1);
-      final int endX = Math.min(this.clip.xMax, x2);
-      final int startY = Math.max(this.clip.yMin, y1);
-      final int endY = Math.min(this.clip.yMax, y2);
+      final int startX = UtilMath.maxIntegers(this.clip.xMin, x1, 0);
+      final int endX = UtilMath.minIntegers(this.clip.xMax, x2, this.width - 1);
+      final int startY = UtilMath.maxIntegers(this.clip.yMin, y1, 0);
+      final int endY = UtilMath.minIntegers(this.clip.yMax, y2, this.height - 1);
 
       if((startX > endX) || (startY > endY))
       {
@@ -4095,7 +4095,7 @@ public class JHelpImage
          {
             pix = line;
 
-            for(int xx = startX; xx < endX; xx++)
+            for(int xx = startX; xx <= endX; xx++)
             {
                this.pixels[pix] = color;
 
@@ -5973,8 +5973,8 @@ public class JHelpImage
          y = this.clip.yMin;
       }
 
-      final int width = UtilMath.minIntegers(w - x, mask.getWidth());
-      final int height = UtilMath.minIntegers(h - y, mask.getHeight());
+      final int width = UtilMath.minIntegers(w - x, mask.getWidth(), this.width - x);
+      final int height = UtilMath.minIntegers(h - y, mask.getHeight(), this.height - y);
 
       if((width < 1) || (height < 1))
       {
@@ -6920,7 +6920,7 @@ public class JHelpImage
          throw new NullPointerException("clip musn't be null");
       }
 
-      this.clips.push(clip);
+      this.clips.push(this.clip.copy());
       this.clip.set(clip);
    }
 
@@ -6950,7 +6950,7 @@ public class JHelpImage
    public void pushClipIntersect(final Clip clip)
    {
       final Clip intersect = new Clip(Math.max(this.clip.xMin, clip.xMin), Math.min(this.clip.xMax, clip.xMax), Math.max(this.clip.yMin, clip.yMin), Math.min(this.clip.yMax, clip.yMax));
-      this.clips.push(intersect);
+      this.clips.push(this.clip.copy());
       this.clip.set(intersect);
    }
 
@@ -7014,7 +7014,7 @@ public class JHelpImage
       if(this.sprites.remove(sprite) == true)
       {
          final int index = sprite.getSpriteIndex();
-         if((index >= 0) && (this.visibilities.length > index))
+         if((index >= 0) && (this.visibilities != null) && (this.visibilities.length > index))
          {
             System.arraycopy(this.visibilities, index + 1, this.visibilities, index, this.visibilities.length - index - 1);
          }
@@ -7336,6 +7336,61 @@ public class JHelpImage
          this.pixels[i] = temp[index];
 
          index = (index + 1) % size;
+      }
+   }
+
+   /**
+    * Force a sprite to be over the others
+    * 
+    * @param sprite
+    *           Sprite to put at top
+    */
+   public void spriteAtTop(final JHelpSprite sprite)
+   {
+      if(sprite == null)
+      {
+         return;
+      }
+
+      final int index = this.sprites.indexOf(sprite);
+
+      if(index < 0)
+      {
+         return;
+      }
+
+      final boolean oldDrawMode = this.drawMode;
+
+      if(oldDrawMode == true)
+      {
+         this.endDrawMode();
+      }
+
+      final int size = this.sprites.size();
+      final boolean[] visibles = new boolean[size];
+
+      for(int i = 0; i < size; i++)
+      {
+         visibles[i] = this.sprites.get(i).isVisible();
+         this.sprites.get(i).setVisible(false);
+      }
+
+      final boolean visible = visibles[index];
+      System.arraycopy(visibles, index + 1, visibles, index, size - index - 1);
+      visibles[size - 1] = visible;
+
+      this.sprites.remove(index);
+      this.sprites.add(sprite);
+
+      for(int i = 0; i < size; i++)
+      {
+         this.sprites.get(i).setSpriteIndex(i);
+         this.sprites.get(i).setVisible(visibles[i]);
+      }
+
+      if(oldDrawMode == true)
+      {
+         this.startDrawMode();
       }
    }
 

@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
+import java.util.jar.JarFile;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -36,6 +37,9 @@ public class Resources
    private final Class<?>                        referenceClass;
    /** Path relative to Resources class */
    private final String                          relativePathFormClass;
+   /** Resources system associated to the resources */
+   private ResourcesSystem                       resourcesSystem;
+
    /** Map of already loaded resources text */
    private final Hashtable<String, ResourceText> resourcesTexts;
 
@@ -184,6 +188,58 @@ public class Resources
    public JHelpImage obtainJHelpImage(final String path) throws IOException
    {
       return JHelpImage.loadImage(this.obtainResourceStream(path));
+   }
+
+   /**
+    * Obatain the resources system linked to the resources
+    * 
+    * @return Resources system linked
+    * @throws IOException
+    *            If failed to create the resources system
+    */
+   public ResourcesSystem obtainResourcesSystem() throws IOException
+   {
+      if(this.resourcesSystem == null)
+      {
+         if(this.externalFiles == true)
+         {
+            if(this.baseDirectory != null)
+            {
+               this.resourcesSystem = new ResourcesSystem(this, this.baseDirectory);
+            }
+            else
+            {
+               this.resourcesSystem = new ResourcesSystem(this, UtilIO.obtainOutsideDirectory());
+            }
+         }
+         else
+         {
+            Class<?> clas = this.referenceClass;
+
+            if(clas == null)
+            {
+               clas = Resources.class;
+            }
+
+            final URL url = clas.getResource(clas.getSimpleName() + ".class");
+            final String path = url.getFile();
+            final int index = path.indexOf(".jar!");
+
+            if(index < 0)
+            {
+               final File file = new File(path);
+               this.resourcesSystem = new ResourcesSystem(this, file.getParentFile());
+            }
+            else
+            {
+               final JarFile jarFile = new JarFile(path.substring(5, index + 4));
+               final int end = Math.max(index + 5, path.lastIndexOf('/'));
+               this.resourcesSystem = new ResourcesSystem(this, jarFile, path.substring(index + 6, end));
+            }
+         }
+      }
+
+      return this.resourcesSystem;
    }
 
    /**

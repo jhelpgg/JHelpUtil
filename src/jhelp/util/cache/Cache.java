@@ -8,6 +8,7 @@
 package jhelp.util.cache;
 
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Manage a only RAM cache<br>
@@ -127,6 +128,16 @@ public class Cache<ELEMENT>
       this.add(key, cacheElement);
 
       return this.get(key);
+   }
+
+   /**
+    * List of keys in cache
+    * 
+    * @return List of keys in cache
+    */
+   public Set<String> obtainKeys()
+   {
+      return this.cache.keySet();
    }
 
    /**
