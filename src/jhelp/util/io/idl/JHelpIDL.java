@@ -887,7 +887,7 @@ public class JHelpIDL
    /**
     * Link a receiver to an interface.<br>
     * It a way to say what to answer when receiver message.<br>
-    * For one interface, only one receiver is allowed, have to call {@link #stopReceiver(Class)} for be able change to
+    * For one interface, only one receiver is allowed, have to call {@link #stopReceiver(Class)} for be able change the
     * registered object
     * 
     * @param <TYPE>

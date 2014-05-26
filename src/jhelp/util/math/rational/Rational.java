@@ -12,16 +12,18 @@ public class Rational
       implements Comparable<Rational>
 {
    /** Epsilon precision */
-   private static final float   EPSILON   = Float.MIN_NORMAL;
+   private static final float   EPSILON          = Float.MIN_NORMAL;
 
    /** Invalid rational. The rational have non meaning (like divide by 0) */
-   public static final Rational INVALID   = new Rational(0, 0);
+   public static final Rational INVALID          = new Rational(0, 0);
+   /** Invalid rational key string. Returned from {@link #toString()} if the rational is invalid */
+   public static final String   INVALID_RATIONAL = "INVALID_RATIONAL";
    /** -1 rational */
-   public static final Rational MINUS_ONE = new Rational(-1, 1);
+   public static final Rational MINUS_ONE        = new Rational(-1, 1);
    /** 1 rational */
-   public static final Rational ONE       = new Rational(1, 1);
+   public static final Rational ONE              = new Rational(1, 1);
    /** 0 rational */
-   public static final Rational ZERO      = new Rational(0, 1);
+   public static final Rational ZERO             = new Rational(0, 1);
 
    /**
     * Indicates if 2 reals are equals in epsilon precision
@@ -266,6 +268,125 @@ public class Rational
    }
 
    /**
+    * Parse a String to be a rational.<br>
+    * String must be {@link #INVALID_RATIONAL} or &lt;integer&gt; or &lt;integer&gt; &lt;space&gt;* / &lt;space&gt;*
+    * &lt;integer&gt;<br>
+    * Where &lt;integer&gt; := [0-9]+ AND &lt;space&gt; := {SPACE, \t, \n, \r, \f}.<br>
+    * If the string is not well dormated {@link IllegalArgumentException} will be throw
+    * 
+    * @param string
+    *           String to parse
+    * @return Parsed rational
+    * @throws NullPointerException
+    *            If string is {@code null}
+    * @throws IllegalArgumentException
+    *            If string can't be parsed as a rational
+    */
+   public static Rational parse(String string)
+   {
+      string = string.trim();
+
+      if(Rational.INVALID_RATIONAL.equals(string) == true)
+      {
+         return Rational.INVALID;
+      }
+
+      final int index = string.indexOf('/');
+
+      if(index < 0)
+      {
+         try
+         {
+            return Rational.createRational(Integer.parseInt(string));
+         }
+         catch(final Exception exception)
+         {
+            throw new IllegalArgumentException(string + " can't be parsed as a rational", exception);
+         }
+      }
+
+      try
+      {
+         return Rational.createRational(Integer.parseInt(string.substring(0, index).trim(), Integer.parseInt(string.substring(index + 1).trim())));
+      }
+      catch(final Exception exception)
+      {
+         throw new IllegalArgumentException(string + " can't be parsed as a rational", exception);
+      }
+   }
+
+   /**
+    * Compute rational raise to power
+    * 
+    * @param rational
+    *           Rational to raise to power
+    * @param power
+    *           Power to use (Warning not always accurate if power < 0)
+    * @return The result
+    */
+   public static Rational power(final Rational rational, final int power)
+   {
+      if(rational == Rational.INVALID)
+      {
+         return Rational.INVALID;
+      }
+
+      if(power == 0)
+      {
+         return Rational.ONE;
+      }
+
+      if(power == 1)
+      {
+         return rational;
+      }
+
+      if(rational == Rational.ZERO)
+      {
+         return Rational.ZERO;
+      }
+
+      if(rational == Rational.ONE)
+      {
+         return Rational.ONE;
+      }
+
+      if(power > 0)
+      {
+         if(rational == Rational.MINUS_ONE)
+         {
+            if((power % 2) == 0)
+            {
+               return Rational.ONE;
+            }
+            else
+            {
+               return Rational.MINUS_ONE;
+            }
+         }
+
+         int num = rational.numerator;
+         int den = rational.denominator;
+
+         for(int i = power - 1; i >= 0; i--)
+         {
+            num *= rational.numerator;
+            den *= rational.denominator;
+         }
+
+         return Rational.createRational(num, den);
+      }
+
+      if(rational.isNegative() == true)
+      {
+         return Rational.INVALID;
+      }
+
+      final float value = (float) Math.pow((double) rational.numerator / (double) rational.denominator, power);
+      return Rational.createRational(value);
+   }
+
+   /**
     * Compute a string representation of a proportion
     * 
     * @param numberPositive
@@ -349,6 +470,7 @@ public class Rational
 
    /** Denominator */
    private final int denominator;
+
    /** Numerator */
    private final int numerator;
 
@@ -604,7 +726,58 @@ public class Rational
          return Rational.INVALID;
       }
 
+      if(this == Rational.ZERO)
+      {
+         return Rational.ZERO;
+      }
+
+      if(this == Rational.ONE)
+      {
+         return Rational.MINUS_ONE;
+      }
+
+      if(this == Rational.MINUS_ONE)
+      {
+         return Rational.ONE;
+      }
+
       return Rational.createRational(-this.numerator, this.denominator);
+   }
+
+   /**
+    * Compute rational raise to power
+    * 
+    * @param power
+    *           Power to use (Warning not always accurate if power < 0)
+    * @return The result
+    */
+   public Rational power(final int power)
+   {
+      return Rational.power(this, power);
+   }
+
+   /**
+    * Sign of rational It returns
+    * <table>
+    * <tr>
+    * <th>-1</th>
+    * <td>If rational is <0</td>
+    * </tr>
+    * <tr>
+    * <th>0</th>
+    * <td>If rational is 0 or invalid</td>
+    * </tr>
+    * <tr>
+    * <th>1</th>
+    * <td>If rational is >0</td>
+    * </tr>
+    * </table>
+    * 
+    * @return Rational sign
+    */
+   public int sign()
+   {
+      return UtilMath.sign(this.numerator);
    }
 
    /**
@@ -633,7 +806,12 @@ public class Rational
    {
       if(this.denominator == 0)
       {
-         return "INVALID_RATIONAL";
+         return Rational.INVALID_RATIONAL;
+      }
+
+      if(this.denominator == 1)
+      {
+         return String.valueOf(this.numerator);
       }
 
       return UtilText.concatenate(this.numerator, '/', this.denominator);

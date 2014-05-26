@@ -392,6 +392,39 @@ public class JHelpImage
    }
 
    /**
+    * Create a resized image from a given one in parameter.<br>
+    * If the desired size is exactly the same has the given image, the image itself is return.<br>
+    * In case of different size, if the given image is not in draw mode, visible sprites on it will be a part of resized image
+    * 
+    * @param image
+    *           Image to resize
+    * @param width
+    *           New width
+    * @param height
+    *           New height
+    * @return Resized image
+    */
+   public static JHelpImage createResizedImage(final JHelpImage image, final int width, final int height)
+   {
+      if((width < 1) || (height < 1))
+      {
+         throw new IllegalArgumentException("width and height must be > 1, but it is specify : " + width + "x" + height);
+      }
+
+      if((image.getWidth() == width) && (image.getHeight() == height))
+      {
+         return image;
+      }
+
+      final JHelpImage result = new JHelpImage(width, height);
+      result.startDrawMode();
+      result.fillRectangleScaleBetter(0, 0, width, height, result, false);
+      result.endDrawMode();
+
+      return result;
+   }
+
+   /**
     * Create an image resized to specify size from a buffered image
     * 
     * @param bufferedImage
@@ -756,6 +789,11 @@ public class JHelpImage
    {
       BufferedImage bufferedImage = ImageIO.read(inputStream);
 
+      if(bufferedImage == null)
+      {
+         throw new IOException("Failed to load image");
+      }
+
       final int width = bufferedImage.getWidth();
       final int height = bufferedImage.getHeight();
       int[] pixels = new int[width * height];
@@ -914,6 +952,7 @@ public class JHelpImage
    private final Stack<Clip>      clips;
    /** List of registered components to alert if image update */
    private ArrayList<Component>   componentsListeners;
+
    /** Actaul draw mode */
    private boolean                drawMode;
 
@@ -937,12 +976,12 @@ public class JHelpImage
 
    /** List of sprite */
    private ArrayList<JHelpSprite> sprites;
-
    /**
     * Last sprite visibility information collected on {@link #startDrawMode()} to resitute sprite in good state when
     * {@link #endDrawMode()} is call
     */
    private boolean[]              visibilities;
+
    /** Image width */
    private final int              width;
 

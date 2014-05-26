@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 
 import jhelp.util.math.UtilMath;
 import jhelp.util.reflection.Reflector;
@@ -466,6 +467,37 @@ public class ByteArray
       this.index += len;
 
       return len;
+   }
+
+   public BigDecimal readBigDecimal()
+   {
+      final String value = this.readString();
+
+      if(value == null)
+      {
+         return null;
+      }
+
+      return new BigDecimal(value);
+   }
+
+   public BigDecimal[] readBigDecimalArray()
+   {
+      final int length = this.readInteger();
+
+      if(length < 0)
+      {
+         return null;
+      }
+
+      final BigDecimal[] array = new BigDecimal[length];
+
+      for(int i = 0; i < length; i++)
+      {
+         array[i] = this.readBigDecimal();
+      }
+
+      return array;
    }
 
    /***
@@ -1023,6 +1055,33 @@ public class ByteArray
       this.array[this.size] = (byte) (b & 0xFF);
 
       this.size++;
+   }
+
+   public void writeBigDecimal(final BigDecimal bigDecimal)
+   {
+      if(bigDecimal == null)
+      {
+         this.writeString(null);
+         return;
+      }
+
+      this.writeString(bigDecimal.toString());
+   }
+
+   public void writeBigDecimalArray(final BigDecimal[] array)
+   {
+      if(array == null)
+      {
+         this.writeInteger(-1);
+         return;
+      }
+
+      final int length = array.length;
+
+      for(int i = 0; i < length; i++)
+      {
+         this.writeBigDecimal(array[i]);
+      }
    }
 
    /**

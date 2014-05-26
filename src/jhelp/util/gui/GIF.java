@@ -108,13 +108,14 @@ public class GIF
       // Initialization
       ArrayList<JHelpImage> images = new ArrayList<JHelpImage>();
       JHelpImage cumulateImage = null;
+      JHelpImage previousImage = null;
       JHelpImage readImage;
       JHelpImage newImage;
       int index = 0;
       boolean oneMore = true;
-      int x, y, time;
+      int x, y, time, readWidth, readHeight;
       GIFImageMetadata imageMetadata;
-      int disposalMethod = GIF.DISPOSE_METHOD_NONE;
+      // int disposalMethod = GIF.DISPOSE_METHOD_NONE;
 
       // While there are one image to extract
       while(oneMore == true)
@@ -138,33 +139,63 @@ public class GIF
                cumulateImage = new JHelpImage(this.width, this.height);
             }
 
-            readImage.getWidth();
-            readImage.getHeight();
+            readWidth = readImage.getWidth();
+            readHeight = readImage.getHeight();
 
-            // Switch the method to do with the previous
-            switch(disposalMethod)
+            cumulateImage.startDrawMode();
+
+            // "Background"
+            switch(imageMetadata.disposalMethod)
             {
-            // Over write the parcel on the cumulative image (over write also
-            // alpha)
-               case GIF.DISPOSE_METHOD_RESTORE_BACKGROUND:
-               case GIF.DISPOSE_METHOD_RESTORE_PREVIOUS:
-                  cumulateImage.startDrawMode();
-                  cumulateImage.drawImage(x, y, readImage, false);
-                  cumulateImage.endDrawMode();
-               break;
-
-               // Just draw the image on the cumulative (alpha processing)
                case GIF.DISPOSE_METHOD_NOT_DISPOSE:
+                  previousImage = cumulateImage.createCopy();
+               break;
                case GIF.DISPOSE_METHOD_NONE:
-               default:
-                  cumulateImage.startDrawMode();
-                  cumulateImage.drawImage(x, y, readImage, true);
-                  cumulateImage.endDrawMode();
+                  previousImage = cumulateImage.createCopy();
+               // cumulateImage.clear(0);
+               break;
+               case GIF.DISPOSE_METHOD_RESTORE_BACKGROUND:
+                  cumulateImage.fillRectangle(x, y, readWidth, readHeight, 0, false);
+               break;
+               case GIF.DISPOSE_METHOD_RESTORE_PREVIOUS:
+                  if(previousImage == null)
+                  {
+                     previousImage = cumulateImage.createCopy();
+                  }
+
+                  cumulateImage.drawImage(x, y, previousImage, 0, 0, readWidth, readHeight, false);
                break;
             }
 
-            // Get method to use for next image
-            disposalMethod = imageMetadata.disposalMethod;
+            // Draw image
+            cumulateImage.drawImage(x, y, readImage, false);
+
+            cumulateImage.endDrawMode();
+
+            // // Switch the method to do with the previous
+            // switch(disposalMethod)
+            // {
+            // // Over write the parcel on the cumulative image (over write also
+            // // alpha)
+            // case GIF.DISPOSE_METHOD_RESTORE_BACKGROUND:
+            // case GIF.DISPOSE_METHOD_RESTORE_PREVIOUS:
+            // cumulateImage.startDrawMode();
+            // cumulateImage.drawImage(x, y, readImage, false);
+            // cumulateImage.endDrawMode();
+            // break;
+            //
+            // // Just draw the image on the cumulative (alpha processing)
+            // case GIF.DISPOSE_METHOD_NOT_DISPOSE:
+            // case GIF.DISPOSE_METHOD_NONE:
+            // default:
+            // cumulateImage.startDrawMode();
+            // cumulateImage.drawImage(x, y, readImage, true);
+            // cumulateImage.endDrawMode();
+            // break;
+            // }
+
+            // // Get method to use for next image
+            // disposalMethod = imageMetadata.disposalMethod;
 
             // Create the final actual image
             newImage = new JHelpImage(this.width, this.height);
@@ -191,6 +222,7 @@ public class GIF
       // Free memory
       imageMetadata = null;
       cumulateImage = null;
+      previousImage = null;
       readImage = null;
       newImage = null;
 

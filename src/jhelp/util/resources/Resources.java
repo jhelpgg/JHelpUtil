@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import jhelp.util.debug.Debug;
+import jhelp.util.gui.JHelpFont;
 import jhelp.util.gui.JHelpImage;
 import jhelp.util.io.UtilIO;
 
@@ -174,6 +175,44 @@ public class Resources
    public ImageIcon obtainImageIcon(final String path)
    {
       return new ImageIcon(this.obtainResourceURL(path));
+   }
+
+   /**
+    * Obtain a font embed in resources
+    * 
+    * @param type
+    *           Font type
+    * @param path
+    *           Resource path
+    * @param size
+    *           Font size
+    * @return Created font
+    */
+   public JHelpFont obtainJHelpFont(final JHelpFont.Type type, final String path, final int size)
+   {
+      return this.obtainJHelpFont(type, path, size, JHelpFont.Value.FREE, JHelpFont.Value.FREE, false);
+   }
+
+   /**
+    * Obtain a font embed in resources
+    * 
+    * @param type
+    *           Font type
+    * @param path
+    *           Resource path
+    * @param size
+    *           Font size
+    * @param bold
+    *           Bold value
+    * @param italic
+    *           Italic value
+    * @param underline
+    *           Indicates if have to underline
+    * @return Created font
+    */
+   public JHelpFont obtainJHelpFont(final JHelpFont.Type type, final String path, final int size, final JHelpFont.Value bold, final JHelpFont.Value italic, final boolean underline)
+   {
+      return JHelpFont.createFont(type, this.obtainResourceStream(path), size, bold, italic, underline);
    }
 
    /**

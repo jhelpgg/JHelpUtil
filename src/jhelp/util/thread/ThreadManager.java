@@ -47,9 +47,9 @@ public final class ThreadManager
 
    /**
     * Number of maximum thread running in same time (If you change this number, I advice to not go under 8, and if you choose a
-    * high value, you may notice a slow or out of memory. For now 128 is a good compromise for what I tested
+    * high value, you may notice a slow or out of memory. For now 1024 is a good compromise for what I tested
     */
-   private static final int                    NUMBER_OF_ACTIVE_THREAD = 128;
+   private static final int                    NUMBER_OF_ACTIVE_THREAD = 1024;
    /** For synchronize the waiting task and the running threads */
    static final Object                         LOCK                    = new Object();
    /**

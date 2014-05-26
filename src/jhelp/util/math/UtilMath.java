@@ -1,5 +1,8 @@
 package jhelp.util.math;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import jhelp.util.list.ArrayInt;
 
 /**
@@ -10,12 +13,14 @@ import jhelp.util.list.ArrayInt;
  */
 public final class UtilMath
 {
+   public static final BigInteger BIG_MINUS_ONE = UtilMath.createBigInteger(-1);
+   public static final BigInteger BIG_TWO       = UtilMath.createBigInteger(2);
    /** Epsilon */
-   public static final double EPSILON = UtilMath.max(Double.MIN_NORMAL, Math.abs(Math.E - Math.exp(1)), Math.abs(Math.PI - Math.acos(-1)));
+   public static final double     EPSILON       = UtilMath.max(Double.MIN_NORMAL, Math.abs(Math.E - Math.exp(1)), Math.abs(Math.PI - Math.acos(-1)));
    /** PI / 2 */
-   public static double       PI_2    = Math.PI / 2;
+   public static double           PI_2          = Math.PI / 2;
    /** 2 * PI */
-   public static double       TWO_PI  = Math.PI * 2;
+   public static double           TWO_PI        = Math.PI * 2;
 
    /**
     * Compute the Bernouilli value
@@ -31,6 +36,11 @@ public final class UtilMath
    public static double Bernouilli(final int n, final int m, final double t)
    {
       return UtilMath.C(n, m) * Math.pow(t, n) * Math.pow(1d - t, m - n);
+   }
+
+   public static BigDecimal bigIntegerToBigDecimal(final BigInteger integer)
+   {
+      return new BigDecimal(integer.toString());
    }
 
    /**
@@ -99,6 +109,16 @@ public final class UtilMath
       }
 
       return result;
+   }
+
+   public static BigInteger createBigInteger(final int value)
+   {
+      return new BigInteger(String.valueOf(value));
+   }
+
+   public static BigInteger createBigInteger(final long value)
+   {
+      return new BigInteger(String.valueOf(value));
    }
 
    /**
@@ -796,6 +816,16 @@ public final class UtilMath
          return 1;
       }
       return -1;
+   }
+
+   public static double square(final double real)
+   {
+      return real * real;
+   }
+
+   public static int square(final int integer)
+   {
+      return integer * integer;
    }
 
    /**

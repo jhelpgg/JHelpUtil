@@ -8,10 +8,12 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jhelp.util.debug.Debug;
 import jhelp.util.list.Pair;
 import jhelp.util.text.StringExtractor;
 import jhelp.util.text.UtilText;
@@ -24,22 +26,157 @@ import jhelp.util.text.UtilText;
 public final class JHelpFont
       implements ConstantsGUI
 {
+   /**
+    * Possible font type
+    * 
+    * @author JHelp
+    */
+   public static enum Type
+   {
+      /** True type font */
+      TRUE_TYPE,
+      /** Type 1 font */
+      TYPE1
+   }
+
+   /**
+    * Choice in {@link JHelpFont#createFont(Type, InputStream, int, Value, Value, boolean)} to be able say : "as it defines in
+    * the stream"
+    * 
+    * @author JHelp
+    */
+   public static enum Value
+   {
+      /** Force the value to be {@code false} (It transform the font if need) */
+      FALSE,
+      /** Use what is defined in the stream value */
+      FREE,
+      /** Force the value to be {@code true} (It transform the font if need) */
+      TRUE
+   }
+
    /** Default font */
    public static final JHelpFont DEFAULT      = new JHelpFont("Monospaced", 18);
-
    /** Character unicode for the smiley :) */
    public static final char      SMILEY_HAPPY = (char) 0x263A;
+
    /** Character unicode for the smiley :( */
    public static final char      SMILEY_SAD   = (char) 0x2639;
 
+   /**
+    * Create a font from a stream
+    * 
+    * @param type
+    *           Font type
+    * @param stream
+    *           Stream to get the font data
+    * @param size
+    *           Size of created font
+    * @param bold
+    *           Bold value
+    * @param italic
+    *           Italic value
+    * @param underline
+    *           Indicates if have to underline or not
+    * @return Created font
+    */
+   public static JHelpFont createFont(final Type type, final InputStream stream, int size, final Value bold, final Value italic, final boolean underline)
+   {
+      try
+      {
+         final int fontFormat = type == Type.TYPE1
+               ? Font.TYPE1_FONT
+               : Font.TRUETYPE_FONT;
+
+         Font font = Font.createFont(fontFormat, stream);
+         final int fontSize = font.getSize();
+         final int fontStyle = font.getStyle();
+
+         int style = 0;
+
+         switch(bold)
+         {
+            case FALSE:
+            break;
+            case FREE:
+               style |= fontStyle & Font.BOLD;
+            break;
+            case TRUE:
+               style |= Font.BOLD;
+            break;
+         }
+
+         switch(italic)
+         {
+            case FALSE:
+            break;
+            case FREE:
+               style |= fontStyle & Font.ITALIC;
+            break;
+            case TRUE:
+               style |= Font.ITALIC;
+            break;
+         }
+
+         if((fontSize != size) || (style != fontStyle))
+         {
+            if(fontSize == size)
+            {
+               font = font.deriveFont(style);
+            }
+            else if(style == fontStyle)
+            {
+               font = font.deriveFont((float) size);
+            }
+            else
+            {
+               font = font.deriveFont(style, size);
+            }
+         }
+
+         return new JHelpFont(font, underline);
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception, "Failed to create the font");
+
+         if(size < 1)
+         {
+            size = 18;
+         }
+
+         return new JHelpFont("Arial", size, bold == Value.TRUE, italic == Value.TRUE, underline);
+      }
+   }
+
    /** Embeded font */
-   private final Font            font;
+   private final Font        font;
    /** Metrics for measure strings */
-   private final FontMetrics     fontMetrics;
+   private final FontMetrics fontMetrics;
    /** Font maximum character width */
-   private int                   maximumWidth = -1;
+   private int               maximumWidth = -1;
    /** Underline information */
-   private final boolean         underline;
+   private final boolean     underline;
+
+   /**
+    * Create a new instance of JHelpFont
+    * 
+    * @param font
+    *           Based font
+    * @param underline
+    *           Underline enable/disable
+    */
+   public JHelpFont(final Font font, final boolean underline)
+   {
+      this.underline = underline;
+      this.font = font;
+
+      final BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+      final Graphics2D graphics2d = bufferedImage.createGraphics();
+      this.fontMetrics = graphics2d.getFontMetrics(this.font);
+      graphics2d.dispose();
+      bufferedImage.flush();
+   }
 
    /**
     * Create a new instance of JHelpFont not bold, not italic, not underline
@@ -431,7 +568,7 @@ public final class JHelpFont
    }
 
    /**
-    * Maximum character witdh
+    * Maximum character width
     * 
     * @return Biggest width of one character
     */

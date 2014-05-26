@@ -773,6 +773,8 @@ public class LapsTime
          {
             return stringBuilder.toString();
          }
+
+         force = true;
       }
 
       if((force == true) && (this.microsecond < 100))
