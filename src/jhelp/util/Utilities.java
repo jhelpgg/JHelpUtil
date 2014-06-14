@@ -64,6 +64,26 @@ public final class Utilities
    }
 
    /**
+    * Copy a byte array
+    * 
+    * @param data
+    *           Array to copy
+    * @return Copy of array
+    */
+   public static byte[] createCopy(final byte[] data)
+   {
+      if(data == null)
+      {
+         return null;
+      }
+
+      final int length = data.length;
+      final byte[] copy = new byte[length];
+      System.arraycopy(data, 0, copy, 0, length);
+      return copy;
+   }
+
+   /**
     * Create a int array copy
     * 
     * @param array

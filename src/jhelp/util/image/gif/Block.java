@@ -1,0 +1,84 @@
+package jhelp.util.image.gif;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * Generic GIF block <br>
+ * 
+ * @see <a href="http://www.w3.org/Graphics/GIF/spec-gif89a.txt">GIF specification</a>
+ * @author JHelp
+ */
+abstract class Block
+      implements GIFConstants
+{
+   /**
+    * Read next block from stream
+    * 
+    * @param inputStream
+    *           Stream to read
+    * @param colorResolution
+    *           Color resolution
+    * @return Read block
+    * @throws IOException
+    *            If stream not contains a valid block
+    */
+   static Block readBlock(final InputStream inputStream, final int colorResolution) throws IOException
+   {
+      final int type = inputStream.read();
+
+      if(type < 0)
+      {
+         throw new IOException("No block to read");
+      }
+
+      Block block = null;
+
+      switch(type)
+      {
+         case BLOCK_IMAGE_DESCRIPTOR:
+            block = new ImageDescriptorBlock(colorResolution);
+         break;
+         case BLOCK_EXTENTION:
+            block = BlockExtention.readBlockExtention(inputStream);
+         break;
+         case BLOCK_END_GIF:
+            block = EndBlock.END_BLOCK;
+         break;
+      }
+
+      if(block == null)
+      {
+         throw new IOException("Unknown block type : " + type);
+      }
+
+      block.type = type;
+      block.read(inputStream);
+
+      return block;
+   }
+
+   /** Block type */
+   private int type;
+
+   /**
+    * Read block specific data.<br>
+    * Note : the type and eventual sub-type are already read and set
+    * 
+    * @param inputStream
+    *           Stream to read
+    * @throws IOException
+    *            If stream not contains valid data for the target block
+    */
+   protected abstract void read(InputStream inputStream) throws IOException;
+
+   /**
+    * Block type
+    * 
+    * @return Block type
+    */
+   public final int getType()
+   {
+      return this.type;
+   }
+}

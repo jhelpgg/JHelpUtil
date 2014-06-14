@@ -1,6 +1,7 @@
 package jhelp.util.math.random;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
@@ -161,6 +162,26 @@ public final class JHelpRandom<CHOICE>
       final int max = Math.max(minimum, maximum);
 
       return min + (int) (Math.random() * ((max - min) + 1));
+   }
+
+   /**
+    * Return an element of a list.<br>
+    * {@code null} is return is the list is {@code null} or empty
+    * 
+    * @param <T>
+    *           Type of list's element
+    * @param list
+    *           List to get one element
+    * @return Element get or {@code null} if list {@code null} or empty
+    */
+   public static final <T> T random(final List<T> list)
+   {
+      if((list == null) || (list.size() == 0))
+      {
+         return null;
+      }
+
+      return list.get(JHelpRandom.random(list.size()));
    }
 
    /**

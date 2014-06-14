@@ -12,61 +12,118 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
+import jhelp.util.image.gif.DataGIF;
+import jhelp.util.image.gif.DataGIFVisitor;
 import jhelp.util.io.IntegerArrayInputStream;
 import jhelp.util.list.ArrayInt;
 
-import com.sun.imageio.plugins.gif.GIFImageMetadata;
-import com.sun.imageio.plugins.gif.GIFImageReader;
-
 /**
- * GIF image <br>
+ * GIF image, now without SUN proprietary files :) <br>
  * <br>
- * Last modification : 4 avr. 2009<br>
- * Version 0.0.0<br>
+ * Version 1.0.0<br>
  * 
  * @author JHelp
  */
-@SuppressWarnings("restriction")
 public class GIF
 {
-   /** Indicates the method NONE */
-   private static final int            DISPOSE_METHOD_NONE               = 0;
-   /** Indicates the method NOT DISPOSE */
-   private static final int            DISPOSE_METHOD_NOT_DISPOSE        = 1;
-   /** Indicates the method RESTORE BACKGROUND */
-   private static final int            DISPOSE_METHOD_RESTORE_BACKGROUND = 2;
-   /** Indicates the method RESTORE PREVIOUS */
-   private static final int            DISPOSE_METHOD_RESTORE_PREVIOUS   = 3;
-
-   /** GIF image reader */
-   private static final GIFImageReader GIFReader                         = GIF.obtainImageReader();
-
    /**
-    * Obtain GIF image reader
+    * Visitor for collect images inside GIF
     * 
-    * @return GIF image reader
+    * @author JHelp
     */
-   private static GIFImageReader obtainImageReader()
+   class InternalVisitor
+         implements DataGIFVisitor
    {
-      final Iterator<ImageReader> iterator = ImageIO.getImageReadersBySuffix("GIF");
-      while(iterator.hasNext() == true)
+      /** List of collecting images */
+      private List<JHelpImage> list;
+      /** List of collecting delays */
+      ArrayInt                 delays;
+      /** Image height */
+      int                      height;
+      /** Image width */
+      int                      width;
+
+      /**
+       * Create a new instance of InternalVisitor
+       * 
+       * @param delays
+       *           Delays to fill
+       */
+      InternalVisitor(final ArrayInt delays)
       {
-         return (GIFImageReader) iterator.next();
+         this.delays = delays;
       }
-      return null;
+
+      /**
+       * Transform collected list in array, and empty the list
+       * 
+       * @return Array of images
+       */
+      JHelpImage[] getArray()
+      {
+         final JHelpImage[] array = this.list.toArray(new JHelpImage[this.list.size()]);
+         this.list.clear();
+         this.list = null;
+         return array;
+      }
+
+      /**
+       * Called when collection of images is finished <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       * 
+       * @see jhelp.util.image.gif.DataGIFVisitor#endCollecting()
+       */
+      @Override
+      public void endCollecting()
+      {
+      }
+
+      /**
+       * Called when next image is computed <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       * 
+       * @param duration
+       *           Image duration in millisecond
+       * @param image
+       *           Image
+       * @see jhelp.util.image.gif.DataGIFVisitor#nextImage(long, jhelp.util.gui.JHelpImage)
+       */
+      @Override
+      public void nextImage(final long duration, final JHelpImage image)
+      {
+         this.delays.add((int) duration);
+         this.list.add(image);
+      }
+
+      /**
+       * Called when collect image start <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       * 
+       * @param width
+       *           Image width
+       * @param height
+       *           Image height
+       * @see jhelp.util.image.gif.DataGIFVisitor#startCollecting(int, int)
+       */
+      @Override
+      public void startCollecting(final int width, final int height)
+      {
+         this.list = new ArrayList<JHelpImage>();
+      }
    }
 
    /** Images delay */
    private final ArrayInt delays;
    /** Image height */
-   private int            height;
+   private final int      height;
    /** Images contains in the GIF */
    private JHelpImage[]   images;
    /** Last seen index in automatic show */
@@ -75,8 +132,9 @@ public class GIF
    private long           startTime;
    /** Total animation time */
    private int            totalTime;
+
    /** Image width */
-   private int            width;
+   private final int      width;
 
    /**
     * Constructs GIF
@@ -86,7 +144,7 @@ public class GIF
     * @throws IOException
     *            On reading problem
     */
-   public GIF(InputStream inputStream)
+   public GIF(final InputStream inputStream)
          throws IOException
    {
       if(inputStream == null)
@@ -97,147 +155,22 @@ public class GIF
       this.delays = new ArrayInt();
       this.totalTime = 0;
 
-      // Get stream to read the image
-      ImageInputStream imageInputStream = ImageIO.createImageInputStream(inputStream);
-      // Given the stream to the reader
-      GIF.GIFReader.setInput(imageInputStream, true, false);
+      final DataGIF dataGIF = new DataGIF();
+      dataGIF.read(inputStream);
 
-      // Read parameters
-      ImageReadParam imageReadParam = GIF.GIFReader.getDefaultReadParam();
+      final InternalVisitor internalVisitor = new InternalVisitor(this.delays);
+      dataGIF.collectImages(internalVisitor);
 
-      // Initialization
-      ArrayList<JHelpImage> images = new ArrayList<JHelpImage>();
-      JHelpImage cumulateImage = null;
-      JHelpImage previousImage = null;
-      JHelpImage readImage;
-      JHelpImage newImage;
-      int index = 0;
-      boolean oneMore = true;
-      int x, y, time, readWidth, readHeight;
-      GIFImageMetadata imageMetadata;
-      // int disposalMethod = GIF.DISPOSE_METHOD_NONE;
+      this.width = internalVisitor.width;
+      this.height = internalVisitor.height;
+      this.images = internalVisitor.getArray();
 
-      // While there are one image to extract
-      while(oneMore == true)
+      final int size = this.delays.getSize();
+
+      for(int i = 0; i < size; i++)
       {
-         try
-         {
-            // Read actual image
-            readImage = JHelpImage.createImage(GIF.GIFReader.read(index, imageReadParam));
-            // Read actual informations
-            imageMetadata = (GIFImageMetadata) GIF.GIFReader.getImageMetadata(index);
-
-            // Get image position in the total image
-            x = imageMetadata.imageLeftPosition;
-            y = imageMetadata.imageTopPosition;
-
-            // If this is first image, prepare the cumulative image
-            if(cumulateImage == null)
-            {
-               this.width = readImage.getWidth();
-               this.height = readImage.getHeight();
-               cumulateImage = new JHelpImage(this.width, this.height);
-            }
-
-            readWidth = readImage.getWidth();
-            readHeight = readImage.getHeight();
-
-            cumulateImage.startDrawMode();
-
-            // "Background"
-            switch(imageMetadata.disposalMethod)
-            {
-               case GIF.DISPOSE_METHOD_NOT_DISPOSE:
-                  previousImage = cumulateImage.createCopy();
-               break;
-               case GIF.DISPOSE_METHOD_NONE:
-                  previousImage = cumulateImage.createCopy();
-               // cumulateImage.clear(0);
-               break;
-               case GIF.DISPOSE_METHOD_RESTORE_BACKGROUND:
-                  cumulateImage.fillRectangle(x, y, readWidth, readHeight, 0, false);
-               break;
-               case GIF.DISPOSE_METHOD_RESTORE_PREVIOUS:
-                  if(previousImage == null)
-                  {
-                     previousImage = cumulateImage.createCopy();
-                  }
-
-                  cumulateImage.drawImage(x, y, previousImage, 0, 0, readWidth, readHeight, false);
-               break;
-            }
-
-            // Draw image
-            cumulateImage.drawImage(x, y, readImage, false);
-
-            cumulateImage.endDrawMode();
-
-            // // Switch the method to do with the previous
-            // switch(disposalMethod)
-            // {
-            // // Over write the parcel on the cumulative image (over write also
-            // // alpha)
-            // case GIF.DISPOSE_METHOD_RESTORE_BACKGROUND:
-            // case GIF.DISPOSE_METHOD_RESTORE_PREVIOUS:
-            // cumulateImage.startDrawMode();
-            // cumulateImage.drawImage(x, y, readImage, false);
-            // cumulateImage.endDrawMode();
-            // break;
-            //
-            // // Just draw the image on the cumulative (alpha processing)
-            // case GIF.DISPOSE_METHOD_NOT_DISPOSE:
-            // case GIF.DISPOSE_METHOD_NONE:
-            // default:
-            // cumulateImage.startDrawMode();
-            // cumulateImage.drawImage(x, y, readImage, true);
-            // cumulateImage.endDrawMode();
-            // break;
-            // }
-
-            // // Get method to use for next image
-            // disposalMethod = imageMetadata.disposalMethod;
-
-            // Create the final actual image
-            newImage = new JHelpImage(this.width, this.height);
-            newImage.startDrawMode();
-            newImage.drawImage(0, 0, cumulateImage, false);
-            newImage.endDrawMode();
-
-            // Add the image
-            images.add(newImage);
-            time = Math.max(1, imageMetadata.delayTime);
-            this.delays.add(time);
-            this.totalTime += time;
-
-            // Go to next image
-            index++;
-         }
-         catch(final Exception exception)
-         {
-            // On problem, we have no more image
-            oneMore = false;
-         }
+         this.totalTime += this.delays.getIndex(i);
       }
-
-      // Free memory
-      imageMetadata = null;
-      cumulateImage = null;
-      previousImage = null;
-      readImage = null;
-      newImage = null;
-
-      // Get extracted images
-      this.images = new JHelpImage[images.size()];
-      this.images = images.toArray(this.images);
-
-      // Free memory
-      images.clear();
-      images = null;
-      imageReadParam = null;
-      imageInputStream = null;
-      GIF.GIFReader.dispose();
-      inputStream.close();
-      inputStream = null;
 
       if(this.images.length == 0)
       {
