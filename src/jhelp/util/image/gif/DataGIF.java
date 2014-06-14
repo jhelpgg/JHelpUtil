@@ -226,10 +226,12 @@ public class DataGIF
                   baseImage.startDrawMode();
                   baseImage.drawImage(0, 0, image);
                   baseImage.endDrawMode();
+               break;
                case DISPSOAL_METHOD_RESTORE_BACKGROUND_COLOR:
                   baseImage.startDrawMode();
                   baseImage.fillRectangle(imageX, imageY, imageWidth, imageHeight, background, false);
                   baseImage.endDrawMode();
+               break;
                case DISPSOAL_METHOD_RESTORE_PREVIOUS:
                break;
             }
