@@ -90,7 +90,11 @@ public final class Debug
       System.out.print(stackTraceElement.getMethodName());
       System.out.print(" at ");
       System.out.print(stackTraceElement.getLineNumber());
-      System.out.print(" : ");
+      System.out.print(" (");
+      System.out.print(stackTraceElement.getFileName());
+      System.out.print(":");
+      System.out.print(stackTraceElement.getLineNumber());
+      System.out.print(") : ");
 
       // Print message
       for(final Object element : message)
@@ -321,7 +325,12 @@ public final class Debug
             System.out.print('.');
             System.out.print(stackTraceElement.getMethodName());
             System.out.print(" at ");
-            System.out.println(stackTraceElement.getLineNumber());
+            System.out.print(stackTraceElement.getLineNumber());
+            System.out.print(" (");
+            System.out.print(stackTraceElement.getFileName());
+            System.out.print(":");
+            System.out.print(stackTraceElement.getLineNumber());
+            System.out.println(")");
          }
 
          throwable = throwable.getCause();

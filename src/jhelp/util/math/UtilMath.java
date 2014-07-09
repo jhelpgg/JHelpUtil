@@ -13,7 +13,9 @@ import jhelp.util.list.ArrayInt;
  */
 public final class UtilMath
 {
+   /** -1 in high definition */
    public static final BigInteger BIG_MINUS_ONE = UtilMath.createBigInteger(-1);
+   /** 2 in high definition */
    public static final BigInteger BIG_TWO       = UtilMath.createBigInteger(2);
    /** Epsilon */
    public static final double     EPSILON       = UtilMath.max(Double.MIN_NORMAL, Math.abs(Math.E - Math.exp(1)), Math.abs(Math.PI - Math.acos(-1)));
@@ -38,6 +40,13 @@ public final class UtilMath
       return UtilMath.C(n, m) * Math.pow(t, n) * Math.pow(1d - t, m - n);
    }
 
+   /**
+    * Convert big integer to big decimal
+    * 
+    * @param integer
+    *           Big integer to convert
+    * @return Converted big decimal
+    */
    public static BigDecimal bigIntegerToBigDecimal(final BigInteger integer)
    {
       return new BigDecimal(integer.toString());
@@ -111,11 +120,25 @@ public final class UtilMath
       return result;
    }
 
+   /**
+    * Create big integer from an integer
+    * 
+    * @param value
+    *           Integer base
+    * @return Big integer created
+    */
    public static BigInteger createBigInteger(final int value)
    {
       return new BigInteger(String.valueOf(value));
    }
 
+   /**
+    * Create big integer from an integer
+    * 
+    * @param value
+    *           Integer base
+    * @return Big integer created
+    */
    public static BigInteger createBigInteger(final long value)
    {
       return new BigInteger(String.valueOf(value));
@@ -818,11 +841,25 @@ public final class UtilMath
       return -1;
    }
 
+   /**
+    * Square or a number
+    * 
+    * @param real
+    *           Number to square
+    * @return Square result
+    */
    public static double square(final double real)
    {
       return real * real;
    }
 
+   /**
+    * Square or a number
+    * 
+    * @param integer
+    *           Number to square
+    * @return Square result
+    */
    public static int square(final int integer)
    {
       return integer * integer;

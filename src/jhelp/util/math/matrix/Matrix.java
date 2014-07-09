@@ -6,21 +6,50 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import jhelp.util.io.ByteArray;
 
+/**
+ * Matrix that parallelize in thread long operation, so multiplication, take adjacent, take inverse are fast.<br>
+ * For determinant, the used algorithm is already fast
+ * 
+ * @author JHelp
+ */
 public class Matrix
 {
-
+   /** Precision used in computing */
    public static final double PRECISION = 1e-5;
 
+   /**
+    * Indicates if 2 real are enough near to be considered as equals
+    * 
+    * @param real1
+    *           First
+    * @param real2
+    *           Second
+    * @return {@code true} if equals
+    */
    public static boolean equals(final double real1, final double real2)
    {
       return Math.abs(real1 - real2) <= Matrix.PRECISION;
    }
 
+   /**
+    * Indicates if a real is enough small to be consider as zero
+    * 
+    * @param real
+    *           Real to test
+    * @return {@code true} if consider as zero
+    */
    public static boolean isNul(final double real)
    {
       return Math.abs(real) <= Matrix.PRECISION;
    }
 
+   /**
+    * Parse a byte array to extract a matrix
+    * 
+    * @param byteArray
+    *           Byte array to parse
+    * @return Read matrix
+    */
    public static Matrix parseBinary(final ByteArray byteArray)
    {
       final int width = byteArray.readInteger();
@@ -32,15 +61,27 @@ public class Matrix
       return matrix;
    }
 
+   /** The matrix determinant */
    private double         determinant;
+   /** Indicates if determinant is already computed and still accurate (No need to compute it again) */
    private boolean        determinantKnown;
+   /** Matrix height */
    private final int      height;
+   /** Matrix itself */
    private final double[] matrix;
-
+   /** Matrix size */
    private final int      size;
-
+   /** Matrix width */
    private final int      width;
 
+   /**
+    * Create a new instance of Matrix full of zero
+    * 
+    * @param width
+    *           Matrix width
+    * @param height
+    *           Matrix height
+    */
    public Matrix(final int width, final int height)
    {
       if((width < 1) || (height < 1))
@@ -56,6 +97,16 @@ public class Matrix
       this.determinant = 0;
    }
 
+   /**
+    * Check if position is inside the matrix
+    * 
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    * @throws IllegalArgumentException
+    *            If position outside the matrix
+    */
    private void check(final int x, final int y)
    {
       if((x < 0) || (x >= this.width) || (y < 0) || (y >= this.height))
@@ -64,6 +115,11 @@ public class Matrix
       }
    }
 
+   /**
+    * Compute the determinant (Here we have already checked that determinant need to be computed)
+    * 
+    * @return Determinant
+    */
    private double determinantInternal()
    {
       if(this.width == 1)
@@ -83,6 +139,11 @@ public class Matrix
       return this.determinantInternalMore2();
    }
 
+   /**
+    * Compute determinant for matrix bigger than 2x2
+    * 
+    * @return Computed determinant
+    */
    private double determinantInternalMore2()
    {
       final Matrix work = this.copy();
@@ -123,6 +184,15 @@ public class Matrix
       return determinant;
    }
 
+   /**
+    * Exchange 2 row.<br>
+    * The determinant not change except by the sign
+    * 
+    * @param y1
+    *           First row
+    * @param y2
+    *           Second row
+    */
    private void interExchangeRowInternal(final int y1, final int y2)
    {
       final int line1 = y1 * this.width;
@@ -133,6 +203,12 @@ public class Matrix
       System.arraycopy(temp, 0, this.matrix, line2, this.width);
    }
 
+   /**
+    * Pivot matrix from one diagonal point
+    * 
+    * @param xy
+    *           X and Y coordinate of diagonal point
+    */
    private void pivoteInternal(final int xy)
    {
       final int startY = xy * this.width;
@@ -162,6 +238,15 @@ public class Matrix
       }
    }
 
+   /**
+    * Extract a sub matrix by remove one column and one row
+    * 
+    * @param removedColumn
+    *           Column to remove
+    * @param removedRow
+    *           Row to remove
+    * @return Extracted matrix
+    */
    private Matrix subMatrix(final int removedColumn, final int removedRow)
    {
       final int w = this.width - 1;
@@ -193,6 +278,15 @@ public class Matrix
       return result;
    }
 
+   /**
+    * Compute the determinant of a sub matrix (The matrix with one column and one row removed)
+    * 
+    * @param x
+    *           Column to remove
+    * @param y
+    *           Row to remove
+    * @return Determinant computed
+    */
    double determinantSubMatrix(final int x, final int y)
    {
       if(this.width == 2)
@@ -240,6 +334,14 @@ public class Matrix
       return this.subMatrix(x, y).determinantInternalMore2();
    }
 
+   /**
+    * Addition wit an other matrix
+    * 
+    * @param matrix
+    *           Matrix to add
+    * @throws IllegalArgumentException
+    *            If given matrix haven't same width and same height as this matrix
+    */
    public void addition(final Matrix matrix)
    {
       if((this.width != matrix.width) || (this.height != matrix.height))
@@ -255,6 +357,13 @@ public class Matrix
       this.determinantKnown = false;
    }
 
+   /**
+    * Compute adjacent matrix
+    * 
+    * @return Adjacent matrix
+    * @throws IllegalStateException
+    *            If matrix is not square
+    */
    public Matrix adjacent()
    {
       if(this.width != this.height)
@@ -310,11 +419,21 @@ public class Matrix
       return adjacent;
    }
 
+   /**
+    * Indicates if matrix can be invert
+    * 
+    * @return {@code true} If matrix can be invert
+    */
    public boolean canBeInvert()
    {
       return (this.isSquare() == true) && (Matrix.isNul(this.determinant()) == false);
    }
 
+   /**
+    * Copy the matrix
+    * 
+    * @return Matrix copy
+    */
    public Matrix copy()
    {
       final Matrix matrix = new Matrix(this.width, this.height);
@@ -324,6 +443,13 @@ public class Matrix
       return matrix;
    }
 
+   /**
+    * Compute matrix determinant
+    * 
+    * @return Matrix determinant
+    * @throws IllegalStateException
+    *            If matrix is not square
+    */
    public double determinant()
    {
       if(this.width != this.height)
@@ -339,6 +465,17 @@ public class Matrix
       return this.determinantInternal();
    }
 
+   /**
+    * Compare the matrix to an object <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @param object
+    *           Object to compare with
+    * @return {@code true} if object is equals to this matrix
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
    @Override
    public boolean equals(final Object object)
    {
@@ -380,6 +517,17 @@ public class Matrix
       return true;
    }
 
+   /**
+    * Obtain a matrix cell
+    * 
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    * @return Cell value
+    * @throws IllegalArgumentException
+    *            If coordinate outside the matrix
+    */
    public double get(final int x, final int y)
    {
       this.check(x, y);
@@ -387,16 +535,35 @@ public class Matrix
       return this.matrix[x + (y * this.width)];
    }
 
+   /**
+    * Matrix height
+    * 
+    * @return Matrix height
+    */
    public int getHeight()
    {
       return this.height;
    }
 
+   /**
+    * Matrix width
+    * 
+    * @return Matrix width
+    */
    public int getWidth()
    {
       return this.width;
    }
 
+   /**
+    * Matrix hash code <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return Matrix hash code
+    * @see java.lang.Object#hashCode()
+    */
    @Override
    public int hashCode()
    {
@@ -408,6 +575,16 @@ public class Matrix
       return result;
    }
 
+   /**
+    * Exchange two matrix row
+    * 
+    * @param y1
+    *           First row
+    * @param y2
+    *           Second row
+    * @throws IllegalArgumentException
+    *            If at least one specified rows is outside the matrix
+    */
    public void interExchangeRow(final int y1, final int y2)
    {
       if((y1 < 0) || (y1 >= this.height) || (y2 < 0) || (y2 >= this.height))
@@ -423,6 +600,15 @@ public class Matrix
       this.interExchangeRowInternal(y1, y2);
    }
 
+   /**
+    * Invert the matrix
+    * 
+    * @return Matrix invert
+    * @throws IllegalStateException
+    *            If the matrix is not square
+    * @throws IllegalArgumentException
+    *            If the matrix determinant is zero
+    */
    public Matrix invert()
    {
       if(this.width != this.height)
@@ -450,6 +636,11 @@ public class Matrix
       return invert;
    }
 
+   /**
+    * Indicates if matrix is the identity matrix
+    * 
+    * @return {@code true} if matrix is the identity one
+    */
    public boolean isIdentity()
    {
       final int diagonal = this.width + 1;
@@ -475,11 +666,21 @@ public class Matrix
       return true;
    }
 
+   /**
+    * Indicates if matrix is square
+    * 
+    * @return {@code true} if matrix is square
+    */
    public boolean isSquare()
    {
       return this.width == this.height;
    }
 
+   /**
+    * Indicates if matrix is zero matrix
+    * 
+    * @return {@code true} if matrix is zero matrix
+    */
    public boolean isZero()
    {
       for(int i = 0; i < this.size; i++)
@@ -495,6 +696,12 @@ public class Matrix
       return true;
    }
 
+   /**
+    * Multiply all matrix cell by a value
+    * 
+    * @param factor
+    *           Value to multiply with
+    */
    public void multiplication(final double factor)
    {
       for(int i = 0; i < this.size; i++)
@@ -505,6 +712,15 @@ public class Matrix
       this.determinant *= Math.pow(factor, this.width);
    }
 
+   /**
+    * Multiply by an other matrix
+    * 
+    * @param matrix
+    *           Matrix to multiply with
+    * @return Matrix result
+    * @throws IllegalArgumentException
+    *            if given matrix width isn't this matrix height OR given matrix height isn't this matrix width
+    */
    public Matrix multiplication(final Matrix matrix)
    {
       if((this.width != matrix.height) || (this.height != matrix.width))
@@ -550,6 +766,14 @@ public class Matrix
       return result;
    }
 
+   /**
+    * Pivot matrix from one diagonal
+    * 
+    * @param xy
+    *           X and Y diagonal coordinate
+    * @throws IllegalArgumentException
+    *            If diagonal outside the matrix
+    */
    public void pivote(final int xy)
    {
       if((xy < 0) || (xy >= this.width) || (xy >= this.height))
@@ -565,6 +789,12 @@ public class Matrix
       this.pivoteInternal(xy);
    }
 
+   /**
+    * Serialize the matrix inside a byte array
+    * 
+    * @param byteArray
+    *           Byte array where write
+    */
    public void serializeBinary(final ByteArray byteArray)
    {
       byteArray.writeInteger(this.width);
@@ -574,6 +804,18 @@ public class Matrix
       byteArray.writeDouble(this.determinant);
    }
 
+   /**
+    * Change a cell value
+    * 
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    * @param value
+    *           new value
+    * @throws IllegalArgumentException
+    *            If coordinate outside the matrix
+    */
    public void set(final int x, final int y, final double value)
    {
       this.check(x, y);
@@ -581,6 +823,14 @@ public class Matrix
       this.determinantKnown = false;
    }
 
+   /**
+    * Push list of values inside the matrix, from up left, left to right, then up to down.<br>
+    * If not enough value are given, the rest of the matrix is fill by 0.<br>
+    * If to much value is given, the matrix is fill and other values are ignored
+    * 
+    * @param values
+    *           Values for fill the matrix
+    */
    public void setValues(final double... values)
    {
       final int nb = Math.min(this.size, values.length);
@@ -594,6 +844,14 @@ public class Matrix
       this.determinantKnown = false;
    }
 
+   /**
+    * Subtract a matrix to current one
+    * 
+    * @param matrix
+    *           Matrix to subtract
+    * @throws IllegalArgumentException
+    *            If given matrix haven't this matrix size
+    */
    public void subtraction(final Matrix matrix)
    {
       if((this.width != matrix.width) || (this.height != matrix.height))
@@ -609,6 +867,9 @@ public class Matrix
       this.determinantKnown = false;
    }
 
+   /**
+    * Transform to matrix to identity one
+    */
    public void toIdentity()
    {
       this.toZero();
@@ -624,6 +885,15 @@ public class Matrix
       this.determinant = 1;
    }
 
+   /**
+    * String representation <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return String representation
+    * @see java.lang.Object#toString()
+    */
    @Override
    public String toString()
    {
@@ -674,6 +944,9 @@ public class Matrix
       return stringBuilder.toString();
    }
 
+   /**
+    * Transform this matrix to zero matrix (Matrix fill of zero)
+    */
    public void toZero()
    {
       for(int i = 0; i < this.size; i++)
@@ -685,6 +958,11 @@ public class Matrix
       this.determinant = 0;
    }
 
+   /**
+    * Compute transpose matrix
+    * 
+    * @return Transpose matrix
+    */
    public Matrix transpose()
    {
       final Matrix transpose = new Matrix(this.height, this.width);

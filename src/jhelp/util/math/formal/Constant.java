@@ -1,6 +1,7 @@
 package jhelp.util.math.formal;
 
 import jhelp.util.math.UtilMath;
+import jhelp.util.text.UtilText;
 
 /**
  * Represents a constant <br>
@@ -14,34 +15,36 @@ public class Constant
    /**
     * e
     */
-   public static final Constant E         = new Constant(2.7182818284590451D);
+   public static final Constant E              = new Constant(2.7182818284590451D);
    /** 100 */
-   public static final Constant HUNDRED   = new Constant(100.0D);
-
+   public static final Constant HUNDRED        = new Constant(100.0D);
    /**
     * -1
     */
-   public static final Constant MINUS_ONE = new Constant(-1D);
+   public static final Constant MINUS_ONE      = new Constant(-1D);
+
    /**
     * 1
     */
-   public static final Constant ONE       = new Constant(1.0D);
+   public static final Constant ONE            = new Constant(1.0D);
    /**
     * &pi;
     */
-   public static final Constant PI        = new Constant(3.1415926535897931D);
+   public static final Constant PI             = new Constant(3.1415926535897931D);
    /**
     * 2
     */
-   public static final Constant TWO       = new Constant(2.0D);
+   public static final Constant TWO            = new Constant(2.0D);
    /**
     * The constant is undefined due illegal operation like division by zero, take the logarithm of negative value, ...
     */
-   public static final Constant UNDEFINED = new Constant((0.0D / 0.0D));
+   public static final Constant UNDEFINED      = new Constant((0.0D / 0.0D));
+   /** Text used for undefined constants {@link #UNDEFINED} */
+   public static final String   UNDEFINED_TEXT = "UNDEFINED";
    /**
     * 0
     */
-   public static final Constant ZERO      = new Constant(0.0D);
+   public static final Constant ZERO           = new Constant(0.0D);
 
    /**
     * Give the -1<sup>n</sup> constant
@@ -352,7 +355,39 @@ public class Constant
    @Override
    public String toString()
    {
-      return String.valueOf(this.real);
+      // Case of undefined value
+      if(this.isUndefined() == true)
+      {
+         return Constant.UNDEFINED_TEXT;
+      }
+
+      // Keep the sign
+      final int sign = UtilMath.sign(this.real);
+      final double real = sign * this.real;
+      // Extract integer and decimal part
+      final long integer = (long) real;
+      final double rest = real - integer;
+      // Round the decimal part
+      long partRest = Math.round(rest * 1000000000L);
+      // Create the zeros between the dot and the first non zero number in decimal part
+      final String zeros = UtilText.repeat('0', 8 - (int) Math.log10(partRest));
+
+      // Remove the trailings zeros
+      while((partRest > 0) && ((partRest % 10l) == 0))
+      {
+         partRest /= 10l;
+      }
+
+      // If decimal part is only zeros, just print as integer
+      if(partRest == 0)
+      {
+         return String.valueOf(sign * integer);
+      }
+
+      // Print as real number
+      return UtilText.concatenate(sign < 0
+            ? "-"
+            : "", integer, '.', zeros, partRest);
    }
 
    /**

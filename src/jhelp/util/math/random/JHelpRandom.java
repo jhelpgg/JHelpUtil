@@ -100,6 +100,45 @@ public final class JHelpRandom<CHOICE>
    }
 
    /**
+    * Take randomly a element of the array.<br>
+    * The array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final boolean random(final boolean[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
+   }
+
+   /**
+    * Take randomly a element of the array.<br>
+    * The array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final byte random(final byte[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
+   }
+
+   /**
+    * Take randomly a element of the array.<br>
+    * The array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final char random(final char[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
+   }
+
+   /**
     * Choose a value of an enum
     * 
     * @param <E>
@@ -128,6 +167,32 @@ public final class JHelpRandom<CHOICE>
       }
 
       return JHelpRandom.random(array);
+   }
+
+   /**
+    * Take randomly a element of the array.<br>
+    * The array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final double random(final double[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
+   }
+
+   /**
+    * Take randomly a element of the array.<br>
+    * The array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final float random(final float[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
    }
 
    /**
@@ -165,6 +230,19 @@ public final class JHelpRandom<CHOICE>
    }
 
    /**
+    * Take randomly a element of the array.<br>
+    * Thea array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final int random(final int[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
+   }
+
+   /**
     * Return an element of a list.<br>
     * {@code null} is return is the list is {@code null} or empty
     * 
@@ -182,6 +260,32 @@ public final class JHelpRandom<CHOICE>
       }
 
       return list.get(JHelpRandom.random(list.size()));
+   }
+
+   /**
+    * Take randomly a element of the array.<br>
+    * The array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final long random(final long[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
+   }
+
+   /**
+    * Take randomly a element of the array.<br>
+    * The array musn't be {@code null} or empty
+    * 
+    * @param array
+    *           Array to get one element
+    * @return Taken element
+    */
+   public static final short random(final short[] array)
+   {
+      return array[JHelpRandom.random(array.length)];
    }
 
    /**

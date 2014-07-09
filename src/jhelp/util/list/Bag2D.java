@@ -12,7 +12,7 @@ import jhelp.util.text.UtilText;
  * A bag in two dimension.<br>
  * The bag is a table with a fixed number of cell in width and in height.<br>
  * It can contains objects that have a size (width and height) that occupied cells of the bag.<br>
- * Two objects can't itersect each other,.<br>
+ * Two objects can't intersect each other,.<br>
  * Each time an object is add, free space are use to put it, if not enough room for put the object, then the bag will be
  * reordered automatically to try to add the new object, if its not possible to add the new object, it is not added
  * 
@@ -177,7 +177,7 @@ public class Bag2D<OBJECT extends SizedObject>
     *           Object width
     * @param h
     *           Object height
-    * @return The bet location or {@code null} if not enough room for put the object (May have to reorder the bag before try
+    * @return The best location or {@code null} if not enough room for put the object (May have to reorder the bag before try
     *         again)
     */
    private Point searchBestFreeSpace(final int w, final int h)

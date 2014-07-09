@@ -469,6 +469,11 @@ public class ByteArray
       return len;
    }
 
+   /**
+    * Read a big decimal from the array
+    * 
+    * @return Read big decimal
+    */
    public BigDecimal readBigDecimal()
    {
       final String value = this.readString();
@@ -481,6 +486,11 @@ public class ByteArray
       return new BigDecimal(value);
    }
 
+   /**
+    * Read an array of big decimal
+    * 
+    * @return Array read
+    */
    public BigDecimal[] readBigDecimalArray()
    {
       final int length = this.readInteger();
@@ -1057,6 +1067,12 @@ public class ByteArray
       this.size++;
    }
 
+   /**
+    * Write a big decimal in the array
+    * 
+    * @param bigDecimal
+    *           Big decimal to write
+    */
    public void writeBigDecimal(final BigDecimal bigDecimal)
    {
       if(bigDecimal == null)
@@ -1068,6 +1084,12 @@ public class ByteArray
       this.writeString(bigDecimal.toString());
    }
 
+   /**
+    * Write array of big decimal
+    * 
+    * @param array
+    *           Array to write
+    */
    public void writeBigDecimalArray(final BigDecimal[] array)
    {
       if(array == null)

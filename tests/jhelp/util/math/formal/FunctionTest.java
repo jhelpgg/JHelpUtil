@@ -172,6 +172,13 @@ public class FunctionTest
       Assert.assertEquals(new Constant(0.5), Function.parse("10%/20%").simplifyMaximum(System.out));
    }
 
+   @Test
+   public void testRoundString()
+   {
+      final Function function = Function.parse("0.2-0.6");
+      Assert.assertEquals("-0.4", function.simplifyMaximum().toString());
+   }
+
    /**
     * Simplification test
     */

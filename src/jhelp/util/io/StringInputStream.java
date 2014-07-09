@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import jhelp.util.text.UtilText;
+
 /**
  * Stream for read a {@link String}
  * 
@@ -23,15 +25,7 @@ public class StringInputStream
     */
    public StringInputStream(final String string)
    {
-      final int length = string.length();
-      final char[] characters = string.toCharArray();
-      final byte[] array = new byte[length];
-
-      for(int i = 0; i < length; i++)
-      {
-         array[i] = (byte) (characters[i] & 0xFF);
-      }
-
+      final byte[] array = UtilText.toUTF8(string);
       this.byteArrayInputStream = new ByteArrayInputStream(array);
    }
 

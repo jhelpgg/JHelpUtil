@@ -80,7 +80,7 @@ public class ForEach<ELEMENT>
    }
 
    /**
-    * Task for do assynchronously the for each
+    * Task for do asynchronously the for each
     * 
     * @author JHelp
     * @param <ELT>
@@ -119,7 +119,7 @@ public class ForEach<ELEMENT>
       }
 
       /**
-       * Launch the paralell actions <br>
+       * Launch the parallel actions <br>
        * <br>
        * <b>Parent documentation:</b><br>
        * {@inheritDoc}
@@ -136,7 +136,7 @@ public class ForEach<ELEMENT>
 
    /**
     * Launch same action for each element in parallel of the given collection.<br>
-    * The mehod waits that all parallel tasks are done before exit.
+    * The method waits that all parallel tasks are done before exit.
     * 
     * @param <ELEMENT>
     *           Collection element's type
@@ -152,7 +152,7 @@ public class ForEach<ELEMENT>
 
    /**
     * Launch same action for each filtered element in parallel of the given collection.<br>
-    * The mehod waits that all parallel tasks are done before exit.
+    * The method waits that all parallel tasks are done before exit.
     * 
     * @param <ELEMENT>
     *           Collection element's type
@@ -181,7 +181,7 @@ public class ForEach<ELEMENT>
 
    /**
     * Launch same action for each element in parallel of the given list.<br>
-    * The mehod waits that all parallel tasks are done before exit.
+    * The method waits that all parallel tasks are done before exit.
     * 
     * @param <ELEMENT>
     *           List element's type
@@ -197,7 +197,7 @@ public class ForEach<ELEMENT>
 
    /**
     * Launch same action for each filtered element in parallel of the given list.<br>
-    * The mehod waits that all parallel tasks are done before exit.
+    * The method waits that all parallel tasks are done before exit.
     * 
     * @param <ELEMENT>
     *           List element's type
@@ -225,7 +225,7 @@ public class ForEach<ELEMENT>
    }
 
    /**
-    * Launch asyncrhonously the for each. Didn't wait that tasks are all done befor exit, it launch the tasks and return
+    * Launch asynchronously the for each. Didn't wait that tasks are all done before exit, it launch the tasks and return
     * immediately
     * 
     * @param <ELEMENT>
@@ -251,7 +251,7 @@ public class ForEach<ELEMENT>
    }
 
    /**
-    * Launch asyncrhonously the for each. Didn't wait that tasks are all done befor exit, it launch the tasks and return
+    * Launch asynchronously the for each. Didn't wait that tasks are all done before exit, it launch the tasks and return
     * immediately
     * 
     * @param <ELEMENT>
@@ -279,7 +279,7 @@ public class ForEach<ELEMENT>
    }
 
    /**
-    * Launch asyncrhonously the for each. Didn't wait that tasks are all done befor exit, it launch the tasks and return
+    * Launch asynchronously the for each. Didn't wait that tasks are all done before exit, it launch the tasks and return
     * immediately
     * 
     * @param <ELEMENT>
@@ -305,7 +305,7 @@ public class ForEach<ELEMENT>
    }
 
    /**
-    * Launch asyncrhonously the for each. Didn't wait that tasks are all done befor exit, it launch the tasks and return
+    * Launch asynchronously the for each. Didn't wait that tasks are all done before exit, it launch the tasks and return
     * immediately
     * 
     * @param <ELEMENT>
@@ -343,7 +343,7 @@ public class ForEach<ELEMENT>
    }
 
    /**
-    * Launch the action on each elemnt in parallel
+    * Launch the action on each element in parallel
     * 
     * @param collection
     *           Collection to gets element (or {@code null} if elements are from a list)

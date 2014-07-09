@@ -28,7 +28,7 @@ public class Preferences
     *           Preference type
     * @return Parsed value
     */
-   static Object parse(final String serializedValue, final PreferenceType preferenceType)
+   public static Object parse(final String serializedValue, final PreferenceType preferenceType)
    {
       switch(preferenceType)
       {
@@ -70,7 +70,7 @@ public class Preferences
     *           Preference type
     * @return Serialized value
     */
-   static String serialize(final Object value, final PreferenceType preferenceType)
+   public static String serialize(final Object value, final PreferenceType preferenceType)
    {
       switch(preferenceType)
       {

@@ -1,6 +1,7 @@
 package jhelp.util.gui;
 
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -27,6 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.swing.Icon;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.JHelpAnimatedImage.AnimationMode;
@@ -47,7 +49,7 @@ import jhelp.util.math.UtilMath;
  * @author JHelp
  */
 public class JHelpImage
-      implements ConstantsGUI, HeavyObject, SizedObject
+      implements ConstantsGUI, HeavyObject, SizedObject, Icon
 {
    /** Palette to use */
    private static final int[]     PALETTE      =
@@ -418,7 +420,7 @@ public class JHelpImage
 
       final JHelpImage result = new JHelpImage(width, height);
       result.startDrawMode();
-      result.fillRectangleScaleBetter(0, 0, width, height, result, false);
+      result.fillRectangleScaleBetter(0, 0, width, height, image, false);
       result.endDrawMode();
 
       return result;
@@ -944,6 +946,43 @@ public class JHelpImage
       bufferedImage.flush();
 
       bufferedImage = null;
+   }
+
+   /**
+    * Convert an {@link Icon} to a {@link JHelpImage}.<br>
+    * If the {@link Icon} is already a {@link JHelpImage}, it is returned good casted, else a new {@link JHelpImage} is created
+    * and the {@link Icon} is draw on it
+    * 
+    * @param icon
+    *           Icon to convert
+    * @return Converted image
+    */
+   public static JHelpImage toJHelpImage(final Icon icon)
+   {
+      if(icon == null)
+      {
+         return null;
+      }
+
+      if(icon instanceof JHelpImage)
+      {
+         return (JHelpImage) icon;
+      }
+
+      final int width = icon.getIconWidth();
+      final int height = icon.getIconHeight();
+
+      if((width <= 0) || (height <= 0))
+      {
+         return JHelpImage.DUMMY;
+      }
+
+      final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+      final Graphics2D graphics2d = bufferedImage.createGraphics();
+      icon.paintIcon(null, graphics2d, 0, 0);
+      bufferedImage.flush();
+      graphics2d.dispose();
+      return JHelpImage.createImage(bufferedImage);
    }
 
    /** Actual clip to apply */
@@ -3435,7 +3474,7 @@ public class JHelpImage
 
       if((width < 1) || (height < 1))
       {
-         return new JHelpImage(1, 1);
+         return JHelpImage.DUMMY;
       }
 
       final JHelpImage part = new JHelpImage(width, height);
@@ -4242,7 +4281,8 @@ public class JHelpImage
       int line = startX + (startY * this.width);
       int pix, color;
 
-      int yTexture = 0;
+      final int startXTexture = (startX - x1) % texture.width;
+      int yTexture = (startY - y1) % texture.height;
       int pixTexture, colorTexture;
 
       int alpha, ahpla;
@@ -4252,7 +4292,7 @@ public class JHelpImage
          pixTexture = yTexture * texture.width;
          pix = line;
 
-         for(int xx = startX, xTexture = 0; xx < endX; xx++, xTexture = (xTexture + 1) % texture.width)
+         for(int xx = startX, xTexture = startXTexture; xx < endX; xx++, xTexture = (xTexture + 1) % texture.width)
          {
             colorTexture = texture.pixels[pixTexture + xTexture];
 
@@ -4345,14 +4385,13 @@ public class JHelpImage
          return;
       }
 
-      final int w = (endX - startX) + 1;
-      final int h = (endY - startY) + 1;
-      paint.initializePaint(w, h);
+      paint.initializePaint(width, height);
 
       int line = startX + (startY * this.width);
       int pix, color;
 
-      int yPaint = 0;
+      final int startXPaint = startX - x1;
+      int yPaint = startY - y1;
       int colorPaint;
 
       int alpha, ahpla;
@@ -4361,7 +4400,7 @@ public class JHelpImage
       {
          pix = line;
 
-         for(int xx = startX, xPaint = 0; xx <= endX; xx++, xPaint++)
+         for(int xx = startX, xPaint = startXPaint; xx <= endX; xx++, xPaint++)
          {
             colorPaint = paint.obtainColor(xPaint, yPaint);
 
@@ -4415,7 +4454,7 @@ public class JHelpImage
    /**
     * Fill a rectangle with an image.<br>
     * The image is scaled to fit rectangle size<br>
-    * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
     * MUST be in draw mode
     * 
     * @param x
@@ -4461,20 +4500,19 @@ public class JHelpImage
       int line = startX + (startY * this.width);
       int pix, color;
 
-      int yTexture = 0;
+      final int startXT = startX - x1;
+      int yt = startY - y1;
+      int yTexture = (yt * texture.height) / height;
       int pixTexture, colorTexture;
 
       int alpha, ahpla;
 
-      final int w = (endX - startX) + 1;
-      final int h = (endY - startY) + 1;
-
-      for(int yy = startY, yt = 0; yy <= endY; yy++, yt++, yTexture = (yt * texture.height) / h)
+      for(int yy = startY; yy <= endY; yy++, yt++, yTexture = (yt * texture.height) / height)
       {
          pixTexture = yTexture * texture.width;
          pix = line;
 
-         for(int xx = startX, xt = 0, xTexture = 0; xx < endX; xx++, xt++, xTexture = (xt * texture.width) / w)
+         for(int xx = startX, xt = startXT, xTexture = 0; xx < endX; xx++, xt++, xTexture = (xt * texture.width) / width)
          {
             colorTexture = texture.pixels[pixTexture + xTexture];
 
@@ -4932,7 +4970,8 @@ public class JHelpImage
       int line = startX + (startY * this.width);
       int pix, color;
 
-      int yTexture = 0;
+      final int startTextureX = (startX - x1) % texture.width;
+      int yTexture = (startY - y1) % texture.height;
       int pixTexture, colorTexture;
 
       int alpha, ahpla;
@@ -4942,7 +4981,7 @@ public class JHelpImage
          pixTexture = yTexture * texture.width;
          pix = line;
 
-         for(int xx = startX, xTexture = 0; xx <= endX; xx++, xTexture = (xTexture + 1) % texture.width)
+         for(int xx = startX, xTexture = startTextureX; xx <= endX; xx++, xTexture = (xTexture + 1) % texture.width)
          {
             if(shape.contains(xx, yy) == true)
             {
@@ -5033,14 +5072,13 @@ public class JHelpImage
          return;
       }
 
-      final int w = (endX - startX) + 1;
-      final int h = (endY - startY) + 1;
-      paint.initializePaint(w, h);
+      paint.initializePaint(width, height);
 
       int line = startX + (startY * this.width);
       int pix, color;
 
-      int yPaint = 0;
+      final int startXPaint = startX - x1;
+      int yPaint = startY - y1;
       int colorPaint;
 
       int alpha, ahpla;
@@ -5049,7 +5087,7 @@ public class JHelpImage
       {
          pix = line;
 
-         for(int xx = startX, xPaint = 0; xx <= endX; xx++, xPaint++)
+         for(int xx = startX, xPaint = startXPaint; xx <= endX; xx++, xPaint++)
          {
             if(shape.contains(xx, yy) == true)
             {
@@ -5585,6 +5623,36 @@ public class JHelpImage
    }
 
    /**
+    * Image height <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return Image height
+    * @see javax.swing.Icon#getIconHeight()
+    */
+   @Override
+   public int getIconHeight()
+   {
+      return this.height;
+   }
+
+   /**
+    * Image width <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return Image width
+    * @see javax.swing.Icon#getIconWidth()
+    */
+   @Override
+   public int getIconWidth()
+   {
+      return this.width;
+   }
+
+   /**
     * Image for draw in graphics environment
     * 
     * @return Image for draw in graphics environment
@@ -5968,6 +6036,29 @@ public class JHelpImage
                (((((colorThis >> 8) & 0xFF) * ((colorImage >> 8) & 0xFF)) / 255) << 8) | //
                (((colorThis & 0xFF) * (colorImage & 0xFF)) / 255);
       }
+   }
+
+   /**
+    * Draw the image like an {@link Icon} <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @param component
+    *           Reference component
+    * @param graphics
+    *           Graphics where paint
+    * @param x
+    *           X position
+    * @param y
+    *           Y position
+    * @see javax.swing.Icon#paintIcon(java.awt.Component, java.awt.Graphics, int, int)
+    */
+   @Override
+   public void paintIcon(final Component component, final Graphics graphics, final int x, final int y)
+   {
+      this.update();
+      graphics.drawImage(this.image, x, y, component);
    }
 
    /**
@@ -6977,7 +7068,7 @@ public class JHelpImage
     */
    public void pushClip(final int x, final int y, final int width, final int height)
    {
-      this.pushClip(new Clip(x, (x + width) - 1, y, (y + height) - 1));
+      this.pushClip(new Clip(Math.max(x, 0), Math.min((x + width) - 1, this.width - 1), Math.max(y, 0), Math.min((y + height) - 1, this.height - 1)));
    }
 
    /**
