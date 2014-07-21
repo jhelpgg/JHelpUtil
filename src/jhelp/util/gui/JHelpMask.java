@@ -21,6 +21,55 @@ import jhelp.util.io.UtilIO;
  */
 public class JHelpMask
 {
+   /** Dummy 1x1 mask */
+   public static final JHelpMask DUMMY = new JHelpMask(1, 1);
+
+   /**
+    * Create mask with thick line
+    * 
+    * @param x1
+    *           First point x
+    * @param y1
+    *           First point y
+    * @param x2
+    *           Second point x
+    * @param y2
+    *           Second point y
+    * @param thickness
+    *           Line thickness
+    * @return Created mask
+    */
+   public static JHelpMask createThickLineMask(final int x1, final int y1, final int x2, final int y2, final int thickness)
+   {
+      if(thickness < 1)
+      {
+         return JHelpMask.DUMMY;
+      }
+
+      final int width = Math.abs(x1 - x2) + (thickness << 1);
+      final int height = Math.abs(y1 - y2) + (thickness << 1);
+
+      if((width < 1) || (height < 1))
+      {
+         return JHelpMask.DUMMY;
+      }
+
+      final int xMin = Math.min(x1, x2);
+      final int yMin = Math.min(y1, y2);
+
+      final JHelpImage model = new JHelpImage(thickness, thickness);
+      model.startDrawMode();
+      model.fillEllipse(0, 0, thickness, thickness, 0xFFFFFFFF);
+      model.endDrawMode();
+
+      final JHelpImage image = new JHelpImage(width, height);
+      image.startDrawMode();
+      image.repeatOnLine((x1 - xMin) + thickness, (y1 - yMin) + thickness, (x2 - xMin) + thickness, (y2 - yMin) + thickness, model);
+      image.endDrawMode();
+
+      return image.createMask(0xFFFFFFFF, 1);
+   }
+
    /**
     * Load the mask from a stream
     * 

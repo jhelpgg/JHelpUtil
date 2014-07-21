@@ -2277,6 +2277,48 @@ public class JHelpImage
    }
 
    /**
+    * Create a mask from the image
+    * 
+    * @param positiveColor
+    *           Color that consider as light on (other colors are consider as light off)
+    * @param precision
+    *           Precision or distance minimum for consider colors equals
+    * @return Created mask
+    */
+   public JHelpMask createMask(final int positiveColor, int precision)
+   {
+      precision = Math.max(0, precision);
+      final JHelpMask mask = new JHelpMask(this.width, this.height);
+      final int alpha = (positiveColor >> 24) & 0xFF;
+      final int red = (positiveColor >> 16) & 0xFF;
+      final int green = (positiveColor >> 8) & 0xFF;
+      final int blue = positiveColor & 0xFF;
+      int pix = 0;
+      int color, a, r, g, b;
+
+      for(int y = 0; y < this.height; y++)
+      {
+         for(int x = 0; x < this.width; x++)
+         {
+            color = this.pixels[pix];
+            a = (color >> 24) & 0xFF;
+            r = (color >> 16) & 0xFF;
+            g = (color >> 8) & 0xFF;
+            b = color & 0xFF;
+
+            if((Math.abs(alpha - a) <= precision) && (Math.abs(red - r) <= precision) && (Math.abs(green - g) <= precision) && (Math.abs(blue - b) <= precision))
+            {
+               mask.setValue(x, y, true);
+            }
+
+            pix++;
+         }
+      }
+
+      return mask;
+   }
+
+   /**
     * Create a sprite<br>
     * MUSN'T be in draw mode
     * 
@@ -2488,13 +2530,16 @@ public class JHelpImage
          return;
       }
 
-      int start = Math.max(this.clip.xMin, Math.min(x1, x2));
-      int end = Math.min(this.clip.xMax, Math.max(x1, x2));
+      final int xMin = Math.max(this.clip.xMin, Math.min(x1, x2));
+      final int xMax = Math.min(this.clip.xMax, Math.max(x1, x2));
 
-      if(start > end)
+      if((xMin > xMax) || (xMin > this.clip.xMax) || (xMax < this.clip.xMin))
       {
          return;
       }
+
+      int start = xMin;
+      int end = xMax;
 
       final int alpha = (color >> 24) & 0xFF;
 
@@ -3325,6 +3370,784 @@ public class JHelpImage
    }
 
    /**
+    * Draw an ellipse with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param thickness
+    *           Thick of the border
+    * @param color
+    *           Color to use on border
+    */
+   public void drawThickEllipse(final int x, final int y, final int width, final int height, final int thickness, final int color)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickShape(new Ellipse2D.Double(x, y, width, height), thickness, color);
+   }
+
+   /**
+    * Draw an ellipse with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param thickness
+    *           Thick of the border
+    * @param texture
+    *           Texture to use on border
+    */
+   public void drawThickEllipse(final int x, final int y, final int width, final int height, final int thickness, final JHelpImage texture)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickShape(new Ellipse2D.Double(x, y, width, height), thickness, texture);
+   }
+
+   /**
+    * Draw an ellipse with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param thickness
+    *           Thick of the border
+    * @param paint
+    *           Paint to use on border
+    */
+   public void drawThickEllipse(final int x, final int y, final int width, final int height, final int thickness, final JHelpPaint paint)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickShape(new Ellipse2D.Double(x, y, width, height), thickness, paint);
+   }
+
+   /**
+    * Draw a thick line
+    * 
+    * @param x1
+    *           First point X
+    * @param y1
+    *           First point Y
+    * @param x2
+    *           Second point X
+    * @param y2
+    *           Second point Y
+    * @param thickness
+    *           Thick of the line
+    * @param color
+    *           Color to use on line
+    */
+   public void drawThickLine(final int x1, final int y1, final int x2, final int y2, final int thickness, final int color)
+   {
+      final JHelpMask mask = JHelpMask.createThickLineMask(x1, y1, x2, y2, thickness);
+      this.paintMask(Math.min(x1, x2) - thickness, Math.min(y1, y2) - thickness, mask, color, 0, true);
+   }
+
+   /**
+    * Draw a thick line
+    * 
+    * @param x1
+    *           First point X
+    * @param y1
+    *           First point Y
+    * @param x2
+    *           Second point X
+    * @param y2
+    *           Second point Y
+    * @param thickness
+    *           Thick of the line
+    * @param texture
+    *           Texture to use on line
+    */
+   public void drawThickLine(final int x1, final int y1, final int x2, final int y2, final int thickness, final JHelpImage texture)
+   {
+      final JHelpMask mask = JHelpMask.createThickLineMask(x1, y1, x2, y2, thickness);
+      this.paintMask(Math.min(x1, x2) - thickness, Math.min(y1, y2) - thickness, mask, texture, 0, 0, 0, true);
+   }
+
+   /**
+    * Draw a thick line
+    * 
+    * @param x1
+    *           First point X
+    * @param y1
+    *           First point Y
+    * @param x2
+    *           Second point X
+    * @param y2
+    *           Second point Y
+    * @param thickness
+    *           Thick of the line
+    * @param paint
+    *           Paint to use on line
+    */
+   public void drawThickLine(final int x1, final int y1, final int x2, final int y2, final int thickness, final JHelpPaint paint)
+   {
+      final JHelpMask mask = JHelpMask.createThickLineMask(x1, y1, x2, y2, thickness);
+      this.paintMask(Math.min(x1, x2) - thickness, Math.min(y1, y2) - thickness, mask, paint, 0, true);
+   }
+
+   /**
+    * Draw a thick polygon<br>
+    * MUST be in draw mode
+    * 
+    * @param xs
+    *           Polygon X list
+    * @param offsetX
+    *           Where start read the X list
+    * @param ys
+    *           Polygon Y list
+    * @param offsetY
+    *           Where start read the Y list
+    * @param length
+    *           Number of point
+    * @param thickness
+    *           Thickness
+    * @param color
+    *           Color to use
+    */
+   public void drawThickPolygon(final int[] xs, int offsetX, final int[] ys, int offsetY, int length, final int thickness, final int color)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(offsetX < 0)
+      {
+         length += offsetX;
+
+         offsetX = 0;
+      }
+
+      if(offsetY < 0)
+      {
+         length += offsetY;
+
+         offsetY = 0;
+      }
+
+      length = UtilMath.minIntegers(length, xs.length - offsetX, ys.length - offsetY);
+
+      if((length < 3) || (thickness < 1))
+      {
+         return;
+      }
+
+      int x = xs[offsetX];
+      final int xStart = x;
+      int y = ys[offsetY];
+      final int yStart = y;
+      int xx, yy;
+
+      for(int i = 1; i < length; i++)
+      {
+         offsetX++;
+         offsetY++;
+
+         xx = xs[offsetX];
+         yy = ys[offsetY];
+
+         this.drawThickLine(x, y, xx, yy, thickness, color);
+
+         x = xx;
+         y = yy;
+      }
+
+      this.drawThickLine(x, y, xStart, yStart, thickness, color);
+   }
+
+   /**
+    * Draw a polygon with thick border
+    * 
+    * @param xs
+    *           Xs of polygon points
+    * @param offsetX
+    *           Offset where start read the Xs
+    * @param ys
+    *           Ys of polygon points
+    * @param offsetY
+    *           Offset where start read Ys
+    * @param length
+    *           Number of polygon point
+    * @param thickness
+    *           Polygon border thick
+    * @param texture
+    *           Texture to use on polygon
+    */
+   public void drawThickPolygon(final int[] xs, int offsetX, final int[] ys, int offsetY, int length, final int thickness, final JHelpImage texture)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(offsetX < 0)
+      {
+         length += offsetX;
+
+         offsetX = 0;
+      }
+
+      if(offsetY < 0)
+      {
+         length += offsetY;
+
+         offsetY = 0;
+      }
+
+      length = UtilMath.minIntegers(length, xs.length - offsetX, ys.length - offsetY);
+
+      if((length < 3) || (thickness < 1))
+      {
+         return;
+      }
+
+      int x = xs[offsetX];
+      final int xStart = x;
+      int y = ys[offsetY];
+      final int yStart = y;
+      int xx, yy;
+
+      for(int i = 1; i < length; i++)
+      {
+         offsetX++;
+         offsetY++;
+
+         xx = xs[offsetX];
+         yy = ys[offsetY];
+
+         this.drawThickLine(x, y, xx, yy, thickness, texture);
+
+         x = xx;
+         y = yy;
+      }
+
+      this.drawThickLine(x, y, xStart, yStart, thickness, texture);
+   }
+
+   /**
+    * Draw a polygon with thick border
+    * 
+    * @param xs
+    *           Xs of polygon points
+    * @param offsetX
+    *           Offset where start read the Xs
+    * @param ys
+    *           Ys of polygon points
+    * @param offsetY
+    *           Offset where start read Ys
+    * @param length
+    *           Number of polygon point
+    * @param thickness
+    *           Polygon border thick
+    * @param paint
+    *           Paint to use on polygon
+    */
+   public void drawThickPolygon(final int[] xs, int offsetX, final int[] ys, int offsetY, int length, final int thickness, final JHelpPaint paint)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(offsetX < 0)
+      {
+         length += offsetX;
+
+         offsetX = 0;
+      }
+
+      if(offsetY < 0)
+      {
+         length += offsetY;
+
+         offsetY = 0;
+      }
+
+      length = UtilMath.minIntegers(length, xs.length - offsetX, ys.length - offsetY);
+
+      if((length < 3) || (thickness < 1))
+      {
+         return;
+      }
+
+      int x = xs[offsetX];
+      final int xStart = x;
+      int y = ys[offsetY];
+      final int yStart = y;
+      int xx, yy;
+
+      for(int i = 1; i < length; i++)
+      {
+         offsetX++;
+         offsetY++;
+
+         xx = xs[offsetX];
+         yy = ys[offsetY];
+
+         this.drawThickLine(x, y, xx, yy, thickness, paint);
+
+         x = xx;
+         y = yy;
+      }
+
+      this.drawThickLine(x, y, xStart, yStart, thickness, paint);
+   }
+
+   /**
+    * Draw a polygon<br>
+    * MUST be in draw mode
+    * 
+    * @param xs
+    *           X list
+    * @param ys
+    *           Y list
+    * @param thickness
+    *           Thickness
+    * @param color
+    *           Color to use
+    */
+   public void drawThickPolygon(final int[] xs, final int[] ys, final int thickness, final int color)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickPolygon(xs, 0, ys, 0, Math.min(xs.length, ys.length), thickness, color);
+   }
+
+   /**
+    * Draw a polygon with thick border<br>
+    * MUST be in draw mode
+    * 
+    * @param xs
+    *           X list
+    * @param ys
+    *           Y list
+    * @param thickness
+    *           Thickness
+    * @param texture
+    *           Texture to use
+    */
+   public void drawThickPolygon(final int[] xs, final int[] ys, final int thickness, final JHelpImage texture)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickPolygon(xs, 0, ys, 0, Math.min(xs.length, ys.length), thickness, texture);
+   }
+
+   /**
+    * Draw a polygon with thick border<br>
+    * MUST be in draw mode
+    * 
+    * @param xs
+    *           X list
+    * @param ys
+    *           Y list
+    * @param thickness
+    *           Thickness
+    * @param paint
+    *           Paint to use
+    */
+   public void drawThickPolygon(final int[] xs, final int[] ys, final int thickness, final JHelpPaint paint)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickPolygon(xs, 0, ys, 0, Math.min(xs.length, ys.length), thickness, paint);
+   }
+
+   /**
+    * Draw rectangle with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param thickness
+    *           Border thick
+    * @param color
+    *           Color to use on border
+    */
+   public void drawThickRectangle(final int x, final int y, final int width, final int height, final int thickness, final int color)
+   {
+      final int x2 = x + width;
+      final int y2 = y + height;
+      this.drawThickLine(x, y, x2, y, thickness, color);
+      this.drawThickLine(x2, y, x2, y2, thickness, color);
+      this.drawThickLine(x2, y2, x, y2, thickness, color);
+      this.drawThickLine(x, y2, x, y, thickness, color);
+   }
+
+   /**
+    * Draw rectangle with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param thickness
+    *           Border thick
+    * @param texture
+    *           texture to use on border
+    */
+   public void drawThickRectangle(final int x, final int y, final int width, final int height, final int thickness, final JHelpImage texture)
+   {
+      final int x2 = x + width;
+      final int y2 = y + height;
+      this.drawThickLine(x, y, x2, y, thickness, texture);
+      this.drawThickLine(x2, y, x2, y2, thickness, texture);
+      this.drawThickLine(x2, y2, x, y2, thickness, texture);
+      this.drawThickLine(x, y2, x, y, thickness, texture);
+   }
+
+   /**
+    * Draw rectangle with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param thickness
+    *           Border thick
+    * @param paint
+    *           texture to use on border
+    */
+   public void drawThickRectangle(final int x, final int y, final int width, final int height, final int thickness, final JHelpPaint paint)
+   {
+      final int x2 = x + width;
+      final int y2 = y + height;
+      this.drawThickLine(x, y, x2, y, thickness, paint);
+      this.drawThickLine(x2, y, x2, y2, thickness, paint);
+      this.drawThickLine(x2, y2, x, y2, thickness, paint);
+      this.drawThickLine(x, y2, x, y, thickness, paint);
+   }
+
+   /**
+    * Draw round rectangle rectangle with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param arcWidth
+    *           Arc width
+    * @param arcHeight
+    *           Arc height
+    * @param thickness
+    *           Border thick
+    * @param color
+    *           Color to use on border
+    */
+   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int thickness, final int color)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickShape(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight), thickness, color);
+   }
+
+   /**
+    * Draw round rectangle rectangle with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param arcWidth
+    *           Arc width
+    * @param arcHeight
+    *           Arc height
+    * @param thickness
+    *           Border thick
+    * @param texture
+    *           Texture to use on border
+    */
+   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int thickness, final JHelpImage texture)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickShape(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight), thickness, texture);
+   }
+
+   /**
+    * Draw round rectangle rectangle with thick border
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @param arcWidth
+    *           Arc width
+    * @param arcHeight
+    *           Arc height
+    * @param thickness
+    *           Border thick
+    * @param paint
+    *           Paint to use on border
+    */
+   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int thickness, final JHelpPaint paint)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawThickShape(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight), thickness, paint);
+   }
+
+   /**
+    * Draw shape with thick border
+    * 
+    * @param shape
+    *           Shape to draw
+    * @param thickness
+    *           Border thick
+    * @param color
+    *           Color to use on border
+    */
+   public void drawThickShape(final Shape shape, final int thickness, final int color)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(thickness < 1)
+      {
+         return;
+      }
+
+      final PathIterator pathIterator = shape.getPathIterator(ConstantsGUI.AFFINE_TRANSFORM, ConstantsGUI.FLATNESS);
+
+      final double[] info = new double[6];
+      int x = 0;
+      int y = 0;
+      int xStart = 0;
+      int yStart = 0;
+      int xx, yy;
+
+      while(pathIterator.isDone() == false)
+      {
+         switch(pathIterator.currentSegment(info))
+         {
+            case PathIterator.SEG_MOVETO:
+               xStart = x = (int) Math.round(info[0]);
+               yStart = y = (int) Math.round(info[1]);
+
+            break;
+            case PathIterator.SEG_LINETO:
+               xx = (int) Math.round(info[0]);
+               yy = (int) Math.round(info[1]);
+
+               this.drawThickLine(x, y, xx, yy, thickness, color);
+
+               x = xx;
+               y = yy;
+
+            break;
+            case PathIterator.SEG_CLOSE:
+               this.drawThickLine(x, y, xStart, yStart, thickness, color);
+
+               x = xStart;
+               y = yStart;
+
+            break;
+         }
+
+         pathIterator.next();
+      }
+   }
+
+   /**
+    * Draw shape with thick border
+    * 
+    * @param shape
+    *           Shape to draw
+    * @param thickness
+    *           Border thick
+    * @param texture
+    *           Texture to use on border
+    */
+   public void drawThickShape(final Shape shape, final int thickness, final JHelpImage texture)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(thickness < 1)
+      {
+         return;
+      }
+
+      final PathIterator pathIterator = shape.getPathIterator(ConstantsGUI.AFFINE_TRANSFORM, ConstantsGUI.FLATNESS);
+
+      final double[] info = new double[6];
+      int x = 0;
+      int y = 0;
+      int xStart = 0;
+      int yStart = 0;
+      int xx, yy;
+
+      while(pathIterator.isDone() == false)
+      {
+         switch(pathIterator.currentSegment(info))
+         {
+            case PathIterator.SEG_MOVETO:
+               xStart = x = (int) Math.round(info[0]);
+               yStart = y = (int) Math.round(info[1]);
+
+            break;
+            case PathIterator.SEG_LINETO:
+               xx = (int) Math.round(info[0]);
+               yy = (int) Math.round(info[1]);
+
+               this.drawThickLine(x, y, xx, yy, thickness, texture);
+
+               x = xx;
+               y = yy;
+
+            break;
+            case PathIterator.SEG_CLOSE:
+               this.drawThickLine(x, y, xStart, yStart, thickness, texture);
+
+               x = xStart;
+               y = yStart;
+
+            break;
+         }
+
+         pathIterator.next();
+      }
+   }
+
+   /**
+    * Draw shape with thick border
+    * 
+    * @param shape
+    *           Shape to draw
+    * @param thickness
+    *           Border thick
+    * @param paint
+    *           Paint to use on border
+    */
+   public void drawThickShape(final Shape shape, final int thickness, final JHelpPaint paint)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(thickness < 1)
+      {
+         return;
+      }
+
+      final PathIterator pathIterator = shape.getPathIterator(ConstantsGUI.AFFINE_TRANSFORM, ConstantsGUI.FLATNESS);
+
+      final double[] info = new double[6];
+      int x = 0;
+      int y = 0;
+      int xStart = 0;
+      int yStart = 0;
+      int xx, yy;
+
+      while(pathIterator.isDone() == false)
+      {
+         switch(pathIterator.currentSegment(info))
+         {
+            case PathIterator.SEG_MOVETO:
+               xStart = x = (int) Math.round(info[0]);
+               yStart = y = (int) Math.round(info[1]);
+
+            break;
+            case PathIterator.SEG_LINETO:
+               xx = (int) Math.round(info[0]);
+               yy = (int) Math.round(info[1]);
+
+               this.drawThickLine(x, y, xx, yy, thickness, paint);
+
+               x = xx;
+               y = yy;
+
+            break;
+            case PathIterator.SEG_CLOSE:
+               this.drawThickLine(x, y, xStart, yStart, thickness, paint);
+
+               x = xStart;
+               y = yStart;
+
+            break;
+         }
+
+         pathIterator.next();
+      }
+   }
+
+   /**
     * Draw a vertical line<br>
     * MUST be in draw mode
     * 
@@ -3369,8 +4192,16 @@ public class JHelpImage
          return;
       }
 
-      final int start = (Math.max(this.clip.yMin, Math.min(y1, y2)) * this.width) + x;
-      final int end = (Math.min(this.clip.yMax, Math.max(y1, y2)) * this.width) + x;
+      final int yMin = Math.max(this.clip.yMin, Math.min(y1, y2));
+      final int yMax = Math.min(this.clip.yMax, Math.max(y1, y2));
+
+      if((yMin > yMax) || (yMin > this.clip.yMax) || (yMax < this.clip.yMin))
+      {
+         return;
+      }
+
+      final int start = (yMin * this.width) + x;
+      final int end = (yMax * this.width) + x;
 
       if(start > end)
       {
@@ -6039,6 +6870,241 @@ public class JHelpImage
    }
 
    /**
+    * Paint the image on using an other as alpha mask<br>
+    * Alpha mask image can be imagine like a paper with holes that we put on the main image, we paint, and remove the image,
+    * only holes are paint on final image.<br>
+    * Holes are here pixxels with alpha more than 0x80
+    * 
+    * @param x
+    *           Where put the left corner X of alpha mask
+    * @param y
+    *           Where put the left corner Y of alpha mask
+    * @param alphaMask
+    *           Alpha mask to use
+    * @param color
+    *           Color to fill holes
+    */
+   public void paintAlphaMask(int x, int y, final JHelpImage alphaMask, final int color)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      int w = this.clip.xMax + 1;
+      int xx = 0;
+      if(x < this.clip.xMin)
+      {
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
+      }
+
+      int h = this.clip.yMax + 1;
+      int yy = 0;
+      if(y < this.clip.yMin)
+      {
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int widthAlpha = alphaMask.getWidth();
+      final int width = UtilMath.minIntegers(w - x, widthAlpha, this.width - x);
+      final int height = UtilMath.minIntegers(h - y, alphaMask.getHeight(), this.height - y);
+
+      if((width < 1) || (height < 1))
+      {
+         return;
+      }
+
+      int line = x + (y * this.width);
+      int lineAlpha = xx + (yy * widthAlpha);
+      int pix, pixAlpha, alphaAlpha;
+
+      for(int yyy = yy; yyy < height; yyy++)
+      {
+         pix = line;
+         pixAlpha = lineAlpha;
+
+         for(int xxx = xx; xxx < width; xxx++)
+         {
+            alphaAlpha = (alphaMask.pixels[pixAlpha] >> 24) & 0xFF;
+
+            if(alphaAlpha > 0x80)
+            {
+               this.pixels[pix] = color;
+            }
+
+            pix++;
+            pixAlpha++;
+         }
+
+         line += this.width;
+         lineAlpha += widthAlpha;
+      }
+   }
+
+   /**
+    * Paint the image on using an other as alpha mask<br>
+    * Alpha mask image can be imagine like a paper with holes that we put on the main image, we paint, and remove the image,
+    * only holes are paint on final image.<br>
+    * Holes are here pixxels with alpha more than 0x80
+    * 
+    * @param x
+    *           Where put the left corner X of alpha mask
+    * @param y
+    *           Where put the left corner Y of alpha mask
+    * @param alphaMask
+    *           Alpha mask to use
+    * @param texture
+    *           Texture to fill holes
+    */
+   public void paintAlphaMask(int x, int y, final JHelpImage alphaMask, final JHelpImage texture)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      int w = this.clip.xMax + 1;
+      int xx = 0;
+      if(x < this.clip.xMin)
+      {
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
+      }
+
+      int h = this.clip.yMax + 1;
+      int yy = 0;
+      if(y < this.clip.yMin)
+      {
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int widthAlpha = alphaMask.getWidth();
+      final int heightAlpha = alphaMask.getHeight();
+      final int width = UtilMath.minIntegers(w - x, widthAlpha, this.width - x);
+      final int height = UtilMath.minIntegers(h - y, heightAlpha, this.height - y);
+
+      if((width < 1) || (height < 1))
+      {
+         return;
+      }
+
+      final int widthTexture = texture.getWidth();
+      final int heightTexture = texture.getHeight();
+      final int xStart = xx % widthTexture;
+      int line = x + (y * this.width);
+      int lineAlpha = xx + (yy * widthAlpha);
+      int pix, pixAlpha, alphaAlpha, lineTexture;
+
+      for(int yyy = yy; yyy < height; yyy++)
+      {
+         lineTexture = xStart + ((yyy % heightTexture) * widthTexture);
+         pix = line;
+         pixAlpha = lineAlpha;
+
+         for(int xxx = xx; xxx < width; xxx++)
+         {
+            alphaAlpha = (alphaMask.pixels[pixAlpha] >> 24) & 0xFF;
+
+            if(alphaAlpha > 0x80)
+            {
+               this.pixels[pix] = texture.pixels[lineTexture + (xxx % widthTexture)];
+            }
+
+            pix++;
+            pixAlpha++;
+         }
+
+         line += this.width;
+         lineAlpha += widthAlpha;
+      }
+   }
+
+   /**
+    * Paint the image on using an other as alpha mask<br>
+    * Alpha mask image can be imagine like a paper with holes that we put on the main image, we paint, and remove the image,
+    * only holes are paint on final image.<br>
+    * Holes are here pixxels with alpha more than 0x80
+    * 
+    * @param x
+    *           Where put the left corner X of alpha mask
+    * @param y
+    *           Where put the left corner Y of alpha mask
+    * @param alphaMask
+    *           Alpha mask to use
+    * @param paint
+    *           Paint to fill holes
+    */
+   public void paintAlphaMask(int x, int y, final JHelpImage alphaMask, final JHelpPaint paint)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      int w = this.clip.xMax + 1;
+      int xx = 0;
+      if(x < this.clip.xMin)
+      {
+         xx = -x + this.clip.xMin;
+         w += x - this.clip.xMin;
+         x = this.clip.xMin;
+      }
+
+      int h = this.clip.yMax + 1;
+      int yy = 0;
+      if(y < this.clip.yMin)
+      {
+         yy = -y + this.clip.yMin;
+         h += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int widthAlpha = alphaMask.getWidth();
+      final int heightAlpha = alphaMask.getHeight();
+      final int width = UtilMath.minIntegers(w - x, widthAlpha, this.width - x);
+      final int height = UtilMath.minIntegers(h - y, heightAlpha, this.height - y);
+
+      if((width < 1) || (height < 1))
+      {
+         return;
+      }
+
+      paint.initializePaint(widthAlpha, heightAlpha);
+      int line = x + (y * this.width);
+      int lineAlpha = xx + (yy * widthAlpha);
+      int pix, pixAlpha, alphaAlpha;
+
+      for(int yyy = yy; yyy < height; yyy++)
+      {
+         pix = line;
+         pixAlpha = lineAlpha;
+
+         for(int xxx = xx; xxx < width; xxx++)
+         {
+            alphaAlpha = (alphaMask.pixels[pixAlpha] >> 24) & 0xFF;
+
+            if(alphaAlpha > 0x80)
+            {
+               this.pixels[pix] = paint.obtainColor(xxx, yyy);
+            }
+
+            pix++;
+            pixAlpha++;
+         }
+
+         line += this.width;
+         lineAlpha += widthAlpha;
+      }
+   }
+
+   /**
     * Draw the image like an {@link Icon} <br>
     * <br>
     * <b>Parent documentation:</b><br>
@@ -6058,7 +7124,7 @@ public class JHelpImage
    public void paintIcon(final Component component, final Graphics graphics, final int x, final int y)
    {
       this.update();
-      graphics.drawImage(this.image, x, y, component);
+      graphics.drawImage(this.image, x, y, null);
    }
 
    /**
@@ -7051,7 +8117,7 @@ public class JHelpImage
       }
 
       this.clips.push(this.clip.copy());
-      this.clip.set(clip);
+      this.clip.set(new Clip(Math.max(clip.xMin, 0), Math.min(clip.xMax, this.width - 1), Math.max(clip.yMin, 0), Math.min(clip.yMax, this.height - 1)));
    }
 
    /**
@@ -7155,6 +8221,220 @@ public class JHelpImage
          }
 
          this.update();
+      }
+   }
+
+   /**
+    * Repeat an image on following a line
+    * 
+    * @param x1
+    *           First point X
+    * @param y1
+    *           First point Y
+    * @param x2
+    *           Second point X
+    * @param y2
+    *           Second point Y
+    * @param image
+    *           Image to repeat
+    */
+   public void repeatOnLine(final int x1, final int y1, final int x2, final int y2, final JHelpImage image)
+   {
+      this.repeatOnLine(x1, y1, x2, y2, image, true);
+   }
+
+   /**
+    * Repeat an image on following a line
+    * 
+    * @param x1
+    *           First point X
+    * @param y1
+    *           First point Y
+    * @param x2
+    *           Second point X
+    * @param y2
+    *           Second point Y
+    * @param image
+    *           Image to repeat
+    * @param doAlphaMix
+    *           Indicates if we want do alpha mixing
+    */
+   public void repeatOnLine(final int x1, final int y1, final int x2, final int y2, final JHelpImage image, final boolean doAlphaMix)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(x1 == x2)
+      {
+         this.repeatOnLineVertical(x1, y1, y2, image, doAlphaMix);
+         return;
+      }
+
+      if(y1 == y2)
+      {
+         this.repeatOnLineHorizontal(x1, x2, y1, image, doAlphaMix);
+         return;
+      }
+
+      int error = 0;
+      final int dx = Math.abs(x2 - x1);
+      final int sx = UtilMath.sign(x2 - x1);
+      final int dy = Math.abs(y2 - y1);
+      final int sy = UtilMath.sign(y2 - y1);
+      int x = x1;
+      int y = y1;
+      final int xx = -(image.getWidth() >> 1);
+      final int yy = -(image.getHeight() >> 1);
+
+      if(dx >= dy)
+      {
+         while(((x < this.clip.xMin) || (x > this.clip.xMax) || (y < this.clip.yMin) || (y > this.clip.yMax)) && ((x != x2) || (y != y2)))
+         {
+            x += sx;
+
+            error += dy;
+            if(error >= dx)
+            {
+               y += sy;
+
+               error -= dx;
+            }
+         }
+
+         while((x >= this.clip.xMin) && (x <= this.clip.xMax) && (x != x2) && (y >= this.clip.yMin) && (y <= this.clip.yMax) && (y != y2))
+         {
+            this.drawImage(xx + x, yy + y, image, doAlphaMix);
+
+            x += sx;
+
+            error += dy;
+            if(error >= dx)
+            {
+               y += sy;
+
+               error -= dx;
+            }
+         }
+      }
+      else
+      {
+         while(((x < this.clip.xMin) || (x > this.clip.xMax) || (y < this.clip.yMin) || (y > this.clip.yMax)) && ((x != x2) || (y != y2)))
+         {
+            y += sy;
+
+            error += dx;
+            if(error >= dy)
+            {
+               x += sx;
+
+               error -= dy;
+            }
+         }
+
+         while((x >= this.clip.xMin) && (x <= this.clip.xMax) && (x != x2) && (y >= this.clip.yMin) && (y <= this.clip.yMax) && (y != y2))
+         {
+            this.drawImage(xx + x, yy + y, image, doAlphaMix);
+
+            y += sy;
+
+            error += dx;
+            if(error >= dy)
+            {
+               x += sx;
+
+               error -= dy;
+            }
+         }
+      }
+   }
+
+   /**
+    * Repeat an image on following a horizontal line
+    * 
+    * @param x1
+    *           First point X
+    * @param x2
+    *           Second point X
+    * @param y
+    *           of line
+    * @param image
+    *           Image to repeat
+    */
+   public void repeatOnLineHorizontal(final int x1, final int x2, final int y, final JHelpImage image)
+   {
+      this.repeatOnLineHorizontal(x1, x2, y, image, true);
+   }
+
+   /**
+    * Repeat an image on following a horizontal line
+    * 
+    * @param x1
+    *           First point X
+    * @param x2
+    *           Second point X
+    * @param y
+    *           of line
+    * @param image
+    *           Image to repeat
+    * @param doAlphaMix
+    *           Indicates if we do alpha mixing
+    */
+   public void repeatOnLineHorizontal(final int x1, final int x2, final int y, final JHelpImage image, final boolean doAlphaMix)
+   {
+      final int xx = -(image.getWidth() >> 1);
+      final int yy = y - (image.getHeight() >> 1);
+      final int xMin = xx + Math.min(x1, x2);
+      final int xMax = xx + Math.max(x1, x2);
+
+      for(int x = xMin; x <= xMax; x++)
+      {
+         this.drawImage(x, yy, image, doAlphaMix);
+      }
+   }
+
+   /**
+    * Repeat an image on following a vertical line
+    * 
+    * @param x
+    *           Line X
+    * @param y1
+    *           First point y
+    * @param y2
+    *           Second point Y
+    * @param image
+    *           Image to repeat
+    */
+   public void repeatOnLineVertical(final int x, final int y1, final int y2, final JHelpImage image)
+   {
+      this.repeatOnLineVertical(x, y1, y2, image, true);
+   }
+
+   /**
+    * Repeat an image on following a vertical line
+    * 
+    * @param x
+    *           Line X
+    * @param y1
+    *           First point y
+    * @param y2
+    *           Second point Y
+    * @param image
+    *           Image to repeat
+    * @param doAlphaMix
+    *           Indicates if we do alpha mixing
+    */
+   public void repeatOnLineVertical(final int x, final int y1, final int y2, final JHelpImage image, final boolean doAlphaMix)
+   {
+      final int xx = x - (image.getWidth() >> 1);
+      final int yy = -(image.getHeight() >> 1);
+      final int yMin = yy + Math.min(y1, y2);
+      final int yMax = yy + Math.max(y1, y2);
+
+      for(int y = yMin; y <= yMax; y++)
+      {
+         this.drawImage(xx, y, image, doAlphaMix);
       }
    }
 

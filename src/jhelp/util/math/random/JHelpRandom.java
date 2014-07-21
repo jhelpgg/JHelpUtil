@@ -231,7 +231,7 @@ public final class JHelpRandom<CHOICE>
 
    /**
     * Take randomly a element of the array.<br>
-    * Thea array musn't be {@code null} or empty
+    * The array musn't be {@code null} or empty
     * 
     * @param array
     *           Array to get one element
@@ -244,7 +244,7 @@ public final class JHelpRandom<CHOICE>
 
    /**
     * Return an element of a list.<br>
-    * {@code null} is return is the list is {@code null} or empty
+    * {@code null} is return if the list is {@code null} or empty
     * 
     * @param <T>
     *           Type of list's element

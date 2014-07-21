@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
@@ -343,7 +344,7 @@ public final class JHelpFont
     */
    public Pair<List<JHelpTextLine>, Dimension> computeTextLines(final String text, final JHelpTextAlign textAlign, final int limitWidth, final int limitHeight, final boolean trim)
    {
-      final int limit = Math.max(this.fontMetrics.getMaxAdvance() + 2, limitWidth);
+      final int limit = Math.max(this.getMaximumCharacterWidth() + 2, limitWidth);
 
       final ArrayList<JHelpTextLine> textLines = new ArrayList<JHelpTextLine>();
       final StringExtractor lines = new StringExtractor(text, "\n\f\r", "", "");
@@ -477,6 +478,14 @@ public final class JHelpFont
       final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
       bufferedImage.setRGB(0, 0, width, height, pixels, 0, width);
       final Graphics2D graphics2d = bufferedImage.createGraphics();
+
+      graphics2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+      graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      graphics2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      graphics2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+      graphics2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
       graphics2d.setColor(Color.WHITE);
       graphics2d.setFont(this.font);
       graphics2d.drawString(string, 0, ascent);
@@ -488,7 +497,10 @@ public final class JHelpFont
       {
          for(int x = 0; x < width; x++)
          {
-            mask.setValue(x, y, (pixels[pix++] & 0xFF) > 0x80);
+            if((pixels[pix++] & 0xFF) > 0x80)
+            {
+               mask.setValue(x, y, true);
+            }
          }
       }
 
