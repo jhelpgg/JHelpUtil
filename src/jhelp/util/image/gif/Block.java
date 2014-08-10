@@ -45,6 +45,9 @@ abstract class Block
          case BLOCK_END_GIF:
             block = EndBlock.END_BLOCK;
          break;
+         case 0:
+            block = IgnoreBlock.IGNORE_BLOCK;
+         break;
       }
 
       if(block == null)

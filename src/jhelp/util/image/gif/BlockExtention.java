@@ -45,7 +45,7 @@ abstract class BlockExtention
 
       if(blockExtention == null)
       {
-         throw new IOException("Invalid block extention sub type " + subType);
+         throw new IOException("Invalid block extension sub type " + subType);
       }
 
       blockExtention.subType = subType;

@@ -7,8 +7,6 @@ import java.util.Hashtable;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import jhelp.util.debug.Debug;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -69,7 +67,7 @@ class ParserXMLText
       }
       catch(final Exception exception)
       {
-         Debug.printException(exception, "Issue while parsing XML of texts : ", reference);
+         // Debug.printException(exception, "Issue while parsing XML of texts : ", reference);
       }
       finally
       {

@@ -1,5 +1,13 @@
 package jhelp.util.io.json;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import jhelp.util.io.UtilIO;
 import jhelp.util.list.Pair;
 import jhelp.util.math.UtilMath;
 import jhelp.util.text.UtilText;
@@ -285,6 +293,63 @@ public final class ValueJSON
    }
 
    /**
+    * Create a JSON value from a file
+    * 
+    * @param file
+    *           File to put inside JSON value
+    * @return Created JSON value
+    * @throws IOException
+    *            On reading issue
+    */
+   public static ValueJSON newValue(final File file) throws IOException
+   {
+      if(file.exists() == false)
+      {
+         throw new IOException(file.getAbsolutePath() + " doesn't exists !");
+      }
+
+      FileInputStream fileInputStream = null;
+
+      try
+      {
+         fileInputStream = new FileInputStream(file);
+         return ValueJSON.newValue(fileInputStream);
+      }
+      catch(final Exception exception)
+      {
+         throw new IOException("Failed to store " + file.getAbsolutePath(), exception);
+      }
+      finally
+      {
+         if(fileInputStream != null)
+         {
+            try
+            {
+               fileInputStream.close();
+            }
+            catch(final Exception exception)
+            {
+            }
+         }
+      }
+   }
+
+   /**
+    * Create a JSON value from a stream.<br>
+    * The stream not close by the method
+    * 
+    * @param inputStream
+    *           Stream to read
+    * @return Created JSON value
+    * @throws IOException
+    *            On reading issue
+    */
+   public static ValueJSON newValue(final InputStream inputStream) throws IOException
+   {
+      return ValueJSON.newValue(UtilIO.toBase64(inputStream));
+   }
+
+   /**
     * Create JSON value with a JSON object inside
     * 
     * @param object
@@ -402,6 +467,69 @@ public final class ValueJSON
       }
 
       return (ArrayJSON) this.value;
+   }
+
+   /**
+    * Get JSON value as binary and write it inside a file
+    * 
+    * @param file
+    *           File where write
+    * @throws IOException
+    *            On writing issue
+    */
+   public void getBinary(final File file) throws IOException
+   {
+      if(UtilIO.createFile(file) == false)
+      {
+         throw new IOException("Can't create file " + file.getAbsolutePath());
+      }
+
+      FileOutputStream fileOutputStream = null;
+
+      try
+      {
+         fileOutputStream = new FileOutputStream(file);
+         this.getBinary(fileOutputStream);
+      }
+      catch(final Exception exception)
+      {
+         throw new IOException("Failed to extract data in " + file.getAbsolutePath());
+      }
+      finally
+      {
+         if(fileOutputStream != null)
+         {
+            try
+            {
+               fileOutputStream.flush();
+            }
+            catch(final Exception exception)
+            {
+            }
+
+            try
+            {
+               fileOutputStream.close();
+            }
+            catch(final Exception exception)
+            {
+            }
+         }
+      }
+   }
+
+   /**
+    * Get JSON value as binary and write it inside a stream.<br>
+    * The stream i not close by the method
+    * 
+    * @param outputStream
+    *           Stream where write
+    * @throws IOException
+    *            On writing issue
+    */
+   public void getBinary(final OutputStream outputStream) throws IOException
+   {
+      UtilIO.fromBase64(this.getString(), outputStream);
    }
 
    /**

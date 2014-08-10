@@ -39,12 +39,15 @@ public class Ring<TYPE>
 
    /** Current element of the ring */
    private Element<TYPE> current;
+   /** Ring size */
+   private int           size;
 
    /**
     * Create a new empty Ring
     */
    public Ring()
    {
+      this.size = 0;
    }
 
    /**
@@ -65,6 +68,7 @@ public class Ring<TYPE>
          this.current = new Element<TYPE>(element);
          this.current.next = this.current;
          this.current.previous = this.current;
+         this.size = 1;
 
          return;
       }
@@ -78,6 +82,20 @@ public class Ring<TYPE>
       this.current.next = elt;
 
       next.previous = elt;
+      this.size++;
+   }
+
+   /**
+    * Clear the ring
+    */
+   public void clear()
+   {
+      while(this.current != null)
+      {
+         this.remove();
+      }
+
+      this.size = 0;
    }
 
    /**
@@ -93,6 +111,16 @@ public class Ring<TYPE>
       }
 
       return this.current.element;
+   }
+
+   /**
+    * Number of elements inside the ring
+    * 
+    * @return Number of elements inside the ring
+    */
+   public int getSize()
+   {
+      return this.size;
    }
 
    /**
@@ -134,11 +162,13 @@ public class Ring<TYPE>
    {
       if(this.current == null)
       {
+         this.size = 0;
          return;
       }
 
-      if(this.current.next == this.current && this.current.previous == this.current)
+      if((this.current.next == this.current) && (this.current.previous == this.current))
       {
+         this.size = 0;
          this.current = null;
 
          return;
@@ -148,6 +178,7 @@ public class Ring<TYPE>
       this.current.next.previous = this.current.previous;
 
       this.current = this.current.next;
+      this.size--;
    }
 
    /**

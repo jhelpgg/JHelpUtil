@@ -9,11 +9,11 @@ import jhelp.util.list.Pair;
 
 /**
  * Image descriptor block<br>
- * Images colored are referenced via their index in color table.<br>
+ * Images' colors are referenced via their index in color table.<br>
  * Moreover the indexes list is compress in a derived algorithm of LZW.<br>
  * An image can be interlaced or not.<br>
- * @see <a href="http://www.w3.org/Graphics/GIF/spec-gif89a.txt">GIF specification</a>
  * 
+ * @see <a href="http://www.w3.org/Graphics/GIF/spec-gif89a.txt">GIF specification</a>
  * @author JHelp
  */
 class ImageDescriptorBlock
@@ -193,6 +193,13 @@ class ImageDescriptorBlock
 
       subBlock.getSize();
       byte[] data = subBlock.getData();
+
+      if(data.length < 4)
+      {
+         // To avoid some malformed GIF
+         return;
+      }
+
       this.buffer32 = (data[0] & 0xFF) | ((data[1] & 0xFF) << 8) | ((data[2] & 0xFF) << 16) | ((data[3] & 0xFF) << 24);
       final int clearCode = 1 << lzwCode;
       final int endCode = clearCode + 1;
@@ -294,7 +301,9 @@ class ImageDescriptorBlock
     */
    private void writeImage(final byte[] data, final int length)
    {
-      for(int i = 0; i < length; i++)
+      final int size = this.colorIndexes.length;
+
+      for(int i = 0; (i < length) && (this.pix < size); i++)
       {
          this.colorIndexes[this.pix] = data[i] & 0xFF;
 

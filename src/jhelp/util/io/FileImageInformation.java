@@ -1,5 +1,6 @@
 package jhelp.util.io;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -21,7 +22,9 @@ public class FileImageInformation
 {
    /** JVM known readers */
    private static final ImageReader[] IMAGES_READERS;
-   /** Filter of image, based on file information, not on file extention. Directory are allowed */
+   /** BMP image file format name */
+   public static final String         BMP;
+   /** Filter of image, based on file information, not on file extension. Directory are allowed */
    public static final FileFilter     FILTER_BY_FILE_INFORMATION              = new FileFilter()
                                                                               {
                                                                                  /**
@@ -48,7 +51,7 @@ public class FileImageInformation
                                                                                     return (new FileImageInformation(pathname)).getFormatName() != null;
                                                                                  }
                                                                               };
-   /** Filter of image, based on file information, not on file extention. Directory are forbiden */
+   /** Filter of image, based on file information, not on file extension. Directory are forbidden */
    public static final FileFilter     FILTER_BY_FILE_INFORMATION_NO_DIRECTORY = new FileFilter()
                                                                               {
                                                                                  /**
@@ -74,13 +77,27 @@ public class FileImageInformation
                                                                                  }
                                                                               };
 
+   /** GIF image file format name */
+   public static final String         GIF;
+   /** JPG image file format name */
+   public static final String         JPG;
+   /** PCX image file format name */
+   public static final String         PCX;
+   /** PNG image file format name */
+   public static final String         PNG;
+
    static
    {
+      GIF = "GIF";
+      JPG = "JPG";
+      PNG = "PNG";
+      BMP = "BMP";
+      PCX = "PCX";
       final ArrayList<ImageReader> imageReaders = new ArrayList<ImageReader>();
 
       final String[] suffixs =
       {
-         "JPG", "PNG", "GIF", "BMP"
+         FileImageInformation.JPG, FileImageInformation.PNG, FileImageInformation.GIF, FileImageInformation.BMP
       };
 
       for(final String suffix : suffixs)
@@ -116,6 +133,26 @@ public class FileImageInformation
 
       if((file.exists() == false) || (file.isDirectory() == true) || (file.canRead() == false))
       {
+         return;
+      }
+
+      Dimension size = jhelp.util.gui.GIF.computeGifSize(file);
+
+      if(size != null)
+      {
+         this.width = size.width;
+         this.height = size.height;
+         this.formatName = FileImageInformation.GIF;
+         return;
+      }
+
+      size = jhelp.util.image.pcx.PCX.computePcxSize(file);
+
+      if(size != null)
+      {
+         this.width = size.width;
+         this.height = size.height;
+         this.formatName = FileImageInformation.PCX;
          return;
       }
 

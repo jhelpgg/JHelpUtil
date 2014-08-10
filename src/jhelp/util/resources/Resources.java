@@ -230,6 +230,26 @@ public class Resources
    }
 
    /**
+    * Obtain a {@link JHelpImage} or {@link JHelpImage#DUMMY}
+    * 
+    * @param path
+    *           Relative path of the image (Separator is "/")
+    * @return The buffered image or {@link JHelpImage#DUMMY}
+    */
+   public JHelpImage obtainJHelpImageOrDummy(final String path)
+   {
+      try
+      {
+         return this.obtainJHelpImage(path);
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception, "Failed to load image : ", path);
+         return JHelpImage.DUMMY;
+      }
+   }
+
+   /**
     * Obatain the resources system linked to the resources
     * 
     * @return Resources system linked

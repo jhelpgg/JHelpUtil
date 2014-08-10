@@ -16,6 +16,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,6 +33,7 @@ import javax.swing.Icon;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.JHelpAnimatedImage.AnimationMode;
+import jhelp.util.image.pcx.PCX;
 import jhelp.util.io.FileImageInformation;
 import jhelp.util.list.HeavyObject;
 import jhelp.util.list.Pair;
@@ -751,7 +753,8 @@ public class JHelpImage
    }
 
    /**
-    * Load an image from file
+    * Load an image from file.<br>
+    * This method also manage {@link PCX} image files
     * 
     * @param image
     *           Image file
@@ -761,6 +764,35 @@ public class JHelpImage
     */
    public static JHelpImage loadImage(final File image) throws IOException
    {
+      if(PCX.isPCX(image) == true)
+      {
+         InputStream inputStream = null;
+
+         try
+         {
+            inputStream = new FileInputStream(image);
+            final PCX pcx = new PCX(inputStream);
+            return pcx.createImage();
+         }
+         catch(final Exception exception)
+         {
+            throw new IOException(image.getAbsolutePath() + " not PCX well formed", exception);
+         }
+         finally
+         {
+            if(inputStream != null)
+            {
+               try
+               {
+                  inputStream.close();
+               }
+               catch(final Exception exception)
+               {
+               }
+            }
+         }
+      }
+
       BufferedImage bufferedImage = JHelpImage.loadBufferedImage(image);
 
       final int width = bufferedImage.getWidth();
@@ -812,7 +844,8 @@ public class JHelpImage
    }
 
    /**
-    * Load an image and resize it to have specific dimension
+    * Load an image and resize it to have specific dimension.<br>
+    * This method also manage {@link PCX} image files
     * 
     * @param image
     *           Image file
@@ -826,6 +859,35 @@ public class JHelpImage
     */
    public static JHelpImage loadImageThumb(final File image, final int width, final int height) throws IOException
    {
+      if(PCX.isPCX(image) == true)
+      {
+         InputStream inputStream = null;
+
+         try
+         {
+            inputStream = new FileInputStream(image);
+            final PCX pcx = new PCX(inputStream);
+            return JHelpImage.createResizedImage(pcx.createImage(), width, height);
+         }
+         catch(final Exception exception)
+         {
+            throw new IOException(image.getAbsolutePath() + " not PCX well formed", exception);
+         }
+         finally
+         {
+            if(inputStream != null)
+            {
+               try
+               {
+                  inputStream.close();
+               }
+               catch(final Exception exception)
+               {
+               }
+            }
+         }
+      }
+
       BufferedImage bufferedImage = JHelpImage.loadBufferedImage(image);
 
       if(bufferedImage == null)
@@ -1099,7 +1161,7 @@ public class JHelpImage
    }
 
    /**
-    * Create a new instance of JHelpImage fill with a pixels array scales to fill al the image
+    * Create a new instance of JHelpImage fill with a pixels array scales to fill all the image
     * 
     * @param width
     *           Width of image inside pixels array
@@ -6505,7 +6567,7 @@ public class JHelpImage
 
    /**
     * Extract an array of pixels from the image.<br>
-    * If the image is no in draw mode, sprites will be consideras part of image
+    * If the image is no in draw mode, sprites will be consider as part of image
     * 
     * @param x
     *           X up-left corner
@@ -6524,8 +6586,8 @@ public class JHelpImage
 
    /**
     * Extract an array of pixels from the image.<br>
-    * The returned array will have somme additional free integer at start, the number depends on the given offset.<br>
-    * If the image is no in draw mode, sprites will be consideras part of image
+    * The returned array will have some additional free integer at start, the number depends on the given offset.<br>
+    * If the image is no in draw mode, sprites will be consider as part of image
     * 
     * @param x
     *           X up-left corner

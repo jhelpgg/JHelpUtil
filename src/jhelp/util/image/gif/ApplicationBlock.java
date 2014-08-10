@@ -21,7 +21,7 @@ class ApplicationBlock
    /** Application specific data */
    private final ByteArray applicationData;
    /** Application identifier */
-   private String          applicationIndentifier;
+   private String          applicationIdentifier;
 
    /**
     * Create a new instance of ApplicationBlock
@@ -54,7 +54,7 @@ class ApplicationBlock
          throw new IOException("Size of application MUST be 11, not " + size);
       }
 
-      this.applicationIndentifier = UtilGIF.readString(8, inputStream);
+      this.applicationIdentifier = UtilGIF.readString(8, inputStream);
 
       UtilIO.readStream(inputStream, this.applicationCode);
 
@@ -92,8 +92,8 @@ class ApplicationBlock
     * 
     * @return Application identifier
     */
-   public String getApplicationIndentifier()
+   public String getApplicationIdentifier()
    {
-      return this.applicationIndentifier;
+      return this.applicationIdentifier;
    }
 }

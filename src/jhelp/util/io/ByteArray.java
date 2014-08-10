@@ -346,22 +346,6 @@ public class ByteArray
    }
 
    /**
-    * Skip a number of bytes
-    * 
-    * @param n
-    *           Number of bytes to skip
-    * @return Number of skipped bytes
-    */
-   long skip(long n)
-   {
-      n = Math.min(n, this.size - this.index);
-
-      this.index += n;
-
-      return n;
-   }
-
-   /**
     * Number of bytes left to read
     * 
     * @return Number of bytes left to read
@@ -995,6 +979,22 @@ public class ByteArray
    }
 
    /**
+    * Skip a number of bytes
+    * 
+    * @param n
+    *           Number of bytes to skip
+    * @return Number of skipped bytes
+    */
+   public long skip(long n)
+   {
+      n = Math.min(n, this.size - this.index);
+
+      this.index += n;
+
+      return n;
+   }
+
+   /**
     * Get an array
     * 
     * @return Get an array
@@ -1175,7 +1175,7 @@ public class ByteArray
 
    /**
     * Write a boolean array to the byte array.<br>
-    * The number of bytes takes here is 4(Array length)+(NumberOfBoolean)/8, that mean if you have to store several boolen, its
+    * The number of bytes takes here is 4(Array length)+(NumberOfBoolean)/8, that mean if you have to store several boolean, its
     * more efficient to use this method (Number of byte took for store data are less) if the number of boolean is at least 5.<br>
     * See {@link #readBooleanArray()} for read it later
     * 

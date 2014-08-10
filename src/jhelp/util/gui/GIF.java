@@ -7,6 +7,8 @@
  */
 package jhelp.util.gui;
 
+import java.awt.Dimension;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -118,6 +120,31 @@ public class GIF
       {
          this.list = new ArrayList<JHelpImage>();
       }
+   }
+
+   /**
+    * Compute size of an GIF image.<br>
+    * If the given file is not a GIF image file, {@code null} is return
+    * 
+    * @param file
+    *           Image GIF file
+    * @return GIF image size OR {@code null} if given file not a valid GIF image file
+    */
+   public static Dimension computeGifSize(final File file)
+   {
+      return DataGIF.computeGifSize(file);
+   }
+
+   /**
+    * Indicates if a file is a GIF image file
+    * 
+    * @param file
+    *           Tested file
+    * @return {@code true} if the file is a GIF image file
+    */
+   public static boolean isGIF(final File file)
+   {
+      return DataGIF.isGIF(file);
    }
 
    /** Images delay */

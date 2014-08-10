@@ -1,11 +1,13 @@
 package jhelp.util.io;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URL;
@@ -18,6 +20,8 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import jhelp.util.debug.Debug;
+import jhelp.util.io.base64.Base64InputStream;
+import jhelp.util.io.base64.Base64OutputStream;
 import jhelp.util.list.Pair;
 import jhelp.util.text.StringCutter;
 import jhelp.util.text.UtilText;
@@ -713,6 +717,24 @@ public final class UtilIO
    }
 
    /**
+    * Write a base 64 String to stream as decoded binary.<br>
+    * Stream not close by the method
+    * 
+    * @param base64
+    *           Base 64 string
+    * @param outputStream
+    *           Stream where write
+    * @throws IOException
+    *            On writing issue
+    */
+   public static void fromBase64(final String base64, final OutputStream outputStream) throws IOException
+   {
+      final StringInputStream stringInputStream = new StringInputStream(base64);
+      final Base64InputStream base64InputStream = new Base64InputStream(stringInputStream);
+      UtilIO.write(base64InputStream, outputStream);
+   }
+
+   /**
     * Indicates if a file is a virtual link.<br>
     * A virtual link in Linux system is a way to have a reference to a file/directory as if it is in place, but the real file is
     * other place. It is a way to share the same file by several directory
@@ -1318,6 +1340,26 @@ public final class UtilIO
    }
 
    /**
+    * Do a prompt in console, waiting user type something (finish by enter) in console.<br>
+    * {@code null} is return in case of issue
+    * 
+    * @return The user input OR {@code null} in case of issue
+    */
+   public static String readUserInputInConsole()
+   {
+      try
+      {
+         final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+         return bufferedReader.readLine();
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception, "Issue while reading console user input");
+         return null;
+      }
+   }
+
+   /**
     * Rename a file
     * 
     * @param source
@@ -1336,6 +1378,24 @@ public final class UtilIO
 
       UtilIO.copy(source, destination);
       UtilIO.delete(source);
+   }
+
+   /**
+    * Transform a binary stream to base 64 string.<br>
+    * Stream not close by the method
+    * 
+    * @param inputStream
+    *           Stream to read
+    * @return Base 64 string
+    * @throws IOException
+    *            On reading issue
+    */
+   public static String toBase64(final InputStream inputStream) throws IOException
+   {
+      final StringOutputStream stringOutputStream = new StringOutputStream();
+      final Base64OutputStream base64OutputStream = new Base64OutputStream(stringOutputStream);
+      UtilIO.write(inputStream, base64OutputStream);
+      return stringOutputStream.getString();
    }
 
    /**
