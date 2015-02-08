@@ -55,7 +55,8 @@ public class BigRational
          return rational1;
       }
 
-      return BigRational.createRational(rational1.numerator.multiply(rational2.denominator).add(rational2.numerator.multiply(rational1.denominator)), rational1.denominator.multiply(rational2.denominator));
+      return BigRational.createRational(rational1.numerator.multiply(rational2.denominator).add(rational2.numerator.multiply(rational1.denominator)),
+            rational1.denominator.multiply(rational2.denominator));
    }
 
    /**
@@ -203,7 +204,8 @@ public class BigRational
          return BigRational.INVALID;
       }
 
-      return BigRational.createRational(rational1.numerator.multiply(rational2.denominator).add(rational2.numerator.multiply(rational1.denominator)), rational1.denominator.multiply(rational2.denominator.multiply(UtilMath.BIG_TWO)));
+      return BigRational.createRational(rational1.numerator.multiply(rational2.denominator).add(rational2.numerator.multiply(rational1.denominator)),
+            rational1.denominator.multiply(rational2.denominator.multiply(UtilMath.BIG_TWO)));
    }
 
    /**
@@ -252,10 +254,10 @@ public class BigRational
 
    /**
     * Parse a String to be a rational.<br>
-    * String must be {@link #INVALID_RATIONAL} or &lt;integer&gt; or &lt;integer&gt; &lt;space&gt;* / &lt;space&gt;*
+    * String must be {@link #INVALID_RATIONAL} or &lt;integer&gt; or &lt;integer&gt; &lt;space&gt; / &lt;space&gt;
     * &lt;integer&gt;<br>
     * Where &lt;integer&gt; := [0-9]+ AND &lt;space&gt; := {SPACE, \t, \n, \r, \f}.<br>
-    * If the string is not well dormated {@link IllegalArgumentException} will be throw
+    * If the string is not well formated {@link IllegalArgumentException} will be throw
     * 
     * @param string
     *           String to parse
@@ -370,7 +372,8 @@ public class BigRational
          return BigRational.ZERO;
       }
 
-      return BigRational.createRational(rational1.numerator.multiply(rational2.denominator).subtract(rational2.numerator.multiply(rational1.denominator)), rational1.denominator.multiply(rational2.denominator));
+      return BigRational.createRational(rational1.numerator.multiply(rational2.denominator).subtract(rational2.numerator.multiply(rational1.denominator)),
+            rational1.denominator.multiply(rational2.denominator));
    }
 
    /** Denominator */

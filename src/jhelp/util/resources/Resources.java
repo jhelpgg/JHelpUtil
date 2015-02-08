@@ -16,8 +16,10 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import jhelp.util.debug.Debug;
+import jhelp.util.gui.GIF;
 import jhelp.util.gui.JHelpFont;
 import jhelp.util.gui.JHelpImage;
+import jhelp.util.image.pcx.PCX;
 import jhelp.util.io.UtilIO;
 
 /**
@@ -166,6 +168,27 @@ public class Resources
    }
 
    /**
+    * Get a GIF image from resources
+    * 
+    * @param source
+    *           Source path
+    * @return The GIF image OR {@code null} if the resource path not exists or not a GIF
+    */
+   public GIF obtaingGIF(final String source)
+   {
+      try
+      {
+         return new GIF(this.obtainResourceStream(source));
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception, "Failed to load gif : ", source);
+      }
+
+      return null;
+   }
+
+   /**
     * Obtain a image icon
     * 
     * @param path
@@ -210,7 +233,8 @@ public class Resources
     *           Indicates if have to underline
     * @return Created font
     */
-   public JHelpFont obtainJHelpFont(final JHelpFont.Type type, final String path, final int size, final JHelpFont.Value bold, final JHelpFont.Value italic, final boolean underline)
+   public JHelpFont obtainJHelpFont(final JHelpFont.Type type, final String path, final int size, final JHelpFont.Value bold, final JHelpFont.Value italic,
+         final boolean underline)
    {
       return JHelpFont.createFont(type, this.obtainResourceStream(path), size, bold, italic, underline);
    }
@@ -220,32 +244,25 @@ public class Resources
     * 
     * @param path
     *           Relative path of the image (Separator is "/")
-    * @return The buffered image
-    * @throws IOException
-    *            On reading resource failure
+    * @return The image
     */
-   public JHelpImage obtainJHelpImage(final String path) throws IOException
-   {
-      return JHelpImage.loadImage(this.obtainResourceStream(path));
-   }
-
-   /**
-    * Obtain a {@link JHelpImage} or {@link JHelpImage#DUMMY}
-    * 
-    * @param path
-    *           Relative path of the image (Separator is "/")
-    * @return The buffered image or {@link JHelpImage#DUMMY}
-    */
-   public JHelpImage obtainJHelpImageOrDummy(final String path)
+   public JHelpImage obtainJHelpImage(final String path)
    {
       try
       {
-         return this.obtainJHelpImage(path);
+         return JHelpImage.loadImage(this.obtainResourceStream(path));
       }
       catch(final Exception exception)
       {
-         Debug.printException(exception, "Failed to load image : ", path);
-         return JHelpImage.DUMMY;
+         try
+         {
+            final PCX pcx = new PCX(this.obtainResourceStream(path));
+            return pcx.createImage();
+         }
+         catch(final Exception exception2)
+         {
+            return JHelpImage.DUMMY;
+         }
       }
    }
 

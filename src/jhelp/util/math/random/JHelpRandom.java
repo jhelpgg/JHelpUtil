@@ -10,7 +10,7 @@ import jhelp.util.text.UtilText;
 
 /**
  * Able to choice an object randomly.<br>
- * The chance to have an object can be different than to have an& nbsp;other one.<br>
+ * The chance to have an object can be different than to have an other one.<br>
  * For example if <font color="#008800">"A"</font> have 50% chance, <font color="#008800">"B"</font> 25%, <font
  * color="#008800">"C"</font> 12%, <font color="#008800">"D"</font> 6%,<font color="#008800">"E"</font> 3%, <font
  * color="#008800">"F"</font> 2%, <font color="#008800">"G"</font> 1% and <font color="#008800">"H"</font> 1% :<br>

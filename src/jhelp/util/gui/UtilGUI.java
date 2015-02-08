@@ -22,6 +22,7 @@ import javax.swing.UIManager;
 import jhelp.util.Utilities;
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
+import jhelp.util.math.UtilMath;
 
 /**
  * Utilities for GUI
@@ -79,7 +80,8 @@ public final class UtilGUI
    {
       if((screenIndex < 0) || (screenIndex >= UtilGUI.GRAPHICS_DEVICES.length))
       {
-         throw new IllegalArgumentException("You have " + UtilGUI.GRAPHICS_DEVICES.length + " screens so the screen index must be in [0, " + UtilGUI.GRAPHICS_DEVICES.length + "[ not " + screenIndex);
+         throw new IllegalArgumentException("You have " + UtilGUI.GRAPHICS_DEVICES.length + " screens so the screen index must be in [0, "
+               + UtilGUI.GRAPHICS_DEVICES.length + "[ not " + screenIndex);
       }
    }
 
@@ -120,48 +122,6 @@ public final class UtilGUI
 
       window.setLocation(x + destinationScreen.x + insets.left,//
             y + destinationScreen.y + insets.top);
-   }
-
-   /**
-    * Compute intersection area between two rectangles
-    * 
-    * @param rectangle1
-    *           First rectangle
-    * @param rectangle2
-    *           Second rectangle
-    * @return Computed area
-    */
-   public static int computeIntresectedArea(final Rectangle rectangle1, final Rectangle rectangle2)
-   {
-      final int xmin1 = rectangle1.x;
-      final int xmax1 = rectangle1.x + rectangle1.width;
-      final int ymin1 = rectangle1.y;
-      final int ymax1 = rectangle1.y + rectangle1.height;
-      final int xmin2 = rectangle2.x;
-      final int xmax2 = rectangle2.x + rectangle2.width;
-      final int ymin2 = rectangle2.y;
-      final int ymax2 = rectangle2.y + rectangle2.height;
-
-      if((xmin1 > xmax2) || (ymin1 > ymax2) || (xmin2 > xmax1) || (ymin2 > ymax1))
-      {
-         return 0;
-      }
-
-      final int xmin = Math.max(xmin1, xmin2);
-      final int xmax = Math.min(xmax1, xmax2);
-      if(xmin >= xmax)
-      {
-         return 0;
-      }
-
-      final int ymin = Math.max(ymin1, ymin2);
-      final int ymax = Math.min(ymax1, ymax2);
-      if(ymin >= ymax)
-      {
-         return 0;
-      }
-
-      return (xmax - xmin) * (ymax - ymin);
    }
 
    /**
@@ -261,7 +221,7 @@ public final class UtilGUI
 
       GraphicsConfiguration graphicsConfiguration = UtilGUI.GRAPHICS_DEVICES[0].getDefaultConfiguration();
       Rectangle screenBounds = graphicsConfiguration.getBounds();
-      int areaMax = UtilGUI.computeIntresectedArea(windowBounds, screenBounds);
+      int areaMax = UtilMath.computeIntresectedArea(windowBounds, screenBounds);
 
       int totalWidth = screenBounds.x + screenBounds.width;
       int totalHeight = screenBounds.y + screenBounds.height;
@@ -273,7 +233,7 @@ public final class UtilGUI
       {
          cg = UtilGUI.GRAPHICS_DEVICES[i].getDefaultConfiguration();
          bounds = cg.getBounds();
-         area = UtilGUI.computeIntresectedArea(windowBounds, bounds);
+         area = UtilMath.computeIntresectedArea(windowBounds, bounds);
 
          totalWidth = Math.max(totalWidth, bounds.x + bounds.width);
          totalHeight = Math.max(totalHeight, bounds.y + bounds.height);
@@ -508,7 +468,8 @@ public final class UtilGUI
       {
          BufferedImage bufferedImage = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_ARGB);
          bufferedImage.flush();
-         UtilGUI.INVISIBLE_CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(bufferedImage, new Point(dimension.width >> 1, dimension.height >> 1), "Invisible");
+         UtilGUI.INVISIBLE_CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(bufferedImage, new Point(dimension.width >> 1, dimension.height >> 1),
+               "Invisible");
          bufferedImage = null;
       }
 
@@ -540,14 +501,14 @@ public final class UtilGUI
 
       GraphicsConfiguration graphicsConfiguration = UtilGUI.GRAPHICS_DEVICES[0].getDefaultConfiguration();
       Rectangle bounds = graphicsConfiguration.getBounds();
-      int areaMax = UtilGUI.computeIntresectedArea(windowBounds, bounds);
+      int areaMax = UtilMath.computeIntresectedArea(windowBounds, bounds);
       int screenIndex = 0;
       int area;
       for(int i = 1; i < UtilGUI.GRAPHICS_DEVICES.length; i++)
       {
          graphicsConfiguration = UtilGUI.GRAPHICS_DEVICES[i].getDefaultConfiguration();
          bounds = graphicsConfiguration.getBounds();
-         area = UtilGUI.computeIntresectedArea(windowBounds, bounds);
+         area = UtilMath.computeIntresectedArea(windowBounds, bounds);
 
          if(area > areaMax)
          {
@@ -630,6 +591,16 @@ public final class UtilGUI
 
       Debug.println(DebugLevel.VERBOSE, "Screen shot");
       return UtilGUI.ROBOT.createScreenCapture(new Rectangle(xMin, yMin, width, height));
+   }
+
+   /**
+    * Create a screen shot on JHelpImage
+    * 
+    * @return JHelpImage with screen shot
+    */
+   public static JHelpImage screenShotJHelpImage()
+   {
+      return JHelpImage.createImage(UtilGUI.screenShot());
    }
 
    /**
@@ -741,6 +712,16 @@ public final class UtilGUI
       }
 
       UtilGUI.ROBOT.mouseRelease(button);
+   }
+
+   public static void simulateMouseWhell(final int tick)
+   {
+      if(UtilGUI.ROBOT == null)
+      {
+         return;
+      }
+
+      UtilGUI.ROBOT.mouseWheel(tick);
    }
 
    /**

@@ -10,7 +10,7 @@ import jhelp.util.list.Pair;
  *           Progression information type
  */
 final class PostProgress<PROGRESS>
-      extends ThreadedTask<Pair<ThreadedTask<?, ?, PROGRESS>, PROGRESS>, Void, Void>
+      extends ThreadedSimpleTask<Pair<ThreadedTask<?, ?, PROGRESS>, PROGRESS>>
 {
    /**
     * Post the progression information <br>
@@ -20,14 +20,11 @@ final class PostProgress<PROGRESS>
     * 
     * @param parameter
     *           Pair of task to alert and the progression information to give
-    * @return Unused here
-    * @see jhelp.util.thread.ThreadedTask#doThreadAction(java.lang.Object)
+    * @see jhelp.util.thread.ThreadedSimpleTask#doSimpleAction(java.lang.Object)
     */
    @Override
-   protected Void doThreadAction(final Pair<ThreadedTask<?, ?, PROGRESS>, PROGRESS> parameter)
+   protected void doSimpleAction(final Pair<ThreadedTask<?, ?, PROGRESS>, PROGRESS> parameter)
    {
       parameter.element1.doProgress(parameter.element2);
-
-      return null;
    }
 }

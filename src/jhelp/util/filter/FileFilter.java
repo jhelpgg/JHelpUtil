@@ -124,6 +124,41 @@ public class FileFilter
       return fileFilter;
    }
 
+   /**
+    * Create filter initialize to filter videos (Supported by JHelpMultimedia)
+    * 
+    * @return Created filter
+    */
+   public static FileFilter createFilterForVideos()
+   {
+      return FileFilter.createFilterForVideos(false, false);
+   }
+
+   /**
+    * Create a filter for videos (Supported by JHelpMultimedia)
+    * 
+    * @param acceptHidden
+    *           Indicates if hidden files are accepted
+    * @param acceptVirtualLink
+    *           Indicates if virtual links are accepted
+    * @return Created filter
+    */
+   public static FileFilter createFilterForVideos(final boolean acceptHidden, final boolean acceptVirtualLink)
+   {
+      final FileFilter fileFilter = new FileFilter(acceptHidden, acceptVirtualLink);
+
+      fileFilter.addExtension("avi");
+      fileFilter.addExtension("mkv");
+      fileFilter.addExtension("mov");
+      fileFilter.addExtension("mp4");
+      fileFilter.addExtension("mpg");
+      fileFilter.addExtension("flv");
+
+      fileFilter.setInformation("Videos");
+
+      return fileFilter;
+   }
+
    /** Indicates if directories are accepted */
    private boolean                 acceptDirectory;
    /** Indicates if hidden files are accepted */
@@ -177,7 +212,8 @@ public class FileFilter
    {
       try
       {
-         if((file == null) || ((this.acceptHidden == false) && (file.isHidden() == true)) || ((this.acceptVirtualLink == false) && (file.getCanonicalPath().equals(file.getAbsolutePath()) == false)) || (file.exists() == false)
+         if((file == null) || ((this.acceptHidden == false) && (file.isHidden() == true))
+               || ((this.acceptVirtualLink == false) && (file.getCanonicalPath().equals(file.getAbsolutePath()) == false)) || (file.exists() == false)
                || (file.canRead() == false))
          {
             return false;

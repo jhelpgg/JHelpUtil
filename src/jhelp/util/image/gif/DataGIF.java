@@ -77,7 +77,7 @@ public class DataGIF
       return DataGIF.computeGifSize(file) != null;
    }
 
-   /** Aspect ration */
+   /** Aspect ratio */
    private Rational      aspectRatio;
    /** Background color index */
    private int           backgroundColorIndex;
@@ -97,7 +97,6 @@ public class DataGIF
    private int           height;
    /** GIF version */
    private String        version;
-
    /** Image width */
    private int           width;
 

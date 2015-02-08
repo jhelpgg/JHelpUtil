@@ -84,6 +84,26 @@ public final class Utilities
    }
 
    /**
+    * Create a char array copy
+    * 
+    * @param characters
+    *           Char array to copy
+    * @return Copy
+    */
+   public static char[] createCopy(final char[] characters)
+   {
+      if(characters == null)
+      {
+         return null;
+      }
+
+      final int length = characters.length;
+      final char[] copy = new char[length];
+      System.arraycopy(characters, 0, copy, 0, length);
+      return copy;
+   }
+
+   /**
     * Create a int array copy
     * 
     * @param array

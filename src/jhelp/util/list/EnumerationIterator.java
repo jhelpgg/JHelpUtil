@@ -59,6 +59,7 @@ public class EnumerationIterator<T>
     * @param array
     *           Base array
     */
+   @SafeVarargs
    public EnumerationIterator(final T... array)
    {
       this.array = array;

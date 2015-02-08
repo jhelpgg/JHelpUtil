@@ -71,7 +71,7 @@ public class Tree<INFORMATION>
 
    /**
     * Method of search inside the tree.<br>
-    * In search explanation, we explain how the order of eploring the folling tree :
+    * In search explanation, we explain how the order of exploring the following tree :
     * 
     * <pre>
     *      A
@@ -155,7 +155,7 @@ public class Tree<INFORMATION>
     * Create a new instance of Tree
     * 
     * @param information
-    *           Information carray (Musn't be {@code null})
+    *           Information carry (Musn't be {@code null})
     */
    public Tree(final INFORMATION information)
    {
@@ -634,5 +634,10 @@ public class Tree<INFORMATION>
       this.comparatorTree.comparator = comparator;
 
       Collections.sort(this.branches, this.comparatorTree);
+
+      for(final Tree<INFORMATION> branch : this.branches)
+      {
+         branch.sortBranches(comparator);
+      }
    }
 }

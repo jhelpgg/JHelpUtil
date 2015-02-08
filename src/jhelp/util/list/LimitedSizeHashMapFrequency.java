@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
- * Limited map one number of element, if full some elements are removed to make room
+ * Limited map of number of element, if full some elements are removed to make room.<br>
+ * It removes less use time object first
  * 
  * @author JHelp
  * @param <KEY>
@@ -42,7 +43,7 @@ public class LimitedSizeHashMapFrequency<KEY, VALUE>
 
    /** Hash map */
    private final HashMap<KEY, Element> hashMap;
-   /** Size liùmit */
+   /** Size limit */
    private final int                   limit;
 
    /**

@@ -35,6 +35,7 @@ public class EnumerationListIterator<T>
     * @param array
     *           Base array
     */
+   @SafeVarargs
    public EnumerationListIterator(final int startIndex, final T... array)
    {
       this.array = array;
@@ -79,6 +80,7 @@ public class EnumerationListIterator<T>
     * @param array
     *           Base array
     */
+   @SafeVarargs
    public EnumerationListIterator(final T... array)
    {
       this.array = array;

@@ -97,7 +97,7 @@ public class PostOffice
    }
 
    /**
-    * Give the list where the user is in
+    * Give the list of groups where the user is in
     * 
     * @param user
     *           User name

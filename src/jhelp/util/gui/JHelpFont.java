@@ -276,7 +276,8 @@ public final class JHelpFont
     */
    public Shape computeShape(final String string, final int x, final int y)
    {
-      return this.font.createGlyphVector(ConstantsGUI.FONT_RENDER_CONTEXT, string).getOutline(x, y + this.font.getLineMetrics(string, ConstantsGUI.FONT_RENDER_CONTEXT).getAscent());
+      return this.font.createGlyphVector(ConstantsGUI.FONT_RENDER_CONTEXT, string).getOutline(x,
+            y + this.font.getLineMetrics(string, ConstantsGUI.FONT_RENDER_CONTEXT).getAscent());
    }
 
    /**
@@ -342,7 +343,8 @@ public final class JHelpFont
     *           Indicates if have to trim lines
     * @return The couple of the list of each computed lines and the total size of all lines together
     */
-   public Pair<List<JHelpTextLine>, Dimension> computeTextLines(final String text, final JHelpTextAlign textAlign, final int limitWidth, final int limitHeight, final boolean trim)
+   public Pair<List<JHelpTextLine>, Dimension> computeTextLines(final String text, final JHelpTextAlign textAlign, final int limitWidth, final int limitHeight,
+         final boolean trim)
    {
       final int limit = Math.max(this.getMaximumCharacterWidth() + 2, limitWidth);
 
@@ -371,8 +373,8 @@ public final class JHelpFont
          while((width > limit) && (index > 0))
          {
             start = index;
-            index = UtilText.lastIndexOf(line, index, ' ', '\t', '\'', '&', '~', '"', '#', '{', '(', '[', '-', '|', '`', '_', '\\', '^', '@', '°', ')', ']', '+', '=', '}', '"', 'µ', '*', ',', '?', '.', ';', ':', '/', '!', '§', '<',
-                  '>', '²');
+            index = UtilText.lastIndexOf(line, index, ' ', '\t', '\'', '&', '~', '"', '#', '{', '(', '[', '-', '|', '`', '_', '\\', '^', '@', '°', ')', ']',
+                  '+', '=', '}', '"', 'µ', '*', ',', '?', '.', ';', ':', '/', '!', '§', '<', '>', '²');
 
             if(index >= 0)
             {
@@ -459,6 +461,47 @@ public final class JHelpFont
       size.width = Math.max(1, size.width);
       size.height = Math.max(1, size.height);
       return new Pair<List<JHelpTextLine>, Dimension>(Collections.unmodifiableList(textLines), size);
+   }
+
+   /**
+    * Compute text lines drawing text vertically (one character per line)
+    * 
+    * @param text
+    *           Text to write
+    * @param limitHeight
+    *           Height size limit
+    * @return Computed lines
+    */
+   public Pair<List<JHelpTextLine>, Dimension> computeTextLinesVertical(final String text, final int limitHeight)
+   {
+      final ArrayList<JHelpTextLine> textLines = new ArrayList<JHelpTextLine>();
+      final char[] characters = text.toCharArray();
+      String charText;
+      final Dimension size = new Dimension(1, 1);
+      int y = 0;
+      JHelpMask mask;
+      final int height = this.getHeight();
+
+      for(final char character : characters)
+      {
+         if(character > 32)
+         {
+            charText = String.valueOf(character);
+            mask = this.createMask(charText);
+            size.width = Math.max(size.width, mask.getWidth());
+            textLines.add(new JHelpTextLine(charText, 0, y, mask.getWidth(), height, mask, false));
+         }
+
+         y += height;
+         size.height += height;
+
+         if(size.height > limitHeight)
+         {
+            break;
+         }
+      }
+
+      return new Pair<List<JHelpTextLine>, Dimension>(textLines, size);
    }
 
    /**

@@ -343,7 +343,8 @@ public final class ThreadManager
     * The cancel is not immediate, it is do as soon as possible
     * 
     * @param id
-    *           Task id to cancel, give by {@link #repeatThread(ThreadedTask, Object, long, long)}
+    *           Task id to cancel, given by {@link #repeatThread(ThreadedTask, Object, long, long)} or
+    *           {@link #delayedThread(ThreadedTask, Object, long)}
     */
    public void cancelTask(final int id)
    {
@@ -369,12 +370,14 @@ public final class ThreadManager
     *           Number of milliseconds to wait before do the task
     * @return Task ID to able cancel it later with {@link #cancelTask(int)}
     */
-   public <PARAMETER, RESULT, PROGRESS> int delayedThread(final ThreadedTask<PARAMETER, RESULT, PROGRESS> threadedTask, final PARAMETER parameter, final long delay)
+   public <PARAMETER, RESULT, PROGRESS> int delayedThread(final ThreadedTask<PARAMETER, RESULT, PROGRESS> threadedTask, final PARAMETER parameter,
+         final long delay)
    {
       synchronized(ThreadManager.LOCK)
       {
          // Create and add the thread element
-         final ThreadElement<PARAMETER, RESULT, PROGRESS> threadElement = new ThreadElement<PARAMETER, RESULT, PROGRESS>(threadedTask, parameter, Math.max(ThreadManager.MINIMUM_WAIT, delay) + System.currentTimeMillis());
+         final ThreadElement<PARAMETER, RESULT, PROGRESS> threadElement = new ThreadElement<PARAMETER, RESULT, PROGRESS>(threadedTask, parameter, Math.max(
+               ThreadManager.MINIMUM_WAIT, delay) + System.currentTimeMillis());
 
          this.priorityQueue.add(threadElement);
 
@@ -431,7 +434,7 @@ public final class ThreadManager
     * Do a task as soon as possible.
     * 
     * @param <PARAMETER>
-    *           Parameter tpye
+    *           Parameter type
     * @param <RESULT>
     *           Result type
     * @param <PROGRESS>
@@ -476,14 +479,15 @@ public final class ThreadManager
     *           Time between each repeat in milliseconds
     * @return Task ID to able cancel it later with {@link #cancelTask(int)}
     */
-   public <PARAMETER, RESULT, PROGRESS> int repeatThread(final ThreadedTask<PARAMETER, RESULT, PROGRESS> threadedTask, final PARAMETER parameter, final long delay, final long repeat)
+   public <PARAMETER, RESULT, PROGRESS> int repeatThread(final ThreadedTask<PARAMETER, RESULT, PROGRESS> threadedTask, final PARAMETER parameter,
+         final long delay, final long repeat)
    {
       int id;
 
       synchronized(ThreadManager.LOCK)
       {
-         final ThreadElement<PARAMETER, RESULT, PROGRESS> threadElement = new ThreadElement<PARAMETER, RESULT, PROGRESS>(threadedTask, parameter, Math.max(ThreadManager.MINIMUM_WAIT, delay) + System.currentTimeMillis(), Math.max(
-               ThreadManager.MINIMUM_REPEAT, repeat));
+         final ThreadElement<PARAMETER, RESULT, PROGRESS> threadElement = new ThreadElement<PARAMETER, RESULT, PROGRESS>(threadedTask, parameter, Math.max(
+               ThreadManager.MINIMUM_WAIT, delay) + System.currentTimeMillis(), Math.max(ThreadManager.MINIMUM_REPEAT, repeat));
 
          this.priorityQueue.add(threadElement);
 

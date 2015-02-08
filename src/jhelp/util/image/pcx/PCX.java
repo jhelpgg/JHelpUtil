@@ -737,7 +737,7 @@ public class PCX
     */
    private void fillPixels_8_BytePerPixel_4_ColorPlane(final int[] pixels)
    {
-      // RGB color : ex for (5x3)
+      // RGBA color : ex for (5x3)
       // RRRRRGGGGGBBBBBAAAAA
       // RRRRRGGGGGBBBBBAAAAA
       // RRRRRGGGGGBBBBBAAAAA

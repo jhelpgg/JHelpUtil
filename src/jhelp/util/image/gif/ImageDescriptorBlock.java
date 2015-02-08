@@ -39,7 +39,7 @@ class ImageDescriptorBlock
    private final int          colorResoultion;
    /** Image width */
    private int                height;
-   /** Indicales if image is interlaced */
+   /** Indicates if image is interlaced */
    private boolean            interlaced;
    /** Indicates that we reach the last block */
    private boolean            lastBlockFound = false;
@@ -90,7 +90,8 @@ class ImageDescriptorBlock
     * @throws IOException
     *            If stream reach end or close suddenly
     */
-   private Pair<Integer, SubBlock> getCode(final int codeSize, final int codeMask, final InputStream inputStream, SubBlock subBlock, final int endCode) throws IOException
+   private Pair<Integer, SubBlock> getCode(final int codeSize, final int codeMask, final InputStream inputStream, SubBlock subBlock, final int endCode)
+         throws IOException
    {
       if((this.bitPos + codeSize) > 32)
       {

@@ -33,6 +33,8 @@ import javax.swing.Icon;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.JHelpAnimatedImage.AnimationMode;
+import jhelp.util.gui.transformation.Transformation;
+import jhelp.util.gui.transformation.Vector;
 import jhelp.util.image.pcx.PCX;
 import jhelp.util.io.FileImageInformation;
 import jhelp.util.list.HeavyObject;
@@ -102,7 +104,8 @@ public class JHelpImage
     */
    private static int distanceColor(final int color1, final int color2)
    {
-      return UtilMath.maxIntegers(Math.abs(((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF)), Math.abs(((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF)), Math.abs((color1 & 0xFF) - (color2 & 0xFF)));
+      return UtilMath.maxIntegers(Math.abs(((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF)), Math.abs(((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF)),
+            Math.abs((color1 & 0xFF) - (color2 & 0xFF)));
    }
 
    /**
@@ -233,7 +236,7 @@ public class JHelpImage
 
    /**
     * Compute U of a color<br>
-    * U = R * -.168736 + G * -.331264 + B * .500000 + 128
+    * U = R * -0.168736 + G * -0.331264 + B * 0.500000 + 128
     * 
     * @param red
     *           Red part
@@ -250,7 +253,7 @@ public class JHelpImage
 
    /**
     * Compute V of a color<br>
-    * V = R * .500000 + G * -.418688 + B * -.081312 + 128
+    * V = R * 0.500000 + G * -0.418688 + B * -0.081312 + 128
     * 
     * @param red
     *           Red part
@@ -267,7 +270,7 @@ public class JHelpImage
 
    /**
     * Compute Y of a color<br>
-    * Y = R * .299000 + G * .587000 + B * .114000
+    * Y = R * 0.299000 + G * 0.587000 + B * 0.114000
     * 
     * @param red
     *           Red part
@@ -315,7 +318,8 @@ public class JHelpImage
     *           Shift Y [-3, 3].
     * @return Bumped image
     */
-   public static JHelpImage createBumpedImage(final JHelpImage source, final JHelpImage bump, double contrast, final int dark, final int shiftX, final int shiftY)
+   public static JHelpImage createBumpedImage(final JHelpImage source, final JHelpImage bump, double contrast, final int dark, final int shiftX,
+         final int shiftY)
    {
       final int width = source.getWidth();
       final int height = source.getHeight();
@@ -1137,7 +1141,8 @@ public class JHelpImage
 
       if((width * height) != pixels.length)
       {
-         throw new IllegalArgumentException("The pixels array size must be width*height, but it is specify width=" + width + " height=" + height + " pixels.length=" + pixels.length);
+         throw new IllegalArgumentException("The pixels array size must be width*height, but it is specify width=" + width + " height=" + height
+               + " pixels.length=" + pixels.length);
       }
 
       this.width = width;
@@ -1254,7 +1259,7 @@ public class JHelpImage
     * @param width
     *           Rectangle width
     * @param height
-    *           Rectngle height
+    *           Rectangle height
     * @param pixels
     *           Pixels array
     * @param pixelsWidth
@@ -1262,7 +1267,8 @@ public class JHelpImage
     * @param pixelsHeight
     *           Image height inside pixels array
     */
-   private void fillRectangleScale(final int x, final int y, final int width, final int height, final int[] pixels, final int pixelsWidth, final int pixelsHeight)
+   private void fillRectangleScale(final int x, final int y, final int width, final int height, final int[] pixels, final int pixelsWidth,
+         final int pixelsHeight)
    {
       if((width <= 0) || (height <= 0))
       {
@@ -1712,7 +1718,7 @@ public class JHelpImage
    {
       if((this.width != image.width) || (this.height != image.height))
       {
-         throw new IllegalArgumentException("We can only multiply with an image of same size");
+         throw new IllegalArgumentException("We can only add with an image of same size");
       }
 
       int colorThis, colorImage;
@@ -2138,7 +2144,8 @@ public class JHelpImage
                   stack.push(new Point(point.x + 1, point.y));
                }
 
-               if((point.y < (this.height - 1)) && (result[p + this.width] == 0) && (Color.isNear(red, green, blue, this.pixels[p + this.width], precision) == true))
+               if((point.y < (this.height - 1)) && (result[p + this.width] == 0)
+                     && (Color.isNear(red, green, blue, this.pixels[p + this.width], precision) == true))
                {
                   stack.push(new Point(point.x, point.y + 1));
                }
@@ -2215,7 +2222,8 @@ public class JHelpImage
 
          y = (ymil + (factor * (y - ymil)));
 
-         this.pixels[i] = (color & 0xFF000000) | (JHelpImage.computeRed(y, u, v) << 16) | (JHelpImage.computeGreen(y, u, v) << 8) | JHelpImage.computeBlue(y, u, v);
+         this.pixels[i] = (color & 0xFF000000) | (JHelpImage.computeRed(y, u, v) << 16) | (JHelpImage.computeGreen(y, u, v) << 8)
+               | JHelpImage.computeBlue(y, u, v);
       }
    }
 
@@ -2273,7 +2281,8 @@ public class JHelpImage
 
          y = (ymil + (factor * (y - ymil)));
 
-         this.pixels[i] = (color & 0xFF000000) | (JHelpImage.computeRed(y, u, v) << 16) | (JHelpImage.computeGreen(y, u, v) << 8) | JHelpImage.computeBlue(y, u, v);
+         this.pixels[i] = (color & 0xFF000000) | (JHelpImage.computeRed(y, u, v) << 16) | (JHelpImage.computeGreen(y, u, v) << 8)
+               | JHelpImage.computeBlue(y, u, v);
       }
    }
 
@@ -2312,7 +2321,8 @@ public class JHelpImage
     *           Animation mode to use
     * @return Created couple
     */
-   public Pair<JHelpSprite, JHelpAnimatedImage> createAnimatedSprite(final int x, final int y, final int width, final int height, final AnimationMode animationMode)
+   public Pair<JHelpSprite, JHelpAnimatedImage> createAnimatedSprite(final int x, final int y, final int width, final int height,
+         final AnimationMode animationMode)
    {
       final JHelpSprite sprite = this.createSprite(x, y, width, height);
 
@@ -2368,7 +2378,8 @@ public class JHelpImage
             g = (color >> 8) & 0xFF;
             b = color & 0xFF;
 
-            if((Math.abs(alpha - a) <= precision) && (Math.abs(red - r) <= precision) && (Math.abs(green - g) <= precision) && (Math.abs(blue - b) <= precision))
+            if((Math.abs(alpha - a) <= precision) && (Math.abs(red - r) <= precision) && (Math.abs(green - g) <= precision)
+                  && (Math.abs(blue - b) <= precision))
             {
                mask.setValue(x, y, true);
             }
@@ -2748,7 +2759,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if we do the mixing {@code true}, or we just override {@code false}
     */
-   public void drawImage(final int x, final int y, final JHelpImage image, final int xImage, final int yImage, final int width, final int height, final boolean doAlphaMix)
+   public void drawImage(final int x, final int y, final JHelpImage image, final int xImage, final int yImage, final int width, final int height,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -2779,7 +2791,8 @@ public class JHelpImage
     * @param alpha
     *           Alpha to use
     */
-   public void drawImage(final int x, final int y, final JHelpImage image, final int xImage, final int yImage, final int width, final int height, final int alpha)
+   public void drawImage(final int x, final int y, final JHelpImage image, final int xImage, final int yImage, final int width, final int height,
+         final int alpha)
    {
       if(this.drawMode == false)
       {
@@ -2787,6 +2800,114 @@ public class JHelpImage
       }
 
       this.drawImageInternal(x, y, image, xImage, yImage, width, height, alpha);
+   }
+
+   /**
+    * Draw an image with a given transformation.<br>
+    * Image MUST be in draw mode.<br>
+    * Gven image and transformation MUST have same sizes
+    * 
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    * @param image
+    *           Image to draw
+    * @param transformation
+    *           Transformation to apply
+    * @param doAlphaMix
+    *           Indicates if we do the mixing {@code true}, or we just override {@code false}
+    */
+   public void drawImage(int x, int y, final JHelpImage image, final Transformation transformation, final boolean doAlphaMix)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      int width = image.getWidth();
+      int height = image.getHeight();
+
+      if((width != transformation.getWidth()) || (height != transformation.getHeight()))
+      {
+         throw new IllegalArgumentException("Image and transformation MUST have same size");
+      }
+
+      int xImage = 0;
+
+      if(x < this.clip.xMin)
+      {
+         xImage -= x - this.clip.xMin;
+         width += x - this.clip.xMin;
+         x = this.clip.xMin;
+      }
+
+      int yImage = 0;
+
+      if(y < this.clip.yMin)
+      {
+         yImage -= y - this.clip.yMin;
+         height += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int w = UtilMath.minIntegers((this.clip.xMax + 1) - x, image.width - xImage, width, this.width - x);
+      final int h = UtilMath.minIntegers((this.clip.yMax + 1) - y, image.height - yImage, height, this.height - y);
+
+      if((w <= 0) || (h <= 0))
+      {
+         return;
+      }
+
+      int lineImage = xImage + (yImage * image.width);
+      int pixImage;
+      int pixThis;
+      int colorThis;
+      int colorImage;
+      int alpha;
+      int ahpla;
+      Vector vector;
+      int tx, ty;
+
+      for(int yy = 0, yyy = y; yy < h; yy++, yyy++)
+      {
+         pixImage = lineImage;
+
+         for(int xx = 0, xxx = x; xx < w; xx++, xxx++)
+         {
+            vector = transformation.getVector(xImage + xx, yImage + yy);
+            tx = xxx + vector.vx;
+            ty = yyy + vector.vy;
+
+            if((tx >= this.clip.xMin) && (tx <= this.clip.xMax) && (ty >= this.clip.yMin) && (ty <= this.clip.yMax))
+            {
+               pixThis = tx + (ty * this.width);
+               colorImage = image.pixels[pixImage];
+
+               alpha = (colorImage >> 24) & 0xFF;
+
+               if((alpha == 255) || (doAlphaMix == false))
+               {
+                  this.pixels[pixThis] = colorImage;
+               }
+               else if(alpha > 0)
+               {
+                  ahpla = 256 - alpha;
+
+                  colorThis = this.pixels[pixThis];
+
+                  this.pixels[pixThis] = (Math.min(255, alpha + ((colorThis >> 24) & 0xFF)) << 24) | //
+                        ((((((colorImage >> 16) & 0xFF) * alpha) + (((colorThis >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
+                        ((((((colorImage >> 8) & 0xFF) * alpha) + (((colorThis >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+                        ((((colorImage & 0xFF) * alpha) + ((colorThis & 0xFF) * ahpla)) >> 8);
+               }
+            }
+
+            pixImage++;
+         }
+
+         lineImage += image.width;
+      }
    }
 
    /**
@@ -2999,6 +3120,89 @@ public class JHelpImage
             }
          }
       }
+   }
+
+   /**
+    * Draw a neon path.<br>
+    * Image MUST be in draw mode
+    * 
+    * @param path
+    *           Path to draw
+    * @param thin
+    *           Neon thick
+    * @param color
+    *           Color to use
+    * @param percentStart
+    *           Path percent to start drawing in [0, 1]
+    * @param percentEnd
+    *           Path percent to stop drawing in [0, 1]
+    */
+   public void drawNeon(final Path path, int thin, int color, final double percentStart, final double percentEnd)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      final int size = path.numberOfSegment();
+
+      if(size <= 0)
+      {
+         return;
+      }
+
+      int red = (color >> 16) & 0xFF;
+      int green = (color >> 8) & 0xFF;
+      int blue = color & 0xFF;
+      double y = JHelpImage.computeY(red, green, blue);
+      final double u = JHelpImage.computeU(red, green, blue);
+      final double v = JHelpImage.computeV(red, green, blue);
+      final int start = UtilMath.limit((int) (size * Math.min(percentStart, percentEnd)), 0, size);
+      final int limit = UtilMath.limit((int) (size * Math.max(percentStart, percentEnd)), 0, size);
+      Segment segment;
+
+      do
+      {
+         for(int index = start; index < limit; index++)
+         {
+            segment = path.getSegment(index);
+            this.drawThickLine((int) Math.round(segment.x1), (int) Math.round(segment.y1), (int) Math.round(segment.x2), (int) Math.round(segment.y2), thin,
+                  color);
+         }
+
+         y *= 2;
+         red = JHelpImage.computeRed(y, u, v);
+         green = JHelpImage.computeGreen(y, u, v);
+         blue = JHelpImage.computeBlue(y, u, v);
+         color = (color & 0xFF000000) | (red << 16) | (green << 8) | blue;
+         thin >>= 1;
+      }
+      while(thin > 1);
+   }
+
+   /**
+    * Repeat an image along a path.<br>
+    * Image MUST be in draw mode
+    * 
+    * @param path
+    *           Path to follow
+    * @param elementDraw
+    *           Image to repeat
+    * @param percentStart
+    *           Path percent to start drawing in [0, 1]
+    * @param percentEnd
+    *           Path percent to stop drawing in [0, 1]
+    * @param doAlphaMix
+    *           Indicates if we do the mixing {@code true}, or we just override {@code false}
+    */
+   public void drawPath(final Path path, final JHelpImage elementDraw, final double percentStart, final double percentEnd, final boolean doAlphaMix)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      path.drawPath(this, elementDraw, doAlphaMix, percentStart, percentEnd);
    }
 
    /**
@@ -3237,7 +3441,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if do alpha mixing or just overwrite
     */
-   public void drawRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int color, final boolean doAlphaMix)
+   public void drawRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int color,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -3950,7 +4155,8 @@ public class JHelpImage
     * @param color
     *           Color to use on border
     */
-   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int thickness, final int color)
+   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight,
+         final int thickness, final int color)
    {
       if(this.drawMode == false)
       {
@@ -3980,7 +4186,8 @@ public class JHelpImage
     * @param texture
     *           Texture to use on border
     */
-   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int thickness, final JHelpImage texture)
+   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight,
+         final int thickness, final JHelpImage texture)
    {
       if(this.drawMode == false)
       {
@@ -4010,7 +4217,8 @@ public class JHelpImage
     * @param paint
     *           Paint to use on border
     */
-   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int thickness, final JHelpPaint paint)
+   public void drawThickRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight,
+         final int thickness, final JHelpPaint paint)
    {
       if(this.drawMode == false)
       {
@@ -5557,7 +5765,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if we do the mixing {@code true}, or we just override {@code false}
     */
-   public void fillRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int color, final boolean doAlphaMix)
+   public void fillRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final int color,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -5614,7 +5823,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if we do the mixing {@code true}, or we just override {@code false}
     */
-   public void fillRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final JHelpImage texture, final boolean doAlphaMix)
+   public void fillRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight,
+         final JHelpImage texture, final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -5669,7 +5879,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if we do the mixing {@code true}, or we just override {@code false}
     */
-   public void fillRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final JHelpPaint paint, final boolean doAlphaMix)
+   public void fillRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final JHelpPaint paint,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -6109,7 +6320,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if we do the mixing {@code true}, or we just override {@code false}
     */
-   public void fillString(final int x, final int y, final String string, final JHelpFont font, final JHelpImage texture, final int color, final boolean doAlphaMix)
+   public void fillString(final int x, final int y, final String string, final JHelpFont font, final JHelpImage texture, final int color,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -6777,7 +6989,8 @@ public class JHelpImage
          u = JHelpImage.computeU(red, green, blue);
          v = JHelpImage.computeV(red, green, blue);
 
-         this.pixels[i] = (color & 0xFF000000) | (JHelpImage.computeRed(y, v, u) << 16) | (JHelpImage.computeGreen(y, v, u) << 8) | JHelpImage.computeBlue(y, v, u);
+         this.pixels[i] = (color & 0xFF000000) | (JHelpImage.computeRed(y, v, u) << 16) | (JHelpImage.computeGreen(y, v, u) << 8)
+               | JHelpImage.computeBlue(y, v, u);
       }
    }
 
@@ -6789,6 +7002,57 @@ public class JHelpImage
    public boolean isDrawMode()
    {
       return this.drawMode;
+   }
+
+   /**
+    * Remove all color part except blue<br>
+    * MUST be on draw mode
+    */
+   public void keepBlue()
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      for(int pix = this.pixels.length - 1; pix >= 0; pix--)
+      {
+         this.pixels[pix] &= 0xFF0000FF;
+      }
+   }
+
+   /**
+    * Remove all color part except green<br>
+    * MUST be on draw mode
+    */
+   public void keepGreen()
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      for(int pix = this.pixels.length - 1; pix >= 0; pix--)
+      {
+         this.pixels[pix] &= 0xFF00FF00;
+      }
+   }
+
+   /**
+    * Remove all color part except red<br>
+    * MUST be on draw mode
+    */
+   public void keepRed()
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      for(int pix = this.pixels.length - 1; pix >= 0; pix--)
+      {
+         this.pixels[pix] &= 0xFFFF0000;
+      }
    }
 
    /**
@@ -6935,7 +7199,7 @@ public class JHelpImage
     * Paint the image on using an other as alpha mask<br>
     * Alpha mask image can be imagine like a paper with holes that we put on the main image, we paint, and remove the image,
     * only holes are paint on final image.<br>
-    * Holes are here pixxels with alpha more than 0x80
+    * Holes are here pixels with alpha more than 0x80
     * 
     * @param x
     *           Where put the left corner X of alpha mask
@@ -7011,7 +7275,7 @@ public class JHelpImage
     * Paint the image on using an other as alpha mask<br>
     * Alpha mask image can be imagine like a paper with holes that we put on the main image, we paint, and remove the image,
     * only holes are paint on final image.<br>
-    * Holes are here pixxels with alpha more than 0x80
+    * Holes are here pixels with alpha more than 0x80
     * 
     * @param x
     *           Where put the left corner X of alpha mask
@@ -7319,7 +7583,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if do alpha mixing ({@code true}) or just overwrite ({@code false})
     */
-   public void paintMask(int x, int y, final JHelpMask mask, final int foreground, final JHelpImage background, int backgroundX, int backgroundY, final boolean doAlphaMix)
+   public void paintMask(int x, int y, final JHelpMask mask, final int foreground, final JHelpImage background, int backgroundX, int backgroundY,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -7516,7 +7781,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if do alpha mixing ({@code true}) or just overwrite ({@code false})
     */
-   public void paintMask(int x, int y, final JHelpMask mask, final JHelpImage foreground, int foregroundX, int foregroundY, final int background, final boolean doAlphaMix)
+   public void paintMask(int x, int y, final JHelpMask mask, final JHelpImage foreground, int foregroundX, int foregroundY, final int background,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -7630,7 +7896,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if do alpha mixing ({@code true}) or just overwrite ({@code false})
     */
-   public void paintMask(int x, int y, final JHelpMask mask, final JHelpImage foreground, int foregroundX, int foregroundY, final JHelpImage background, int backgroundX, int backgroundY, final boolean doAlphaMix)
+   public void paintMask(int x, int y, final JHelpMask mask, final JHelpImage foreground, int foregroundX, int foregroundY, final JHelpImage background,
+         int backgroundX, int backgroundY, final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -7757,7 +8024,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if do alpha mixing ({@code true}) or just overwrite ({@code false})
     */
-   public void paintMask(int x, int y, final JHelpMask mask, final JHelpImage foreground, int foregroundX, int foregroundY, final JHelpPaint background, final boolean doAlphaMix)
+   public void paintMask(int x, int y, final JHelpMask mask, final JHelpImage foreground, int foregroundX, int foregroundY, final JHelpPaint background,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -7954,7 +8222,8 @@ public class JHelpImage
     * @param doAlphaMix
     *           Indicates if do alpha mixing ({@code true}) or just overwrite ({@code false})
     */
-   public void paintMask(int x, int y, final JHelpMask mask, final JHelpPaint foreground, final JHelpImage background, int backgroundX, int backgroundY, final boolean doAlphaMix)
+   public void paintMask(int x, int y, final JHelpMask mask, final JHelpPaint foreground, final JHelpImage background, int backgroundX, int backgroundY,
+         final boolean doAlphaMix)
    {
       if(this.drawMode == false)
       {
@@ -8144,7 +8413,8 @@ public class JHelpImage
    {
       if((x < 0) || (x >= this.width) || (y < 0) || (y >= this.height))
       {
-         throw new IllegalArgumentException("Coordinates of peek point must be in [0, " + this.width + "[ x [0, " + this.height + "[ not (" + x + ", " + y + ")");
+         throw new IllegalArgumentException("Coordinates of peek point must be in [0, " + this.width + "[ x [0, " + this.height + "[ not (" + x + ", " + y
+               + ")");
       }
 
       return this.pixels[x + (y * this.width)];
@@ -8207,7 +8477,8 @@ public class JHelpImage
     */
    public void pushClipIntersect(final Clip clip)
    {
-      final Clip intersect = new Clip(Math.max(this.clip.xMin, clip.xMin), Math.min(this.clip.xMax, clip.xMax), Math.max(this.clip.yMin, clip.yMin), Math.min(this.clip.yMax, clip.yMax));
+      final Clip intersect = new Clip(Math.max(this.clip.xMin, clip.xMin), Math.min(this.clip.xMax, clip.xMax), Math.max(this.clip.yMin, clip.yMin), Math.min(
+            this.clip.yMax, clip.yMax));
       this.clips.push(this.clip.copy());
       this.clip.set(intersect);
    }
@@ -8523,7 +8794,8 @@ public class JHelpImage
       {
          color = this.pixels[i];
 
-         if((Math.abs(((colorToReplace >> 24) & 0xFF) - ((color >> 24) & 0xFF)) <= near) && (Math.abs(((colorToReplace >> 16) & 0xFF) - ((color >> 16) & 0xFF)) <= near)
+         if((Math.abs(((colorToReplace >> 24) & 0xFF) - ((color >> 24) & 0xFF)) <= near)
+               && (Math.abs(((colorToReplace >> 16) & 0xFF) - ((color >> 16) & 0xFF)) <= near)
                && (Math.abs(((colorToReplace >> 8) & 0xFF) - ((color >> 8) & 0xFF)) <= near) && (Math.abs((colorToReplace & 0xFF) - (color & 0xFF)) <= near))
          {
             this.pixels[i] = newColor;
@@ -8735,11 +9007,39 @@ public class JHelpImage
     * @param pixels
     *           Pixels array
     */
-   public void setPixels(int x, int y, int width, int height, final int[] pixels)
+   public void setPixels(final int x, final int y, final int width, final int height, final int[] pixels)
+   {
+      this.setPixels(x, y, width, height, pixels, 0);
+   }
+
+   /**
+    * Change a pixels area.<br>
+    * MUST be in draw mode
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Width of image in pixels array
+    * @param height
+    *           Height of image in pixels array
+    * @param pixels
+    *           Pixels array
+    * @param offset
+    *           Offset where start read pixels data
+    */
+   public void setPixels(int x, int y, int width, int height, final int[] pixels, final int offset)
    {
       if(this.drawMode == false)
       {
          throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if((x == 0) && (y == 0) && (width == this.width) && (height == this.height) && (offset == 0))
+      {
+         System.arraycopy(pixels, 0, this.pixels, 0, this.pixels.length);
+         return;
       }
 
       if(x < 0)
@@ -8763,7 +9063,7 @@ public class JHelpImage
       }
 
       int lineThis = x + (y * this.width);
-      int lineImage = 0;
+      int lineImage = offset;
 
       for(int yy = 0; yy < h; yy++)
       {
@@ -8771,6 +9071,30 @@ public class JHelpImage
 
          lineThis += this.width;
          lineImage += width;
+      }
+   }
+
+   /**
+    * Change image global transparency<br>
+    * MUST be in draw mode
+    * 
+    * @param alpha
+    *           New global transparency
+    */
+   public void setTransparency(final int alpha)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      final int alphaPart = UtilMath.limit0_255(alpha) << 24;
+      int color;
+
+      for(int pix = this.pixels.length - 1; pix >= 0; pix--)
+      {
+         color = this.pixels[pix];
+         this.pixels[pix] = alphaPart | (color & 0x00FFFFFF);
       }
    }
 
@@ -8911,7 +9235,7 @@ public class JHelpImage
    {
       if((this.width != image.width) || (this.height != image.height))
       {
-         throw new IllegalArgumentException("We can only multiply with an image of same size");
+         throw new IllegalArgumentException("We can only subtract with an image of same size");
       }
 
       if(this.drawMode == false)
@@ -8930,6 +9254,62 @@ public class JHelpImage
                (UtilMath.limit0_255(((colorThis >> 16) & 0xFF) - ((colorImage >> 16) & 0xFF)) << 16) | //
                (UtilMath.limit0_255(((colorThis >> 8) & 0xFF) - ((colorImage >> 8) & 0xFF)) << 8) | //
                UtilMath.limit0_255((colorThis & 0xFF) - (colorImage & 0xFF));
+      }
+   }
+
+   /**
+    * Tint image.<br>
+    * MUST be in draw mode
+    * 
+    * @param color
+    *           Color to tint with
+    */
+   public void tint(final int color)
+   {
+      this.gray();
+      final int red = (color >> 16) & 0xFF;
+      final int green = (color >> 8) & 0xFF;
+      final int blue = color & 0xFF;
+      int col;
+      int gray;
+
+      for(int pix = this.pixels.length - 1; pix >= 0; pix--)
+      {
+         col = this.pixels[pix];
+         gray = col & 0xFF;
+         this.pixels[pix] = (col & 0xFF000000) | (((red * gray) >> 8) << 16) | (((green * gray) >> 8) << 8) | ((blue * gray) >> 8);
+      }
+   }
+
+   /**
+    * Tint image.<br>
+    * MUST be in draw mode
+    * 
+    * @param colorHigh
+    *           Color for "high" value
+    * @param colorLow
+    *           Color for "low" value
+    */
+   public void tint(final int colorHigh, final int colorLow)
+   {
+      this.gray();
+      final int redHigh = (colorHigh >> 16) & 0xFF;
+      final int greenHigh = (colorHigh >> 8) & 0xFF;
+      final int blueHigh = colorHigh & 0xFF;
+      final int redLow = (colorLow >> 16) & 0xFF;
+      final int greenLow = (colorLow >> 8) & 0xFF;
+      final int blueLow = colorLow & 0xFF;
+      int col;
+      int gray;
+      int yarg;
+
+      for(int pix = this.pixels.length - 1; pix >= 0; pix--)
+      {
+         col = this.pixels[pix];
+         gray = col & 0xFF;
+         yarg = 256 - gray;
+         this.pixels[pix] = (col & 0xFF000000) | ((((redHigh * gray) + (redLow * yarg)) >> 8) << 16) | ((((greenHigh * gray) + (greenLow * yarg)) >> 8) << 8)
+               | (((blueHigh * gray) + (blueLow * yarg)) >> 8);
       }
    }
 

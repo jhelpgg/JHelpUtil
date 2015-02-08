@@ -90,32 +90,43 @@ public class ForEach<ELEMENT>
          extends ThreadedVerySimpleTask
    {
       /** Action to do */
-      private final ActionEach<ELT>  action;
+      private final ActionEach<ELT>      action;
       /** List of element in collection */
-      private final Collection<ELT>  collection;
+      private final Collection<ELT>      collection;
       /** filter to apply (may be {@code null} */
-      private final FilterEach<ELT>  filter;
+      private final FilterEach<ELT>      filter;
+      /** Listener to call when for each terminated */
+      private final ForEachAsyncListener forEachAsyncListener;
+      /** For each ID */
+      private final int                  forEachID;
       /** Sorted list of element */
-      private final SortedArray<ELT> sortedArray;
+      private final SortedArray<ELT>     sortedArray;
 
       /**
        * Create a new instance of ForEachAsync
        * 
        * @param collection
-       *           Collection of elemnt ({@code null} if use sorted array)
+       *           Collection of element ({@code null} if use sorted array)
        * @param sortedArray
        *           Sorted array of element ({@code null} if use collection)
        * @param filter
        *           Filter to apply ({@code null} if no filter)
        * @param action
        *           Action to do on each filtered elements
+       * @param forEachAsyncListener
+       *           Listener to call when for each is terminated (If {@code null} no callback)
+       * @param forEachID
+       *           Identifier of for each
        */
-      ForEachAsync(final Collection<ELT> collection, final SortedArray<ELT> sortedArray, final FilterEach<ELT> filter, final ActionEach<ELT> action)
+      ForEachAsync(final Collection<ELT> collection, final SortedArray<ELT> sortedArray, final FilterEach<ELT> filter, final ActionEach<ELT> action,
+            final ForEachAsyncListener forEachAsyncListener, final int forEachID)
       {
          this.collection = collection;
          this.sortedArray = sortedArray;
          this.filter = filter;
          this.action = action;
+         this.forEachAsyncListener = forEachAsyncListener;
+         this.forEachID = forEachID;
       }
 
       /**
@@ -131,6 +142,11 @@ public class ForEach<ELEMENT>
       {
          final ForEach<ELT> forEach = new ForEach<ELT>();
          forEach.launchForEach(this.collection, this.sortedArray, this.filter, this.action);
+
+         if(this.forEachAsyncListener != null)
+         {
+            this.forEachAsyncListener.forEachAsyncTerminated(this.forEachID);
+         }
       }
    }
 
@@ -234,8 +250,13 @@ public class ForEach<ELEMENT>
     *           Collection where found elements
     * @param action
     *           Action to do on each elements
+    * @param forEachAsyncListener
+    *           Listener to call when for each is terminated (If {@code null} no callback)
+    * @param forEachID
+    *           Identifier of for each
     */
-   public static <ELEMENT> void forEachAsync(final Collection<ELEMENT> collection, final ActionEach<ELEMENT> action)
+   public static <ELEMENT> void forEachAsync(final Collection<ELEMENT> collection, final ActionEach<ELEMENT> action,
+         final ForEachAsyncListener forEachAsyncListener, final int forEachID)
    {
       if(collection == null)
       {
@@ -247,7 +268,7 @@ public class ForEach<ELEMENT>
          throw new NullPointerException("action musn't be null");
       }
 
-      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(collection, null, null, action), null);
+      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(collection, null, null, action, forEachAsyncListener, forEachID), null);
    }
 
    /**
@@ -259,11 +280,16 @@ public class ForEach<ELEMENT>
     * @param collection
     *           Collection where found elements
     * @param filter
-    *           Filter to select elemnts to do the action ({@code null} for no filter)
+    *           Filter to select elements to do the action ({@code null} for no filter)
     * @param action
     *           Action to do on each filtered elements
+    * @param forEachAsyncListener
+    *           Listener to call when for each is terminated (If {@code null} no callback)
+    * @param forEachID
+    *           Identifier of for each
     */
-   public static <ELEMENT> void forEachAsync(final Collection<ELEMENT> collection, final FilterEach<ELEMENT> filter, final ActionEach<ELEMENT> action)
+   public static <ELEMENT> void forEachAsync(final Collection<ELEMENT> collection, final FilterEach<ELEMENT> filter, final ActionEach<ELEMENT> action,
+         final ForEachAsyncListener forEachAsyncListener, final int forEachID)
    {
       if(collection == null)
       {
@@ -275,7 +301,7 @@ public class ForEach<ELEMENT>
          throw new NullPointerException("action musn't be null");
       }
 
-      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(collection, null, filter, action), null);
+      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(collection, null, filter, action, forEachAsyncListener, forEachID), null);
    }
 
    /**
@@ -288,8 +314,13 @@ public class ForEach<ELEMENT>
     *           Sorted array where found elements
     * @param action
     *           Action to do on each elements
+    * @param forEachAsyncListener
+    *           Listener to call when for each is terminated (If {@code null} no callback)
+    * @param forEachID
+    *           Identifier of for each
     */
-   public static <ELEMENT> void forEachAsync(final SortedArray<ELEMENT> sortedArray, final ActionEach<ELEMENT> action)
+   public static <ELEMENT> void forEachAsync(final SortedArray<ELEMENT> sortedArray, final ActionEach<ELEMENT> action,
+         final ForEachAsyncListener forEachAsyncListener, final int forEachID)
    {
       if(sortedArray == null)
       {
@@ -301,7 +332,7 @@ public class ForEach<ELEMENT>
          throw new NullPointerException("action musn't be null");
       }
 
-      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(null, sortedArray, null, action), null);
+      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(null, sortedArray, null, action, forEachAsyncListener, forEachID), null);
    }
 
    /**
@@ -313,11 +344,16 @@ public class ForEach<ELEMENT>
     * @param sortedArray
     *           Sorted array where found elements
     * @param filter
-    *           Filter to select elemnts to do the action ({@code null} for no filter)
+    *           Filter to select elements to do the action ({@code null} for no filter)
+    * @param forEachAsyncListener
+    *           Listener to call when for each is terminated (If {@code null} no callback)
+    * @param forEachID
+    *           Identifier of for each
     * @param action
     *           Action to do on each filtered elements
     */
-   public static <ELEMENT> void forEachAsync(final SortedArray<ELEMENT> sortedArray, final FilterEach<ELEMENT> filter, final ActionEach<ELEMENT> action)
+   public static <ELEMENT> void forEachAsync(final SortedArray<ELEMENT> sortedArray, final FilterEach<ELEMENT> filter, final ActionEach<ELEMENT> action,
+         final ForEachAsyncListener forEachAsyncListener, final int forEachID)
    {
       if(sortedArray == null)
       {
@@ -329,7 +365,7 @@ public class ForEach<ELEMENT>
          throw new NullPointerException("action musn't be null");
       }
 
-      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(null, sortedArray, filter, action), null);
+      ThreadManager.THREAD_MANAGER.doThread(new ForEachAsync<ELEMENT>(null, sortedArray, filter, action, forEachAsyncListener, forEachID), null);
    }
 
    /** Current task count */
@@ -354,7 +390,8 @@ public class ForEach<ELEMENT>
     * @param action
     *           Action to do on filtered elements
     */
-   void launchForEach(final Collection<ELEMENT> collection, final SortedArray<ELEMENT> sortedArray, final FilterEach<ELEMENT> filter, final ActionEach<ELEMENT> action)
+   void launchForEach(final Collection<ELEMENT> collection, final SortedArray<ELEMENT> sortedArray, final FilterEach<ELEMENT> filter,
+         final ActionEach<ELEMENT> action)
    {
       // Get the list of elements and initialize the number of tasks
       Iterable<ELEMENT> iterable;

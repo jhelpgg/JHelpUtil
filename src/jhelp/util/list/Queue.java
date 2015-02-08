@@ -112,8 +112,13 @@ public class Queue<TYPE>
       }
 
       final TYPE element = this.head.element;
-
+      this.head.element = null;
       this.head = this.head.next;
+
+      if(this.head == null)
+      {
+         this.queue = null;
+      }
 
       return element;
    }
@@ -150,9 +155,16 @@ public class Queue<TYPE>
       {
          if(((elt.element == null) && (element == null)) || ((elt.element != null) && (elt.element.equals(element) == true)))
          {
+            elt.element = null;
+
             if(prev == null)
             {
                this.head = elt.next;
+
+               if(this.head == null)
+               {
+                  this.queue = null;
+               }
 
                return;
             }
@@ -198,7 +210,7 @@ public class Queue<TYPE>
    @Override
    public String toString()
    {
-      final StringBuilder stringBuilder = new StringBuilder("Ring[");
+      final StringBuilder stringBuilder = new StringBuilder("Queue[");
 
       if(this.head != null)
       {

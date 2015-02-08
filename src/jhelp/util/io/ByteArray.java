@@ -865,7 +865,8 @@ public class ByteArray
     */
    public long readLong()
    {
-      return ((long) this.read() << 56L) | ((long) this.read() << 48L) | ((long) this.read() << 40L) | ((long) this.read() << 32L) | ((long) this.read() << 24L) | ((long) this.read() << 16L) | ((long) this.read() << 8L) | this.read();
+      return ((long) this.read() << 56L) | ((long) this.read() << 48L) | ((long) this.read() << 40L) | ((long) this.read() << 32L)
+            | ((long) this.read() << 24L) | ((long) this.read() << 16L) | ((long) this.read() << 8L) | this.read();
    }
 
    /**
@@ -1137,6 +1138,7 @@ public class ByteArray
     * @param array
     *           {@link Binarizable} array to write
     */
+   @SuppressWarnings("unchecked")
    public <B extends Binarizable> void writeBinarizableArray(final B... array)
    {
       if(array == null)
@@ -1367,7 +1369,10 @@ public class ByteArray
     * @param array
     *           Array of enum to write
     */
-   @SuppressWarnings("rawtypes")
+   @SuppressWarnings(
+   {
+         "rawtypes", "unchecked"
+   })
    public <E extends Enum> void writeEnumArray(final E... array)
    {
       if(array == null)
@@ -1461,6 +1466,20 @@ public class ByteArray
    }
 
    /**
+    * Write integer value in little Indian way
+    * 
+    * @param intValue
+    *           Integer to write
+    */
+   public void writeIntegerLittleEndian(final int intValue)
+   {
+      this.write(intValue & 0xFF);
+      this.write((intValue >> 8) & 0xFF);
+      this.write((intValue >> 16) & 0xFF);
+      this.write((intValue >> 24) & 0xFF);
+   }
+
+   /**
     * Write a long.<br>
     * See {@link #readLong()}
     * 
@@ -1540,6 +1559,18 @@ public class ByteArray
       {
          this.writeShort(array[i]);
       }
+   }
+
+   /**
+    * Write short value in little Indian way
+    * 
+    * @param intValue
+    *           Short to write
+    */
+   public void writeShortLittleEndian(final short intValue)
+   {
+      this.write(intValue & 0xFF);
+      this.write((intValue >> 8) & 0xFF);
    }
 
    /**

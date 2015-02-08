@@ -118,6 +118,8 @@ public class GIF
       @Override
       public void startCollecting(final int width, final int height)
       {
+         this.width = width;
+         this.height = height;
          this.list = new ArrayList<JHelpImage>();
       }
    }
@@ -321,7 +323,7 @@ public class GIF
 
    /**
     * Get the image suggest between last time {@link #startAnimation()} was called and time this method is called based on
-    * images dellays
+    * images delays
     * 
     * @return Image since last time {@link #startAnimation()} was called
     */
@@ -397,7 +399,7 @@ public class GIF
    }
 
    /**
-    * Satart/restart animation from begening, to follow evolution, use {@link #getImageFromStartAnimation()} to have current
+    * Start/restart animation from beginning, to follow evolution, use {@link #getImageFromStartAnimation()} to have current
     * image of the animation
     */
    public void startAnimation()

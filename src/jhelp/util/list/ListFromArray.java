@@ -11,7 +11,7 @@ import java.util.ListIterator;
 /**
  * List based on a fix array.<br>
  * If an element change from this list, it is also modified to the linked array.<br>
- * This ist have some restriction, you can't add or remove element from it. But its possible to read/modfy and element
+ * This list have some restriction, you can't add or remove element from it. But its possible to read/modify and element
  * 
  * @author JHelp
  * @param <TYPE>
@@ -35,6 +35,7 @@ public class ListFromArray<TYPE>
     * @param array
     *           Array to link to the list
     */
+   @SafeVarargs
    public ListFromArray(final boolean modifiable, final TYPE... array)
    {
       this.modifiable = modifiable;
@@ -48,6 +49,7 @@ public class ListFromArray<TYPE>
     * @param array
     *           Array to link to the list
     */
+   @SafeVarargs
    public ListFromArray(final TYPE... array)
    {
       this(true, array);
@@ -494,9 +496,9 @@ public class ListFromArray<TYPE>
     * {@inheritDoc}
     * 
     * @param fromIndex
-    *           Start index
+    *           Start index (inclusive)
     * @param toIndex
-    *           End index
+    *           End index (exclusive)
     * @return Sub list
     * @see java.util.List#subList(int, int)
     */
@@ -505,7 +507,8 @@ public class ListFromArray<TYPE>
    {
       if((fromIndex < 0) || (toIndex > this.length) || (fromIndex > toIndex))
       {
-         throw new IndexOutOfBoundsException("fromIndex=" + fromIndex + " toIndex=" + toIndex + " : One of following condition is not respected : fromIndex<=toIndex, fromIndex>=0, toIndex<=" + this.length);
+         throw new IndexOutOfBoundsException("fromIndex=" + fromIndex + " toIndex=" + toIndex
+               + " : One of following condition is not respected : fromIndex<=toIndex, fromIndex>=0, toIndex<=" + this.length);
       }
 
       if(fromIndex == toIndex)

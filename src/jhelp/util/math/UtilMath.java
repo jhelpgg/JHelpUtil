@@ -1,5 +1,6 @@
 package jhelp.util.math;
 
+import java.awt.Rectangle;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -19,6 +20,8 @@ public final class UtilMath
    public static final BigInteger BIG_TWO       = UtilMath.createBigInteger(2);
    /** Epsilon */
    public static final double     EPSILON       = UtilMath.max(Double.MIN_NORMAL, Math.abs(Math.E - Math.exp(1)), Math.abs(Math.PI - Math.acos(-1)));
+   /** ln(2) */
+   public static final double     LOG_2         = Math.log(2);
    /** PI / 2 */
    public static double           PI_2          = Math.PI / 2;
    /** 2 * PI */
@@ -314,6 +317,48 @@ public final class UtilMath
    }
 
    /**
+    * Limit an integer between 2 values.<br>
+    * If the integer is between given bounds, the integer is returned.<br>
+    * If the integer is lower the minimum of the given bounds, the minimum is returned.<br>
+    * If the integer is upper the maximum of the given bounds, the maximum is returned.
+    * 
+    * @param integer
+    *           Integer to limit
+    * @param bound1
+    *           First bound
+    * @param bound2
+    *           Second bound
+    * @return Limited integer
+    */
+   public static int limit(final int integer, final int bound1, final int bound2)
+   {
+      final int min = Math.min(bound1, bound2);
+      final int max = Math.max(bound1, bound2);
+      return Math.max(min, Math.min(max, integer));
+   }
+
+   /**
+    * Limit an integer between 2 values.<br>
+    * If the integer is between given bounds, the integer is returned.<br>
+    * If the integer is lower the minimum of the given bounds, the minimum is returned.<br>
+    * If the integer is upper the maximum of the given bounds, the maximum is returned.
+    * 
+    * @param integer
+    *           Integer to limit
+    * @param bound1
+    *           First bound
+    * @param bound2
+    *           Second bound
+    * @return Limited integer
+    */
+   public static long limit(final long integer, final long bound1, final long bound2)
+   {
+      final long min = Math.min(bound1, bound2);
+      final long max = Math.max(bound1, bound2);
+      return Math.max(min, Math.min(max, integer));
+   }
+
+   /**
     * Return the given integer, if the integer is in [0, 255]. If integer<0, we return 0, if integer>255, we return 255
     * 
     * @param integer
@@ -322,11 +367,43 @@ public final class UtilMath
     */
    public static int limit0_255(final int integer)
    {
-      return integer <= 0
-            ? 0
-            : (integer >= 255
-                  ? 255
-                  : integer);
+      return UtilMath.limit(integer, 0, 255);
+   }
+
+   /**
+    * Compute logarithm base 2 of a number
+    * 
+    * @param real
+    *           Number to have is logarithm base 2
+    * @return Logarithm base 2 of the number
+    */
+   public static double log2(final double real)
+   {
+      return Math.log(real) / UtilMath.LOG_2;
+   }
+
+   /**
+    * Compute logarithm base 2 of a number
+    * 
+    * @param integer
+    *           Number to have is logarithm base 2
+    * @return Logarithm base 2 of the number
+    */
+   public static int log2(final int integer)
+   {
+      return (int) (Math.log(integer) / UtilMath.LOG_2);
+   }
+
+   /**
+    * Compute logarithm base 2 of a number
+    * 
+    * @param integer
+    *           Number to have is logarithm base 2
+    * @return Logarithm base 2 of the number
+    */
+   public static int log2(final long integer)
+   {
+      return (int) (Math.log(integer) / UtilMath.LOG_2);
    }
 
    /**
@@ -842,7 +919,7 @@ public final class UtilMath
    }
 
    /**
-    * Square or a number
+    * Square of a number
     * 
     * @param real
     *           Number to square
@@ -854,7 +931,7 @@ public final class UtilMath
    }
 
    /**
-    * Square or a number
+    * Square of a number
     * 
     * @param integer
     *           Number to square
@@ -870,5 +947,47 @@ public final class UtilMath
     */
    private UtilMath()
    {
+   }
+
+   /**
+    * Compute intersection area between two rectangles
+    * 
+    * @param rectangle1
+    *           First rectangle
+    * @param rectangle2
+    *           Second rectangle
+    * @return Computed area
+    */
+   public static int computeIntresectedArea(final Rectangle rectangle1, final Rectangle rectangle2)
+   {
+      final int xmin1 = rectangle1.x;
+      final int xmax1 = rectangle1.x + rectangle1.width;
+      final int ymin1 = rectangle1.y;
+      final int ymax1 = rectangle1.y + rectangle1.height;
+      final int xmin2 = rectangle2.x;
+      final int xmax2 = rectangle2.x + rectangle2.width;
+      final int ymin2 = rectangle2.y;
+      final int ymax2 = rectangle2.y + rectangle2.height;
+   
+      if((xmin1 > xmax2) || (ymin1 > ymax2) || (xmin2 > xmax1) || (ymin2 > ymax1))
+      {
+         return 0;
+      }
+   
+      final int xmin = Math.max(xmin1, xmin2);
+      final int xmax = Math.min(xmax1, xmax2);
+      if(xmin >= xmax)
+      {
+         return 0;
+      }
+   
+      final int ymin = Math.max(ymin1, ymin2);
+      final int ymax = Math.min(ymax1, ymax2);
+      if(ymin >= ymax)
+      {
+         return 0;
+      }
+   
+      return (xmax - xmin) * (ymax - ymin);
    }
 }

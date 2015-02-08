@@ -78,8 +78,8 @@ public final class UtilIO
     */
    public static long byteArrayToLong(final byte[] array)
    {
-      return ((long) (array[0] & 0xFF) << 56L) | ((long) (array[1] & 0xFF) << 48L) | ((long) (array[2] & 0xFF) << 40L) | ((long) (array[3] & 0xFF) << 32L) | ((long) (array[4] & 0xFF) << 24L) | ((long) (array[5] & 0xFF) << 16L)
-            | ((long) (array[6] & 0xFF) << 8L) | (array[7] & 0xFF);
+      return ((long) (array[0] & 0xFF) << 56L) | ((long) (array[1] & 0xFF) << 48L) | ((long) (array[2] & 0xFF) << 40L) | ((long) (array[3] & 0xFF) << 32L)
+            | ((long) (array[4] & 0xFF) << 24L) | ((long) (array[5] & 0xFF) << 16L) | ((long) (array[6] & 0xFF) << 8L) | (array[7] & 0xFF);
    }
 
    /**
@@ -973,7 +973,7 @@ public final class UtilIO
          directory = UtilIO.obtainOutsideDirectory();
       }
 
-      directory = new File(directory, "JHelp");
+      directory = new File(directory, "JHelp/temporary");
       UtilIO.createDirectory(directory);
 
       return UtilIO.temporaryDirectory = directory;
@@ -1885,6 +1885,23 @@ public final class UtilIO
     */
    public static void zip(final File source, final File destination) throws IOException
    {
+      UtilIO.zip(source, destination, false);
+   }
+
+   /**
+    * Zip a file or directory inside a file
+    * 
+    * @param source
+    *           File/directory to zip
+    * @param destination
+    *           File destination
+    * @param onlyContentIfDirectory
+    *           Indicates to zip only directory content (not the directory itself) if the given file is a directory.
+    * @throws IOException
+    *            On zipping issue
+    */
+   public static void zip(final File source, final File destination, final boolean onlyContentIfDirectory) throws IOException
+   {
       if(UtilIO.createFile(destination) == false)
       {
          throw new IOException("Can't create " + destination.getAbsolutePath());
@@ -1896,7 +1913,7 @@ public final class UtilIO
       {
          fileOutputStream = new FileOutputStream(destination);
 
-         UtilIO.zip(source, fileOutputStream);
+         UtilIO.zip(source, fileOutputStream, onlyContentIfDirectory);
       }
       catch(final IOException exception)
       {
@@ -1937,6 +1954,23 @@ public final class UtilIO
     */
    public static void zip(final File source, final OutputStream outputStreamZip) throws IOException
    {
+      UtilIO.zip(source, outputStreamZip, false);
+   }
+
+   /**
+    * Zip a file or directory inside a stream
+    * 
+    * @param source
+    *           File/directory to zip
+    * @param outputStreamZip
+    *           Where write the zip
+    * @param onlyContentIfDirectory
+    *           Indicates to zip only directory content (not the directory itself) if the given file is a directory.
+    * @throws IOException
+    *            On zipping issue
+    */
+   public static void zip(final File source, final OutputStream outputStreamZip, final boolean onlyContentIfDirectory) throws IOException
+   {
       ZipEntry zipEntry;
       final ZipOutputStream zipOutputStream = new ZipOutputStream(outputStreamZip);
       // For the best compression
@@ -1946,6 +1980,7 @@ public final class UtilIO
       final Stack<Pair<String, File>> stack = new Stack<Pair<String, File>>();
 
       stack.push(pair);
+      boolean ignore = (source.isDirectory() == true) && (onlyContentIfDirectory == true);
 
       while(stack.isEmpty() == false)
       {
@@ -1955,12 +1990,22 @@ public final class UtilIO
          {
             if(pair.element2.isDirectory() == true)
             {
-               for(final File child : pair.element2.listFiles())
+               if(ignore == false)
                {
-                  stack.push(new Pair<String, File>(pair.element1 + "/" + child.getName(), child));
+                  for(final File child : pair.element2.listFiles())
+                  {
+                     stack.push(new Pair<String, File>(pair.element1 + "/" + child.getName(), child));
+                  }
+               }
+               else
+               {
+                  for(final File child : pair.element2.listFiles())
+                  {
+                     stack.push(new Pair<String, File>(child.getName(), child));
+                  }
                }
             }
-            else
+            else if(ignore == false)
             {
                zipEntry = new ZipEntry(pair.element1);
                // For the best compression
@@ -1973,6 +2018,8 @@ public final class UtilIO
                zipOutputStream.closeEntry();
             }
          }
+
+         ignore = false;
       }
 
       zipOutputStream.finish();

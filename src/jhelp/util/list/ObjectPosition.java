@@ -20,9 +20,9 @@ public class ObjectPosition<OBJECT extends SizedObject>
    private long                       priority;
    /** Object index in the bag */
    final int                          index;
-   /** X of up left cornner of object in the bag */
+   /** X of up left corner of object in the bag */
    int                                x;
-   /** Y of up left cornner of object in the bag */
+   /** Y of up left corner of object in the bag */
    int                                y;
 
    /**

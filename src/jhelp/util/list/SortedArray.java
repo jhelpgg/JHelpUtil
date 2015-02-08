@@ -641,7 +641,7 @@ public final class SortedArray<TYPE>
    }
 
    /**
-    * Collect all matches element is a sorted array list of same class element and unque value
+    * Collect all matches element is a sorted array list of same class element, same comparator, and unique value
     * 
     * @param seekTest
     *           Test of seek elements
@@ -649,7 +649,8 @@ public final class SortedArray<TYPE>
     */
    public SortedArray<TYPE> seekElements(final SeekTest<TYPE> seekTest)
    {
-      final SortedArray<TYPE> sortedArray = new SortedArray<TYPE>(this.typeClass, this.unique);
+      @SuppressWarnings("unchecked")
+      final SortedArray<TYPE> sortedArray = new SortedArray<TYPE>(this.typeClass, this.comparator, this.size, this.unique);
 
       for(int index = 0; index < this.size; index++)
       {

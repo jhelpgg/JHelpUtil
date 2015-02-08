@@ -28,6 +28,7 @@ public final class UtilText
    public static final String  DEFAULT_SEPARATORS        = " \n\t\r\f";
    /** Default string limiters : " and ' (see {@link StringExtractor}) */
    public static final String  DEFAULT_STRING_LIMITERS   = "\"'";
+
    /** UTF-8 char set */
    public static final Charset UTF8                      = Charset.forName("UTF-8");
 
@@ -469,8 +470,8 @@ public final class UtilText
       }
       if(caseSensitive == false)
       {
-         text1 = text1.toUpperCase();
-         text2 = text2.toUpperCase();
+         text1 = UtilText.upperCaseWithoutAccent(text1);
+         text2 = UtilText.upperCaseWithoutAccent(text2);
       }
       final Hashtable<String, Integer> wordList1 = new Hashtable<String, Integer>();
       final Hashtable<String, Integer> wordList2 = new Hashtable<String, Integer>();
@@ -543,6 +544,60 @@ public final class UtilText
       if(atLeast == false)
       {
          distance += 100;
+      }
+
+      return distance;
+   }
+
+   /**
+    * Compute a "distance" between 2 words. <br>
+    * It says hw "far" a test word is from a reference word <br>
+    * 0 means they are the same word
+    * 
+    * @param test
+    *           Word to test
+    * @param reference
+    *           Reference word
+    * @return The "distance"
+    */
+   public static int computeDistanceWord(String test, String reference)
+   {
+      if(test.equals(reference) == true)
+      {
+         return 0;
+      }
+
+      test = UtilText.upperCaseWithoutAccent(test.replace("œ", "oe").replace("Œ", "OE").replace("æ", "ae").replace("Æ", "AE"));
+      reference = UtilText.upperCaseWithoutAccent(reference.replace("œ", "oe").replace("Œ", "OE").replace("æ", "ae").replace("Æ", "AE"));
+      int distance = 1;
+
+      if(test.equals(reference) == true)
+      {
+         return distance;
+      }
+
+      final char[] charactersTest = test.toCharArray();
+      final int lengthTest = charactersTest.length;
+      final char[] charactersReference = reference.toCharArray();
+      final int lengthReference = charactersReference.length;
+      distance += 1 + Math.abs(lengthTest - lengthReference);
+      char character;
+      int minimum;
+
+      for(int indexTest = 0; indexTest < lengthTest; indexTest++)
+      {
+         character = charactersTest[indexTest];
+         minimum = lengthReference;
+
+         for(int indexReference = 0; indexReference < lengthReference; indexReference++)
+         {
+            if(character == charactersReference[indexReference])
+            {
+               minimum = Math.min(minimum, Math.abs(indexReference - indexTest));
+            }
+         }
+
+         distance += minimum;
       }
 
       return distance;
@@ -855,7 +910,7 @@ public final class UtilText
    public static int indexOf(final CharSequence charSequence, final int offset, final char... characters)
    {
       final int start = Math.max(0, offset);
-      final int length = characters.length;
+      final int length = charSequence.length();
       char character;
 
       for(int index = start; index < length; index++)
@@ -911,13 +966,30 @@ public final class UtilText
     */
    public static int indexOfIgnoreString(final String string, final char character)
    {
+      return UtilText.indexOfIgnoreString(string, character, 0);
+   }
+
+   /**
+    * Compute the index of a character in a string on ignoring characters between " or ' an in ignore characters with \ just
+    * before them
+    * 
+    * @param string
+    *           String where search
+    * @param character
+    *           Looking for character
+    * @param startIndex
+    *           Index where start to search
+    * @return Index of character or -1 if not found
+    */
+   public static int indexOfIgnoreString(final String string, final char character, final int startIndex)
+   {
       final char[] characters = string.toCharArray();
       final int length = characters.length;
       char ch;
       char delimString = 0;
       boolean antiSlash = false;
 
-      for(int i = 0; i < length; i++)
+      for(int i = Math.max(0, startIndex); i < length; i++)
       {
          ch = characters[i];
 
@@ -1136,7 +1208,8 @@ public final class UtilText
       final int length = characters.length;
       if(length > 8)
       {
-         throw new IllegalArgumentException(UtilText.concatenate("The number in hexadecimal can't be more than 8 characters, so '", string, "' can't be converted"));
+         throw new IllegalArgumentException(UtilText.concatenate("The number in hexadecimal can't be more than 8 characters, so '", string,
+               "' can't be converted"));
       }
 
       int integer = 0;
@@ -1181,7 +1254,8 @@ public final class UtilText
       final int length = characters.length;
       if(length > 8)
       {
-         throw new IllegalArgumentException(UtilText.concatenate("The number in hexadecimal can't be more than 8 characters (after the 0x), so '", string, "' can't be converted"));
+         throw new IllegalArgumentException(UtilText.concatenate("The number in hexadecimal can't be more than 8 characters (after the 0x), so '", string,
+               "' can't be converted"));
       }
 
       int integer = 0;
@@ -1581,7 +1655,58 @@ public final class UtilText
    }
 
    /**
-    * Compute the upper case version of of string, and remove all accent.
+    * Compute the upper case version of character, and remove all accent.
+    * 
+    * @param character
+    *           Character to upper case
+    * @return Upper case result
+    */
+   public static char upperCaseWithoutAccent(char character)
+   {
+      character = Character.toUpperCase(character);
+
+      switch(character)
+      {
+         case 'À':
+         case 'Â':
+         case 'Ä':
+         case 'Á':
+         case 'Ã':
+            return 'A';
+         case 'Ç':
+            return 'C';
+         case 'Ê':
+         case 'Ë':
+         case 'É':
+         case 'È':
+            return 'E';
+         case 'Î':
+         case 'Ï':
+         case 'Ì':
+         case 'Í':
+            return 'I';
+         case 'Ô':
+         case 'Ö':
+            return 'O';
+         case 'Û':
+         case 'Ü':
+         case 'Ù':
+         case 'Ú':
+            return 'U';
+         case 'Ñ':
+            return 'N';
+         case 'Ŷ':
+         case 'Ÿ':
+            return 'Y';
+         case 'Ŕ':
+            return 'R';
+      }
+
+      return character;
+   }
+
+   /**
+    * Compute the upper case version of string, and remove all accent.
     * 
     * @param text
     *           Text to upper case
@@ -1596,9 +1721,15 @@ public final class UtilText
       {
          switch(characters[i])
          {
+            case 'À':
             case 'Â':
             case 'Ä':
+            case 'Á':
+            case 'Ã':
                characters[i] = 'A';
+            break;
+            case 'Ç':
+               characters[i] = 'C';
             break;
             case 'Ê':
             case 'Ë':
@@ -1608,6 +1739,8 @@ public final class UtilText
             break;
             case 'Î':
             case 'Ï':
+            case 'Ì':
+            case 'Í':
                characters[i] = 'I';
             break;
             case 'Ô':
@@ -1617,10 +1750,18 @@ public final class UtilText
             case 'Û':
             case 'Ü':
             case 'Ù':
+            case 'Ú':
                characters[i] = 'U';
             break;
             case 'Ñ':
                characters[i] = 'N';
+            break;
+            case 'Ŷ':
+            case 'Ÿ':
+               characters[i] = 'Y';
+            break;
+            case 'Ŕ':
+               characters[i] = 'R';
             break;
          }
       }

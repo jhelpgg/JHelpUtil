@@ -28,10 +28,10 @@ public interface ActionEach<ELEMENT>
    public void report(ELEMENT element, Error error);
 
    /**
-    * Called if any execption is throw while doing the task
+    * Called if any exception is throw while doing the task
     * 
     * @param element
-    *           Element with execption happen
+    *           Element with exception happen
     * @param exception
     *           Exception throw
     */

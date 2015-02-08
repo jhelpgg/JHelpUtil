@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 /**
- * Limited map one number of element, if full some elements are removed to make room
+ * Limited map of number of element, if full some elements are removed to make room.<br>
+ * It removes long times not use first
  * 
  * @author JHelp
  * @param <KEY>
@@ -149,7 +150,6 @@ public class LimitedSizeHashMapTime<KEY, VALUE>
          }
 
          this.hashMap.remove(k);
-         // Debug.println(DebugLevel.VERBOSE, "Removed key = ", k);
       }
 
       this.hashMap.put(key, new Element(value));

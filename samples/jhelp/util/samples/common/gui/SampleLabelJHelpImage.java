@@ -28,6 +28,7 @@ public class SampleLabelJHelpImage
    private int                height;
    /** Image to draw */
    private JHelpImage         image;
+   private boolean            resize;
    /** Selected state */
    private boolean            selected = false;
    /** Label width */
@@ -53,6 +54,7 @@ public class SampleLabelJHelpImage
    {
       this.width = width;
       this.height = height;
+      this.resize = false;
 
       final Dimension dimension = new Dimension(width, height);
       this.setSize(dimension);
@@ -78,6 +80,7 @@ public class SampleLabelJHelpImage
 
       this.width = image.getWidth();
       this.height = image.getHeight();
+      this.resize = false;
 
       final Dimension dimension = new Dimension(this.width, this.height);
       this.setSize(dimension);
@@ -124,7 +127,14 @@ public class SampleLabelJHelpImage
 
       if(this.image != null)
       {
-         g.drawImage(this.image.getImage(), 0, 0, this);
+         if(this.resize == true)
+         {
+            g.drawImage(this.image.getImage(), 0, 0, width, height, this);
+         }
+         else
+         {
+            g.drawImage(this.image.getImage(), 0, 0, this);
+         }
       }
 
       if(this.selected == true)
@@ -157,6 +167,11 @@ public class SampleLabelJHelpImage
    public JHelpImage getJHelpImage()
    {
       return this.image;
+   }
+
+   public boolean isResize()
+   {
+      return this.resize;
    }
 
    /**
@@ -231,6 +246,11 @@ public class SampleLabelJHelpImage
       this.setMaximumSize(dimension);
       this.setMinimumSize(dimension);
       this.repaint();
+   }
+
+   public void setResize(final boolean resize)
+   {
+      this.resize = resize;
    }
 
    /**

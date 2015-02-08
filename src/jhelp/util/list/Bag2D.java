@@ -372,7 +372,7 @@ public class Bag2D<OBJECT extends SizedObject>
     * 
     * @param object
     *           Object to add
-    * @return Object position in the bag after loacate it or {@code null} if is impossible to add the object (Reorder is not
+    * @return Object position in the bag after locate it or {@code null} if is impossible to add the object (Reorder is not
     *         enough)
     */
    public ObjectPosition<OBJECT> put(final OBJECT object)

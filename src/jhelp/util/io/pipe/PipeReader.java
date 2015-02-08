@@ -135,6 +135,7 @@ public class PipeReader
          fileInputStream = new FileInputStream(file);
 
          size = fileInputStream.read(temp);
+
          if(this.alive == false)
          {
             return null;
@@ -145,10 +146,16 @@ public class PipeReader
             byteArray.write(temp, 0, size);
 
             size = fileInputStream.read(temp);
+
             if(this.alive == false)
             {
-               return null;
+               break;
             }
+         }
+
+         if(this.alive == false)
+         {
+            return null;
          }
       }
       catch(final Exception exception)

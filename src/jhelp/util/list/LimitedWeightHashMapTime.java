@@ -7,7 +7,7 @@ import java.util.Map.Entry;
  * Hash map with limited number of element in memory.<br>
  * Here its limited by "weight", that is to say when element is add :
  * <ol>
- * <li>If theire enough space, the element is add</li>
+ * <li>If their enough space, the element is add</li>
  * <li>If its allowed, remove oldest used elements to make enough room to put the new one</li>
  * </ol>
  * 
@@ -90,7 +90,7 @@ public class LimitedWeightHashMapTime<KEY, VALUE extends HeavyObject>
     * Obtain the oldest used element in the map
     * 
     * @param ignoreIt
-    *           Elemnt to ignore ({@code null} if no element to ignore)
+    *           Element to ignore ({@code null} if no element to ignore)
     * @return Oldest used element in the map
     */
    private Entry<KEY, Element> oldestElement(final Element ignoreIt)
@@ -233,12 +233,12 @@ public class LimitedWeightHashMapTime<KEY, VALUE extends HeavyObject>
     * <tr>
     * <th>{@link LimitedWeightHashMap.Result#ADD_WITH_AT_LEAST_ONE_REMOVED}</th>
     * <td>:</td>
-    * <td>If the element is add, but at least one element is removed frrom the list (Only happen if remove is allow)</td>
+    * <td>If the element is add, but at least one element is removed from the list (Only happen if remove is allow)</td>
     * </tr>
     * <tr>
     * <th>{@link LimitedWeightHashMap.Result#ADDED}</th>
     * <td>:</td>
-    * <td>If the element is added, and no element is removed frrom the list</td>
+    * <td>If the element is added, and no element is removed from the list</td>
     * </tr>
     * <tr>
     * <th>{@link LimitedWeightHashMap.Result#NOT_ADDED}</th>
@@ -263,7 +263,7 @@ public class LimitedWeightHashMapTime<KEY, VALUE extends HeavyObject>
     * <tr>
     * <th>{@link LimitedWeightHashMap.Result#UPDATED_WITH_AT_LEAST_ONE_REMOVED}</th>
     * <td>:</td>
-    * <td>If the element isupdated, but at least one element is removed frrom the list (Only happen if remove is allow)</td>
+    * <td>If the element is updated, but at least one element is removed from the list (Only happen if remove is allow)</td>
     * </tr>
     * </table>
     * <br>
@@ -276,7 +276,7 @@ public class LimitedWeightHashMapTime<KEY, VALUE extends HeavyObject>
     * @param creator
     *           Describe how to create the element (To be able avoid create object if not add/modify)
     * @param allowAutomaticRemove
-    *           Indicates if remove elemnts to make room is allowed
+    *           Indicates if remove elements to make room is allowed
     * @return The result operation
     * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator, boolean)
     */
