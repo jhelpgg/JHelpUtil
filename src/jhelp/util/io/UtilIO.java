@@ -2,6 +2,7 @@ package jhelp.util.io;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -1378,6 +1379,60 @@ public final class UtilIO
 
       UtilIO.copy(source, destination);
       UtilIO.delete(source);
+   }
+
+   /**
+    * Try skip bytes from given stream (unread bytes).<br>
+    * It stop if reach the end of stream or if manage to skip the number of byte asked
+    * 
+    * @param inputStream
+    *           Stream to skip some bytes
+    * @param count
+    *           Number of byte to skip
+    * @return Real number bytes skip (Lower that asked if end of stream reach)
+    * @throws IOException
+    *            On issue reading stream
+    */
+   public static int skip(final InputStream inputStream, int count) throws IOException
+   {
+      if(count <= 0)
+      {
+         return 0;
+      }
+
+      int skipped = 0;
+      int toSkip;
+      long skip = 1;
+
+      while((count > 0) && (skip > 0))
+      {
+         try
+         {
+            toSkip = count;
+            skip = inputStream.skip(count);
+
+            while((skip <= 0) && (toSkip > 0))
+            {
+               toSkip >>= 1;
+
+               if(toSkip > 0)
+               {
+                  skip = inputStream.skip(toSkip);
+               }
+            }
+
+            if(skip > 0)
+            {
+               count -= skip;
+               skipped += skip;
+            }
+         }
+         catch(final EOFException exception)
+         {
+         }
+      }
+
+      return skipped;
    }
 
    /**

@@ -113,4 +113,16 @@ public class UtilTextTest
             2, 1
       }, UtilText.extractIntFrom("2...1"));
    }
+
+   @Test
+   public void testTrim()
+   {
+      Assert.assertEquals("salut", UtilText.trim("salut", ", "));
+      Assert.assertEquals("salut", UtilText.trim("   salut  ,  ", ", "));
+      Assert.assertEquals("salut", UtilText.trim("   salut,", ", "));
+      Assert.assertEquals("salut", UtilText.trim(",   salut  ,,,  ", ", "));
+      Assert.assertEquals("", UtilText.trim("     ,  ", ", "));
+      Assert.assertEquals("", UtilText.trim("", ", "));
+      Assert.assertEquals("s , alut", UtilText.trim(",   s , alut  ,,,  ", ", "));
+   }
 }

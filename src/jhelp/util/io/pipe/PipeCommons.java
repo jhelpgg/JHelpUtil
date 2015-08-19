@@ -15,20 +15,20 @@ import jhelp.util.io.UtilIO;
  * Pipe common operations, <br>
  * 1) What is a pipe ?<br>
  * <br>
- * A pipe is a way to commuicate between two differents java application, that not neccessary use the same main process, but
- * runs on same computer, or two computer that shares a same shared directory.<br>
- * A pipe is here simply a one way communication theire a one, and only one, writer (The guys who write/send messages) and one,
+ * A pipe is a way to communicate between two different java application, that not necessary use the same main process, but runs
+ * on same computer, or two computer that shares a same shared directory.<br>
+ * A pipe is here simply a one way communication their a one, and only one, writer (The guys who write/send messages) and one,
  * and only one, reader (The guy who read/receive messages)<br>
  * For a two ways communication, have to create two pipes, one for A =&gt; B and one for B =&gt; A..<br>
  * The implementation here is 100% Java, and compatible in any system have file system with at least an area readable/writable
  * by the program.<br>
  * The implementation use a directory and temporary files for exchange message, so no need socket, and avoid in that way proxy
  * issue and other network issue.<br>
- * The security is the same as the security of the used directory for echange.<br>
+ * The security is the same as the security of the used directory for exchange.<br>
  * <br>
  * 2) How to use pipes ? <br>
  * <br>
- * Choose a deticated directory, this directory will be change durring time, so don't use this directory for other stuff. Then
+ * Choose a dedicated directory, this directory will be change during time, so don't use this directory for other stuff. Then
  * create the writer in application that will send messages, and reader in application that receive messages. <br>
  * If you create several readers (For same pipe), you will notice some lost messages (That why only one reader is highly
  * recommended) <br>

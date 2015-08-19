@@ -104,6 +104,26 @@ public final class Utilities
    }
 
    /**
+    * Create a copy of array double
+    * 
+    * @param array
+    *           Array to copy
+    * @return Copy
+    */
+   public static double[] createCopy(final double[] array)
+   {
+      if(array == null)
+      {
+         return null;
+      }
+
+      final int length = array.length;
+      final double[] clone = new double[length];
+      System.arraycopy(array, 0, clone, 0, length);
+      return clone;
+   }
+
+   /**
     * Create a int array copy
     * 
     * @param array

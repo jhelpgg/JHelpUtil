@@ -1,8 +1,6 @@
 package jhelp.util.samples.io.pipe;
 
 import java.io.File;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
@@ -18,13 +16,13 @@ public class SampleWriter
     */
    public static void main(final String[] args)
    {
-      final Properties properties = System.getProperties();
-      for(final Entry<Object, Object> entry : properties.entrySet())
-      {
-         Debug.println(DebugLevel.INFORMATION, entry.getKey(), '=', entry.getValue(), " [", entry.getValue() != null
-               ? entry.getValue().getClass().getName()
-               : "NULL", ']');
-      }
+      // final Properties properties = System.getProperties();
+      // for(final Entry<Object, Object> entry : properties.entrySet())
+      // {
+      // Debug.println(DebugLevel.INFORMATION, entry.getKey(), '=', entry.getValue(), " [", entry.getValue() != null
+      // ? entry.getValue().getClass().getName()
+      // : "NULL", ']');
+      // }
 
       final PipeWriter pipeWriter = new PipeWriter(new File("/home/jhelp/pipeSample"));
 
@@ -32,6 +30,7 @@ public class SampleWriter
       {
          try
          {
+            Debug.println(DebugLevel.INFORMATION, "WRITE:", "Message numéro ", i);
             pipeWriter.write(("Message numéro " + i).getBytes());
          }
          catch(final Exception exception)
@@ -42,6 +41,7 @@ public class SampleWriter
 
       try
       {
+         Debug.println(DebugLevel.INFORMATION, "WRITE:--END--");
          pipeWriter.write("--END--".getBytes());
       }
       catch(final Exception exception)

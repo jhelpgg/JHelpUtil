@@ -32,7 +32,7 @@ import jhelp.util.thread.MessageHandler;
  * Interfaces shared must respect following rules :<br>
  * 1) All refered class, interfaces, enum or exception must be know by sender and receiver.<br>
  * 2) methods return type or parameters MUST be primitives, java.lang.String, enum or {@link Binarizable}<br>
- * 3) can extends other interface only if they respect (2) and (3) rules<br>
+ * 3) can extends other interface only if they respect (1), (2) and (3) rules<br>
  * 4) Must registered in same time all linked interfaces that will be exchange
  * 
  * @author JHelp
@@ -912,8 +912,8 @@ public class JHelpIDL
     *            If the interface targetted is protected by security form refelection or registeration had previously issue
     */
    @SuppressWarnings("unchecked")
-   public static <TYPE> void registerReceiver(final TYPE interfaceIDLImplementation, final Class<TYPE> interfaceIDL) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
-         IllegalAccessException, IllegalArgumentException, InvocationTargetException
+   public static <TYPE> void registerReceiver(final TYPE interfaceIDLImplementation, final Class<TYPE> interfaceIDL) throws ClassNotFoundException,
+         NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
    {
       if(interfaceIDLImplementation == null)
       {

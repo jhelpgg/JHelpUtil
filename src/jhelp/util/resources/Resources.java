@@ -267,7 +267,23 @@ public class Resources
    }
 
    /**
-    * Obatain the resources system linked to the resources
+    * Obtain an image from resources resized to given size
+    * 
+    * @param path
+    *           Resource path
+    * @param width
+    *           Desired width
+    * @param height
+    *           Desired height
+    * @return Resized image
+    */
+   public JHelpImage obtainResizedJHelpImage(final String path, final int width, final int height)
+   {
+      return JHelpImage.createResizedImage(this.obtainJHelpImage(path), width, height);
+   }
+
+   /**
+    * Obtain the resources system linked to the resources
     * 
     * @return Resources system linked
     * @throws IOException

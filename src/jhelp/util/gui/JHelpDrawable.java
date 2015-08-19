@@ -2,12 +2,26 @@ package jhelp.util.gui;
 
 import java.awt.Shape;
 
+/**
+ * Way to specify a color, texture OR paint to use for fill a shape
+ * 
+ * @author JHelp
+ */
 public class JHelpDrawable
 {
+   /** Color */
    private final int        color;
+   /** Image texture */
    private final JHelpImage image;
+   /** Paint */
    private final JHelpPaint paint;
 
+   /**
+    * Create a new instance of JHelpDrawable based on one color
+    * 
+    * @param color
+    *           Color
+    */
    public JHelpDrawable(final int color)
    {
       this.color = color;
@@ -15,6 +29,12 @@ public class JHelpDrawable
       this.paint = null;
    }
 
+   /**
+    * Create a new instance of JHelpDrawable based on one texture image
+    * 
+    * @param image
+    *           Texture image
+    */
    public JHelpDrawable(final JHelpImage image)
    {
       if(image == null)
@@ -27,6 +47,12 @@ public class JHelpDrawable
       this.paint = null;
    }
 
+   /**
+    * Create a new instance of JHelpDrawable Based on one paint
+    * 
+    * @param paint
+    *           Paint
+    */
    public JHelpDrawable(final JHelpPaint paint)
    {
       if(paint == null)
@@ -39,6 +65,20 @@ public class JHelpDrawable
       this.paint = paint;
    }
 
+   /**
+    * Draw a filled ellipse inside an image
+    * 
+    * @param x
+    *           X up-left corner of ellipse bounding box
+    * @param y
+    *           Y up-left corner of ellipse bounding box
+    * @param width
+    *           Ellipse width
+    * @param height
+    *           Ellipse height
+    * @param image
+    *           Image where draw
+    */
    public void fillEllipse(final int x, final int y, final int width, final int height, final JHelpImage image)
    {
       final boolean draw = image.isDrawMode();
@@ -67,6 +107,22 @@ public class JHelpDrawable
       }
    }
 
+   /**
+    * Draw a filled polygon inside given image
+    * 
+    * @param xs
+    *           Polygon point X's coordinate
+    * @param offsetX
+    *           Offset where start read X's coordinate in <b>xs</b> array
+    * @param ys
+    *           Polygon point Y's coordinate
+    * @param offsetY
+    *           Offset where start read Y's coordinate in <b>ys</b> array
+    * @param length
+    *           Number polygon points
+    * @param image
+    *           Image where draw
+    */
    public void fillPolygon(final int[] xs, final int offsetX, final int[] ys, final int offsetY, final int length, final JHelpImage image)
    {
       final boolean draw = image.isDrawMode();
@@ -95,6 +151,20 @@ public class JHelpDrawable
       }
    }
 
+   /**
+    * Draw a filled rectangle inside given image
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Rectangle width
+    * @param height
+    *           Rectangle height
+    * @param image
+    *           Image where draw
+    */
    public void fillRectangle(final int x, final int y, final int width, final int height, final JHelpImage image)
    {
       final boolean draw = image.isDrawMode();
@@ -123,6 +193,24 @@ public class JHelpDrawable
       }
    }
 
+   /**
+    * Draw a filled round rectangle inside given image
+    * 
+    * @param x
+    *           X up-left corner
+    * @param y
+    *           Y up-left corner
+    * @param width
+    *           Rectangle width
+    * @param height
+    *           Rectangle height
+    * @param arcWidth
+    *           Arc size in width
+    * @param arcHeight
+    *           Arc size in height
+    * @param image
+    *           Image where draw
+    */
    public void fillRoundRectangle(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight, final JHelpImage image)
    {
       final boolean draw = image.isDrawMode();
@@ -151,6 +239,14 @@ public class JHelpDrawable
       }
    }
 
+   /**
+    * Draw a filled shape inside given image
+    * 
+    * @param shape
+    *           Shape to draw
+    * @param image
+    *           Image where draw
+    */
    public void fillShape(final Shape shape, final JHelpImage image)
    {
       final boolean draw = image.isDrawMode();

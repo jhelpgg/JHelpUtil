@@ -2,14 +2,29 @@ package jhelp.util.gui.dynamic;
 
 import jhelp.util.gui.JHelpImage;
 
+/**
+ * Draw an image inside an animation
+ * 
+ * @author JHelp
+ */
 public class DrawImage
       extends ImmediateAnimation
 {
+   /** Indicates if image coordinate are center of image */
    private final boolean    center;
+   /** Image to draw */
    private final JHelpImage image;
+   /** X */
    private final int        x;
+   /** Y */
    private final int        y;
 
+   /**
+    * Create a new instance of DrawImage
+    * 
+    * @param image
+    *           Image to draw
+    */
    public DrawImage(final JHelpImage image)
    {
       if(image == null)
@@ -23,6 +38,16 @@ public class DrawImage
       this.image = image;
    }
 
+   /**
+    * Create a new instance of DrawImage
+    * 
+    * @param image
+    *           Image to draw
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    */
    public DrawImage(final JHelpImage image, final int x, final int y)
    {
       if(image == null)
@@ -36,6 +61,16 @@ public class DrawImage
       this.center = false;
    }
 
+   /**
+    * Draw the image <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @param image
+    *           Image where draw
+    * @see jhelp.util.gui.dynamic.ImmediateAnimation#doImmediately(jhelp.util.gui.JHelpImage)
+    */
    @Override
    public void doImmediately(final JHelpImage image)
    {

@@ -34,7 +34,7 @@ public class StringCutter
    }
 
    /**
-    * Give the next part or {@code null} ifno more part to read
+    * Give the next part or {@code null} if no more part to read
     * 
     * @return Next part
     */

@@ -53,7 +53,12 @@ public class Cache<ELEMENT>
          throw new NullPointerException("element musn't be null");
       }
 
-      this.cache.put(key, element);
+      final CacheElement<ELEMENT> previous = this.cache.put(key, element);
+
+      if((previous != null) && (previous.equals(element) == false))
+      {
+         previous.clear();
+      }
    }
 
    /**
@@ -62,9 +67,11 @@ public class Cache<ELEMENT>
    public void clear()
    {
       CacheElement<ELEMENT> cacheElement;
+
       for(final String key : this.cache.keySet())
       {
          cacheElement = this.cache.get(key);
+
          if(cacheElement != null)
          {
             cacheElement.clear();
@@ -89,7 +96,7 @@ public class Cache<ELEMENT>
     * 
     * @param key
     *           Element key
-    * @return Element
+    * @return Element OR {@code null} if no element attached to given key
     */
    public ELEMENT get(final String key)
    {
@@ -99,6 +106,7 @@ public class Cache<ELEMENT>
       }
 
       final CacheElement<ELEMENT> cacheElement = this.cache.get(key);
+
       if(cacheElement != null)
       {
          return cacheElement.getElement();
@@ -154,6 +162,7 @@ public class Cache<ELEMENT>
       }
 
       final CacheElement<ELEMENT> cacheElement = this.cache.get(key);
+
       if(cacheElement != null)
       {
          cacheElement.clear();

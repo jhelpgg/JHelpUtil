@@ -36,10 +36,11 @@ import jhelp.util.gui.JHelpAnimatedImage.AnimationMode;
 import jhelp.util.gui.transformation.Transformation;
 import jhelp.util.gui.transformation.Vector;
 import jhelp.util.image.pcx.PCX;
+import jhelp.util.image.raster.RasterImage;
+import jhelp.util.image.raster.RasterImageType;
 import jhelp.util.io.FileImageInformation;
 import jhelp.util.list.HeavyObject;
 import jhelp.util.list.Pair;
-import jhelp.util.list.SizedObject;
 import jhelp.util.list.SortedArray;
 import jhelp.util.math.UtilMath;
 
@@ -53,7 +54,7 @@ import jhelp.util.math.UtilMath;
  * @author JHelp
  */
 public class JHelpImage
-      implements ConstantsGUI, HeavyObject, SizedObject, Icon
+      implements ConstantsGUI, HeavyObject, RasterImage, Icon
 {
    /** Palette to use */
    private static final int[]     PALETTE      =
@@ -1010,6 +1011,31 @@ public class JHelpImage
 
       outputStream.flush();
       bufferedImage.flush();
+
+      bufferedImage = null;
+   }
+
+   /**
+    * Save the image as JPEG
+    * 
+    * @param outputStream
+    *           Stream where write, not closed by this method
+    * @param image
+    *           Image to save
+    * @throws IOException
+    *            On writing issue
+    */
+   public static void saveImageJPG(final OutputStream outputStream, final JHelpImage image) throws IOException
+   {
+      BufferedImage bufferedImage = new BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB);
+      final Graphics2D graphics2d = bufferedImage.createGraphics();
+      graphics2d.drawImage(image.getImage(), 0, 0, null);
+
+      ImageIO.write(bufferedImage, "JPG", outputStream);
+
+      outputStream.flush();
+      bufferedImage.flush();
+      graphics2d.dispose();
 
       bufferedImage = null;
    }
@@ -2064,6 +2090,32 @@ public class JHelpImage
    }
 
    /**
+    * Clear the image to be totally transparent <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @see jhelp.util.image.raster.RasterImage#clear()
+    */
+   @Override
+   public void clear()
+   {
+      final boolean mode = this.drawMode;
+
+      if(mode == false)
+      {
+         this.startDrawMode();
+      }
+
+      this.clear(0);
+
+      if(mode == false)
+      {
+         this.endDrawMode();
+      }
+   }
+
+   /**
     * Fill the entire image with same color<br>
     * MUST be in draw mode
     * 
@@ -2803,9 +2855,117 @@ public class JHelpImage
    }
 
    /**
+    * Draw a part of image or using a pixel combination
+    * 
+    * @param x
+    *           X where locate up-left corner of image to draw
+    * @param y
+    *           Y where locate up-left corner of image to draw
+    * @param image
+    *           Image to draw
+    * @param xImage
+    *           X of up-left corner of image part
+    * @param yImage
+    *           Y of up-left corner of image part
+    * @param width
+    *           Part width
+    * @param height
+    *           Part height
+    * @param pixelCombination
+    *           Pixel combination to use
+    */
+   public void drawImage(int x, int y, final JHelpImage image, int xImage, int yImage, int width, int height, final PixelCombination pixelCombination)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if(xImage < 0)
+      {
+         x -= xImage;
+         width += xImage;
+         xImage = 0;
+      }
+
+      if(x < this.clip.xMin)
+      {
+         xImage -= x - this.clip.xMin;
+         width += x - this.clip.xMin;
+         x = this.clip.xMin;
+      }
+
+      if(yImage < 0)
+      {
+         y -= yImage;
+         height += yImage;
+         yImage = 0;
+      }
+
+      if(y < this.clip.yMin)
+      {
+         yImage -= y - this.clip.yMin;
+         height += y - this.clip.yMin;
+         y = this.clip.yMin;
+      }
+
+      final int w = UtilMath.minIntegers((this.clip.xMax + 1) - x, image.width - xImage, width, this.width - x);
+      final int h = UtilMath.minIntegers((this.clip.yMax + 1) - y, image.height - yImage, height, this.height - y);
+
+      if((w <= 0) || (h <= 0))
+      {
+         return;
+      }
+
+      int lineThis = x + (y * this.width);
+      int pixThis;
+
+      int lineImage = xImage + (yImage * image.width);
+      int pixImage;
+
+      for(int yy = 0; yy < h; yy++)
+      {
+         pixThis = lineThis;
+         pixImage = lineImage;
+
+         for(int xx = 0; xx < w; xx++)
+         {
+            this.pixels[pixThis] = pixelCombination.combine(this.pixels[pixThis], image.pixels[pixImage]);
+            pixThis++;
+            pixImage++;
+         }
+
+         lineThis += this.width;
+         lineImage += image.width;
+      }
+   }
+
+   /**
+    * Draw an image or using a pixel combination
+    * 
+    * @param x
+    *           X where locate up-left corner of image to draw
+    * @param y
+    *           Y where locate up-left corner of image to draw
+    * @param image
+    *           Image to draw
+    * @param pixelCombination
+    *           Pixel combination to use
+    */
+   public void drawImage(final int x, final int y, final JHelpImage image, final PixelCombination pixelCombination)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      this.drawImage(x, y, image, 0, 0, image.width, image.height, pixelCombination);
+   }
+
+   /**
     * Draw an image with a given transformation.<br>
     * Image MUST be in draw mode.<br>
-    * Gven image and transformation MUST have same sizes
+    * Given image and transformation MUST have same sizes
     * 
     * @param x
     *           X
@@ -6768,6 +6928,21 @@ public class JHelpImage
    }
 
    /**
+    * Raster image type <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return Raster image type
+    * @see jhelp.util.image.raster.RasterImage#getImageType()
+    */
+   @Override
+   public RasterImageType getImageType()
+   {
+      return RasterImageType.JHELP_IMAGE;
+   }
+
+   /**
     * Image name
     * 
     * @return Image name
@@ -9311,6 +9486,21 @@ public class JHelpImage
          this.pixels[pix] = (col & 0xFF000000) | ((((redHigh * gray) + (redLow * yarg)) >> 8) << 16) | ((((greenHigh * gray) + (greenLow * yarg)) >> 8) << 8)
                | (((blueHigh * gray) + (blueLow * yarg)) >> 8);
       }
+   }
+
+   /**
+    * Convert image to JHelp image <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    * 
+    * @return This image itself (It is already a JHelp image)
+    * @see jhelp.util.image.raster.RasterImage#toJHelpImage()
+    */
+   @Override
+   public JHelpImage toJHelpImage()
+   {
+      return this;
    }
 
    /**

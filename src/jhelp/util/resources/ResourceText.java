@@ -124,6 +124,47 @@ public final class ResourceText
    }
 
    /**
+    * Indicates if given locale have a translation file (It not indicates if all are translated inside)
+    * 
+    * @param locale
+    *           Locale to test
+    * @return {@code true} if given locale have a translation file
+    */
+   public boolean languageDefined(final Locale locale)
+   {
+      if(locale == null)
+      {
+         throw new NullPointerException("locale musn't be null");
+      }
+
+      URL url = this.resources.obtainResourceURL(this.xmlReferencePathHeader + "_" + locale.getLanguage() + "_" + locale.getCountry() + ResourceText.XML);
+
+      if(url != null)
+      {
+         return true;
+      }
+
+      url = this.resources.obtainResourceURL(this.xmlReferencePathHeader + "_" + locale.getLanguage() + ResourceText.XML);
+
+      if(url != null)
+      {
+         return true;
+      }
+
+      if(locale.getLanguage().equals("en") == true)
+      {
+         url = this.resources.obtainResourceURL(this.xmlReferencePathHeader + ResourceText.XML);
+
+         if(url != null)
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   /**
     * Register a listener to be alert when language change
     * 
     * @param resourceTextListener

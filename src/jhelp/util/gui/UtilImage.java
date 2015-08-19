@@ -1,6 +1,10 @@
 package jhelp.util.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.util.List;
+
+import jhelp.util.list.Pair;
 
 /**
  * Utilities for image manipulation
@@ -24,6 +28,300 @@ public class UtilImage
       RIGHT,
       /** Triangle for up */
       UP
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground color
+    * @param background
+    *           Background color
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final int foreground,
+         final int background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground color
+    * @param background
+    *           Background image
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final int foreground,
+         final JHelpImage background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(0);
+      image.fillRectangleScaleBetter(0, 0, pair.element2.width, pair.element2.height, background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground color
+    * @param background
+    *           Background paint
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final int foreground,
+         final JHelpPaint background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(0);
+      image.fillRectangle(0, 0, pair.element2.width, pair.element2.height, background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground image
+    * @param background
+    *           Background color
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final JHelpImage foreground,
+         final int background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, 0, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground image
+    * @param background
+    *           Background image
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final JHelpImage foreground,
+         final JHelpImage background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(0);
+      image.fillRectangleScaleBetter(0, 0, pair.element2.width, pair.element2.height, background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, 0, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground image
+    * @param background
+    *           Background paint
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final JHelpImage foreground,
+         final JHelpPaint background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(0);
+      image.fillRectangle(0, 0, pair.element2.width, pair.element2.height, background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, 0, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground paint
+    * @param background
+    *           Background color
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final JHelpPaint foreground,
+         final int background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground paint
+    * @param background
+    *           Background image
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final JHelpPaint foreground,
+         final JHelpImage background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(0);
+      image.fillRectangleScaleBetter(0, 0, pair.element2.width, pair.element2.height, background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
+   }
+
+   /**
+    * Create image with text
+    * 
+    * @param text
+    *           Text to draw
+    * @param font
+    *           Font to use
+    * @param textAlign
+    *           Text align
+    * @param foreground
+    *           Foreground paint
+    * @param background
+    *           Background paint
+    * @return Created image
+    */
+   public static JHelpImage createImageWithText(final String text, final JHelpFont font, final JHelpTextAlign textAlign, final JHelpPaint foreground,
+         final JHelpPaint background)
+   {
+      final Pair<List<JHelpTextLine>, Dimension> pair = font.computeTextLines(text, textAlign);
+      final JHelpImage image = new JHelpImage(pair.element2.width, pair.element2.height);
+      image.startDrawMode();
+      image.clear(0);
+      image.fillRectangle(0, 0, pair.element2.width, pair.element2.height, background);
+
+      for(final JHelpTextLine line : pair.element1)
+      {
+         image.paintMask(line.getX(), line.getY(), line.getMask(), foreground, 0, true);
+      }
+
+      image.endDrawMode();
+      return image;
    }
 
    /**

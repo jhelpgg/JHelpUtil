@@ -44,7 +44,7 @@ public class SampleNeon
 
       SampleNeon.indexStart = 0;
       SampleNeon.indexEnd = 0;
-      SampleNeon.threadID = ThreadManager.THREAD_MANAGER.repeatThread(new SampleNeon(), null, 1024, 16);
+      SampleNeon.threadID = ThreadManager.THREAD_MANAGER.repeatThread(new SampleNeon(), null, 1024, 1);
 
    }
 

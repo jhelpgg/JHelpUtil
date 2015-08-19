@@ -127,6 +127,7 @@ public class SpeedTest
             image.fillRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height,//
                   0xFFFF0000);
             // 0xFF000000 | JHelpRandom.random(0xFFFFFF));
+            // gradient);
          }
          else
          {

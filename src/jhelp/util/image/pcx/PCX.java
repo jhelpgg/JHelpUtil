@@ -26,17 +26,19 @@ import jhelp.util.text.UtilText;
 public class PCX
 {
    /** Original PCX manufacturer code */
-   public static final byte MANUFACTURER_ZSOFT          = (byte) 10;
+   public static final byte MANUFACTURER_ZSOFT                 = (byte) 10;
    /** PCX version Paintbrush v2.5 */
-   public static final byte VERSION_PAINTBRUSH_V_2_5    = (byte) 0;
+   public static final byte VERSION_PAINTBRUSH_V_2_5           = (byte) 0;
+   /** PCX version Paintbrush v2.5 unofficial version */
+   public static final byte VERSION_PAINTBRUSH_V_2_5_UNOFFICAL = (byte) 1;
    /** PCX version Paintbrush v2.8 w palette information */
-   public static final byte VERSION_PAINTBRUSH_V_2_8_W  = (byte) 2;
+   public static final byte VERSION_PAINTBRUSH_V_2_8_W         = (byte) 2;
    /** PCX version Paintbrush v2.8 w/o palette information */
-   public static final byte VERSION_PAINTBRUSH_V_2_8_WO = (byte) 3;
+   public static final byte VERSION_PAINTBRUSH_V_2_8_WO        = (byte) 3;
    /** PCX version Paintbrush v3.0+ */
-   public static final byte VERSION_PAINTBRUSH_V_3_0    = (byte) 5;
+   public static final byte VERSION_PAINTBRUSH_V_3_0           = (byte) 5;
    /** PCX version Paintbrush/Windows */
-   public static final byte VERSION_PAINTBRUSH_WINDOWS  = (byte) 4;
+   public static final byte VERSION_PAINTBRUSH_WINDOWS         = (byte) 4;
 
    /**
     * Read one word from an array
@@ -137,6 +139,7 @@ public class PCX
       switch(version)
       {
          case VERSION_PAINTBRUSH_V_2_5:
+         case VERSION_PAINTBRUSH_V_2_5_UNOFFICAL:
             return "Paintbrush v2.5";
          case VERSION_PAINTBRUSH_V_2_8_W:
             return "Paintbrush v2.8 w palette information";
@@ -978,7 +981,8 @@ public class PCX
                   this.fillPixels_1_BytePerPixel_4_ColorPlane(pixels);
                break;
                default:
-                  throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane=" + this.numberOfColorPlane);
+                  throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane="
+                        + this.numberOfColorPlane);
             }
          break;
          case 4:
@@ -991,7 +995,8 @@ public class PCX
                   this.fillPixels_4_BytePerPixel_4_ColorPlane(pixels);
                break;
                default:
-                  throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane=" + this.numberOfColorPlane);
+                  throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane="
+                        + this.numberOfColorPlane);
 
             }
          break;
@@ -1008,12 +1013,14 @@ public class PCX
                   this.fillPixels_8_BytePerPixel_4_ColorPlane(pixels);
                break;
                default:
-                  throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane=" + this.numberOfColorPlane);
+                  throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane="
+                        + this.numberOfColorPlane);
 
             }
          break;
          default:
-            throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane=" + this.numberOfColorPlane);
+            throw new IllegalStateException("Unknown how to convert numberBytePerPixel=" + this.numberBytePerPixel + " numberOfColorPlane="
+                  + this.numberOfColorPlane);
       }
 
       return new JHelpImage(this.width, this.height, pixels);
@@ -1112,8 +1119,9 @@ public class PCX
    @Override
    public String toString()
    {
-      return UtilText.concatenate("PCX ", PCX.manufacturerToString(this.manufacturer), " ", PCX.versionToString(this.version), ", ", this.width, 'x', this.height, ", DPI=", this.horizontalDPI, 'x', this.verticalDPI, ", ",
-            this.numberBytePerPixel, " bit(s) per pixel, ", this.numberOfColorPlane, " color plane(s), ", this.numberBitsPerScanline, " bit(s) per scanline", (this.has256Palette == true
+      return UtilText.concatenate("PCX ", PCX.manufacturerToString(this.manufacturer), " ", PCX.versionToString(this.version), ", ", this.width, 'x',
+            this.height, ", DPI=", this.horizontalDPI, 'x', this.verticalDPI, ", ", this.numberBytePerPixel, " bit(s) per pixel, ", this.numberOfColorPlane,
+            " color plane(s), ", this.numberBitsPerScanline, " bit(s) per scanline", (this.has256Palette == true
                   ? ", 256 colors palette present"
                   : ""));
    }

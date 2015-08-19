@@ -22,6 +22,8 @@ import javax.swing.UIManager;
 import jhelp.util.Utilities;
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
+import jhelp.util.gui.resolution.Resolution;
+import jhelp.util.gui.resolution.ResolutionUnit;
 import jhelp.util.math.UtilMath;
 
 /**
@@ -41,6 +43,8 @@ public final class UtilGUI
    private final static Robot              ROBOT;
    /** Current graphics environment */
    public static final GraphicsEnvironment GRAPHICS_ENVIRONMENT;
+   /** Current screen resolution */
+   public static final Resolution          SCREEN_RESOLUTION;
    /** Current toolkit */
    public static final Toolkit             TOOLKIT;
 
@@ -68,6 +72,7 @@ public final class UtilGUI
       TOOLKIT = toolkit;
       GRAPHICS_ENVIRONMENT = graphicsEnvironment;
       GRAPHICS_DEVICES = graphicsDevices;
+      SCREEN_RESOLUTION = new Resolution(UtilGUI.TOOLKIT.getScreenResolution(), ResolutionUnit.PIXEL_PER_INCH);
    }
 
    /**
@@ -714,6 +719,13 @@ public final class UtilGUI
       UtilGUI.ROBOT.mouseRelease(button);
    }
 
+   /**
+    * Simulate mouse wheel move
+    * 
+    * @param tick
+    *           Number of "notches" to move the mouse wheel Negative values indicate movement up/away from the user, positive
+    *           values indicate movement down/towards the user.
+    */
    public static void simulateMouseWhell(final int tick)
    {
       if(UtilGUI.ROBOT == null)

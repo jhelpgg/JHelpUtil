@@ -23,7 +23,7 @@ public class ObjectJSON
     *           First index to start parsing
     * @param last
     *           Last index to stop parsing
-    * @return JSON object parsed oand next index to read String OR {@code null} if String part is not a JSON object
+    * @return JSON object parsed and next index to read String OR {@code null} if String part is not a JSON object
     */
    static Pair<ObjectJSON, Integer> parse(final String string, int first, int last)
    {

@@ -64,7 +64,7 @@ public class PipeReader
    /**
     * Read next message.<br>
     * This message will block until theire are a new message or we stop the reader.<br>
-    * If the reader is stoper, {@code null} is return
+    * If the reader is stopped, {@code null} is return
     * 
     * @return The next message or {@code null} if reader is stoped
     * @throws PipeException

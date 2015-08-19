@@ -1655,6 +1655,54 @@ public final class UtilText
    }
 
    /**
+    * Generic trim to string, it permits to remove any character at start at at end of a string.<br>
+    * It does like {@link String#trim()} except remove white characters it remove given list of characters
+    * 
+    * @param stringToTrim
+    *           String to trim
+    * @param charactersToRemove
+    *           List of characters to remove
+    * @return Trimmed string
+    */
+   public static String trim(final String stringToTrim, final String charactersToRemove)
+   {
+      final char[] characters = stringToTrim.toCharArray();
+      final char[] toRemove = charactersToRemove.toCharArray();
+      int start = 0;
+      int end = characters.length;
+
+      // head
+      while(start < end)
+      {
+         if(Utilities.contains(characters[start], toRemove) == false)
+         {
+            break;
+         }
+
+         start++;
+      }
+
+      // tail
+      while(start < end)
+      {
+         if(Utilities.contains(characters[end - 1], toRemove) == false)
+         {
+            break;
+         }
+
+         end--;
+      }
+
+      // If no change, returns the string itself
+      if((start == 0) && (end == characters.length))
+      {
+         return stringToTrim;
+      }
+
+      return stringToTrim.substring(start, end);
+   }
+
+   /**
     * Compute the upper case version of character, and remove all accent.
     * 
     * @param character

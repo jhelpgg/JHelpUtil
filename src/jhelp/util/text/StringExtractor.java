@@ -38,6 +38,11 @@ public class StringExtractor
    private final boolean                               returnSeparators;
    /** Separators characters */
    private final char[]                                separators;
+   /**
+    * Indicates if have to stop parsing when meet "string" to treat them separately {@code true} OR treat them as a part of
+    * something : {@code false}
+    */
+   private boolean                                     stopAtString;
    /** String to parse */
    private final char[]                                string;
    /** String delimiters */
@@ -102,7 +107,8 @@ public class StringExtractor
     * @param returnSeparators
     *           Indicates if return separators
     */
-   public StringExtractor(final String string, final String separators, final String stringLimiters, final String escapeCharacters, final boolean returnSeparators)
+   public StringExtractor(final String string, final String separators, final String stringLimiters, final String escapeCharacters,
+         final boolean returnSeparators)
    {
       this.string = string.toCharArray();
       this.separators = separators.toCharArray();
@@ -115,6 +121,7 @@ public class StringExtractor
 
       this.openCloseIgnore = new ArrayList<Pair<Character, Character>>();
       this.canReturnEmptyString = true;
+      this.stopAtString = true;
    }
 
    /**
@@ -151,6 +158,17 @@ public class StringExtractor
    public boolean isCanReturnEmptyString()
    {
       return this.canReturnEmptyString;
+   }
+
+   /**
+    * Indicates if have to stop parsing when meet "string" to treat them separately {@code true} OR treat them as a part of
+    * something : {@code false}
+    * 
+    * @return {@code true} if have to stop parsing when meet "string" to treat them separately
+    */
+   public boolean isStopAtString()
+   {
+      return this.stopAtString;
    }
 
    /**
@@ -196,10 +214,12 @@ public class StringExtractor
                {
                   insideString = false;
 
-                  end = this.index;
-                  this.index++;
-
-                  break;
+                  if(this.stopAtString == true)
+                  {
+                     end = this.index;
+                     this.index++;
+                     break;
+                  }
                }
             }
             else if(Utilities.contains(character, this.escapeCharacters) == true)
@@ -208,14 +228,18 @@ public class StringExtractor
             }
             else if(Utilities.contains(character, this.stringLimiters) == true)
             {
-               if(start < this.index)
+               if((start < this.index) && (this.stopAtString == true))
                {
                   end = this.index;
 
                   break;
                }
 
-               start++;
+               if(this.stopAtString == true)
+               {
+                  start++;
+               }
+
                insideString = true;
                currentStringLimiter = character;
             }
@@ -270,5 +294,17 @@ public class StringExtractor
    public void setCanReturnEmptyString(final boolean canReturnEmptyString)
    {
       this.canReturnEmptyString = canReturnEmptyString;
+   }
+
+   /**
+    * Change the way to treat "string" : stop parsing when meet "string" to treat them separately {@code true} OR treat them as
+    * a part of something : {@code false}
+    * 
+    * @param stopAtString
+    *           New way to treat "string"
+    */
+   public void setStopAtString(final boolean stopAtString)
+   {
+      this.stopAtString = stopAtString;
    }
 }

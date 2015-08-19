@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jhelp.util.io.ByteArray;
+import jhelp.util.math.VectorPoint;
 
 /**
  * Matrix that parallelize in thread long operation, so multiplication, take adjacent, take inverse are fast.<br>
@@ -116,7 +117,7 @@ public class Matrix
    }
 
    /**
-    * Compute the determinant (Here we have already checked that determinant need to be computed)
+    * Compute the determinant (Here we have already checked that determinant need to be computed and matrix is square)
     * 
     * @return Determinant
     */
@@ -186,7 +187,7 @@ public class Matrix
 
    /**
     * Exchange 2 row.<br>
-    * The determinant not change except by the sign
+    * The determinant not change except by the sign (y1 and y2 are inside matrix and different)
     * 
     * @param y1
     *           First row
@@ -201,6 +202,7 @@ public class Matrix
       System.arraycopy(this.matrix, line1, temp, 0, this.width);
       System.arraycopy(this.matrix, line2, this.matrix, line1, this.width);
       System.arraycopy(temp, 0, this.matrix, line2, this.width);
+      this.determinant *= -1;
    }
 
    /**
@@ -236,6 +238,8 @@ public class Matrix
 
          y += this.width;
       }
+
+      this.determinantKnown = false;
    }
 
    /**
@@ -332,6 +336,45 @@ public class Matrix
       }
 
       return this.subMatrix(x, y).determinantInternalMore2();
+   }
+
+   /**
+    * Permit to derived class to define/change determinant.<br>
+    * Only use with care, when sure to know the determinant without need computing it
+    * 
+    * @param determinant
+    *           New determinant
+    */
+   protected void changeDeterminant(final double determinant)
+   {
+      this.determinant = determinant;
+      this.determinantKnown = true;
+   }
+
+   /**
+    * Permit to derived class to copy a matrix.
+    * 
+    * @param matrix
+    *           Matrix to copy
+    */
+   protected void copy(final Matrix matrix)
+   {
+      if((this.width != matrix.width) || (this.height != matrix.height))
+      {
+         throw new IllegalArgumentException("Given matrix haven't same dimension than this");
+      }
+
+      System.arraycopy(matrix.matrix, 0, this.matrix, 0, this.size);
+      this.determinantKnown = matrix.determinantKnown;
+      this.determinant = matrix.determinant;
+   }
+
+   /**
+    * Permit to derived class to forget current determinant. It will have to compute it to know it again
+    */
+   protected void forgetDeterminant()
+   {
+      this.determinantKnown = false;
    }
 
    /**
@@ -956,6 +999,115 @@ public class Matrix
 
       this.determinantKnown = this.width == this.height;
       this.determinant = 0;
+   }
+
+   /**
+    * Transform vector/point throw matrix.<br>
+    * R=VM (R:result, V:vector/point, M:matrix).<br>
+    * The vector/point MUST have number of coordinate equals to matrix height<br>
+    * If result given is {@code null} a new result is created, if not {@code null} the number of coordinate MUST be equals to
+    * matrix width.<br>
+    * If the matrix is sqaure (width equals to height) it is safe to use same instance for transform matrix and result (Safe
+    * means result will be accurate)
+    * 
+    * @param source
+    *           Vector/point source
+    * @param result
+    *           Result where put result OR {@code null} for create new one
+    * @return Result transform vector/point
+    */
+   public VectorPoint transformPrefix(final VectorPoint source, VectorPoint result)
+   {
+      if(this.height != source.numberOfCoordinate())
+      {
+         throw new IllegalArgumentException("Source MUST have the same size as matrix height");
+      }
+
+      if(result == null)
+      {
+         result = new VectorPoint(this.width);
+      }
+
+      if(this.width != result.numberOfCoordinate())
+      {
+         throw new IllegalArgumentException("Result MUST have the same size as matrix width");
+      }
+
+      double value;
+      final double[] sourceCoordinate = source.getCoordinates();
+      final double[] resultCoordinate = new double[this.width];
+      int matrixIndex;
+
+      for(int x = 0; x < this.width; x++)
+      {
+         value = 0;
+         matrixIndex = x;
+
+         for(int y = 0; y < this.height; y++)
+         {
+            value += sourceCoordinate[y] * this.matrix[matrixIndex];
+            matrixIndex += this.width;
+         }
+
+         resultCoordinate[x] = value;
+      }
+
+      result.setCoordinate(resultCoordinate);
+      return result;
+   }
+
+   /**
+    * Transform vector/point throw matrix.<br>
+    * R=MV (R:result, V:vector/point, M:matrix).<br>
+    * The vector/point MUST have number of coordinate equals to matrix width<br>
+    * If result given is {@code null} a new result is created, if not {@code null} the number of coordinate MUST be equals to
+    * matrix height.<br>
+    * If the matrix is square (width equals to height) it is safe to use same instance for transform matrix and result (Safe
+    * means result will be accurate)
+    * 
+    * @param source
+    *           Vector/point source
+    * @param result
+    *           Result where put result OR {@code null} for create new one
+    * @return Result transform vector/point
+    */
+   public VectorPoint transformSuffix(final VectorPoint source, VectorPoint result)
+   {
+      if(this.width != source.numberOfCoordinate())
+      {
+         throw new IllegalArgumentException("Source MUST have the same size as matrix width");
+      }
+
+      if(result == null)
+      {
+         result = new VectorPoint(this.height);
+      }
+
+      if(this.height != result.numberOfCoordinate())
+      {
+         throw new IllegalArgumentException("Result MUST have the same size as matrix height");
+      }
+
+      double value;
+      final double[] sourceCoordinate = source.getCoordinates();
+      final double[] resultCoordinate = new double[this.height];
+      int matrixIndex = 0;
+
+      for(int y = 0; y < this.height; y++)
+      {
+         value = 0;
+
+         for(int x = 0; x < this.width; x++)
+         {
+            value += sourceCoordinate[x] * this.matrix[matrixIndex];
+            matrixIndex++;
+         }
+
+         resultCoordinate[y] = value;
+      }
+
+      result.setCoordinate(resultCoordinate);
+      return result;
    }
 
    /**

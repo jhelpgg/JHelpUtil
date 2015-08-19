@@ -16,6 +16,7 @@ import jhelp.util.resources.ResourceFile;
 import jhelp.util.resources.Resources;
 import jhelp.util.resources.ResourcesSystem;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
+import jhelp.util.text.UtilText;
 
 public class SamplePCX
 {
@@ -49,7 +50,7 @@ public class SamplePCX
                Debug.println(DebugLevel.INFORMATION, pcx);
                final JHelpImage image = pcx.createImage();
                final SampleLabelJHelpImage labelJHelpImage = new SampleLabelJHelpImage(image);
-               final JFrame frame = new JFrame(resourceElement.getName());
+               final JFrame frame = new JFrame(UtilText.concatenate(resourceElement.getName(), " : ", image.getWidth(), 'x', image.getHeight()));
                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                frame.setLayout(new BorderLayout());
                frame.add(labelJHelpImage, BorderLayout.CENTER);

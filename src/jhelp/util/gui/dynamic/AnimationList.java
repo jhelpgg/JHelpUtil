@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jhelp.util.gui.JHelpImage;
+import jhelp.util.list.Pair;
+import jhelp.util.thread.ThreadManager;
+import jhelp.util.thread.ThreadedSimpleTask;
 
 /**
  * List of animation to be played one after other
@@ -13,14 +16,48 @@ import jhelp.util.gui.JHelpImage;
 public class AnimationList
       implements DynamicAnimation
 {
+   /**
+    * Task for indicates to a listener that one animation inside list he is register for is finish
+    * 
+    * @author JHelp
+    */
+   class TaskCallBackFinishListener
+         extends ThreadedSimpleTask<Pair<DynamicAnimation, DynamicAnimationFinishListener>>
+   {
+      /**
+       * Create a new instance of TaskCallBackFinishListener
+       */
+      TaskCallBackFinishListener()
+      {
+      }
+
+      /**
+       * Do the task <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       * 
+       * @param parameter
+       *           Pair of finished animation and listener to alert
+       * @see jhelp.util.thread.ThreadedSimpleTask#doSimpleAction(java.lang.Object)
+       */
+      @Override
+      protected void doSimpleAction(final Pair<DynamicAnimation, DynamicAnimationFinishListener> parameter)
+      {
+         parameter.element2.dynamicAnimationFinished(parameter.element1);
+      }
+   }
+
    /** Animations list */
-   private final List<DynamicAnimation> animations;
+   private final List<Pair<DynamicAnimation, DynamicAnimationFinishListener>> animations;
    /** Current animation index */
-   private int                          index;
+   private int                                                                index;
    /** Number of loop left */
-   private int                          loopLeft;
+   private int                                                                loopLeft;
    /** Number of loop to do */
-   private final int                    numberOfLoop;
+   private final int                                                          numberOfLoop;
+   /** Task for sinal to a listener that one animation is finished */
+   private final TaskCallBackFinishListener                                   taskCallBackFinishListener;
 
    /**
     * Create a new instance of AnimationList
@@ -31,7 +68,8 @@ public class AnimationList
    public AnimationList(final int numberOfLoop)
    {
       this.numberOfLoop = Math.max(1, numberOfLoop);
-      this.animations = new ArrayList<DynamicAnimation>();
+      this.animations = new ArrayList<Pair<DynamicAnimation, DynamicAnimationFinishListener>>();
+      this.taskCallBackFinishListener = new TaskCallBackFinishListener();
    }
 
    /**
@@ -42,6 +80,19 @@ public class AnimationList
     */
    public void addAnimation(final DynamicAnimation dynamicAnimation)
    {
+      this.addAnimation(dynamicAnimation, null);
+   }
+
+   /**
+    * Add animation to a list and register a listener to alert when this registered animation is finished
+    * 
+    * @param dynamicAnimation
+    *           Animation to add
+    * @param listener
+    *           Listener to register. Use {@code null} for no listener
+    */
+   public void addAnimation(final DynamicAnimation dynamicAnimation, final DynamicAnimationFinishListener listener)
+   {
       if(dynamicAnimation == null)
       {
          throw new NullPointerException("dynamicAnimation musn't be null");
@@ -49,7 +100,7 @@ public class AnimationList
 
       synchronized(this.animations)
       {
-         this.animations.add(dynamicAnimation);
+         this.animations.add(new Pair<DynamicAnimation, DynamicAnimationFinishListener>(dynamicAnimation, listener));
       }
    }
 
@@ -78,23 +129,28 @@ public class AnimationList
             return false;
          }
 
-         DynamicAnimation dynamicAnimation;
+         Pair<DynamicAnimation, DynamicAnimationFinishListener> animation;
 
-         dynamicAnimation = this.animations.get(this.index);
+         animation = this.animations.get(this.index);
 
-         while(dynamicAnimation.animate(absoluteFrame, image) == false)
+         while(animation.element1.animate(absoluteFrame, image) == false)
          {
             image.endDrawMode();
-            dynamicAnimation.endAnimation(image);
+            animation.element1.endAnimation(image);
             image.startDrawMode();
+
+            if(animation.element2 != null)
+            {
+               ThreadManager.THREAD_MANAGER.doThread(this.taskCallBackFinishListener, animation);
+            }
 
             this.index++;
 
             if(this.index < size)
             {
-               dynamicAnimation = this.animations.get(this.index);
+               animation = this.animations.get(this.index);
                image.endDrawMode();
-               dynamicAnimation.startAnimation(absoluteFrame, image);
+               animation.element1.startAnimation(absoluteFrame, image);
                image.startDrawMode();
             }
             else
@@ -107,9 +163,9 @@ public class AnimationList
                }
 
                this.index = 0;
-               dynamicAnimation = this.animations.get(this.index);
+               animation = this.animations.get(this.index);
                image.endDrawMode();
-               dynamicAnimation.startAnimation(absoluteFrame, image);
+               animation.element1.startAnimation(absoluteFrame, image);
                image.startDrawMode();
             }
          }
@@ -135,7 +191,13 @@ public class AnimationList
       {
          if(this.index < this.animations.size())
          {
-            this.animations.get(this.index).endAnimation(image);
+            final Pair<DynamicAnimation, DynamicAnimationFinishListener> animation = this.animations.get(this.index);
+            animation.element1.endAnimation(image);
+
+            if(animation.element2 != null)
+            {
+               ThreadManager.THREAD_MANAGER.doThread(this.taskCallBackFinishListener, animation);
+            }
          }
       }
    }
@@ -162,7 +224,7 @@ public class AnimationList
       {
          if(this.animations.size() > 0)
          {
-            this.animations.get(0).startAnimation(startAbslouteFrame, image);
+            this.animations.get(0).element1.startAnimation(startAbslouteFrame, image);
          }
       }
    }
