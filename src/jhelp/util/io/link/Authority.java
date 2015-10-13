@@ -1,5 +1,7 @@
 package jhelp.util.io.link;
 
+import jhelp.util.HashCode;
+
 /**
  * Represents an authority in reference to distant source
  * 
@@ -211,18 +213,7 @@ public class Authority
    @Override
    public int hashCode()
    {
-      int hashCode = 1;
-      hashCode *= 31;
-
-      if(this.userInfo != null)
-      {
-         hashCode += this.userInfo.hashCode();
-      }
-
-      hashCode *= 31;
-      hashCode += this.host.hashCode();
-      hashCode *= 31;
-      return hashCode + this.port;
+      return HashCode.computeHashCode(this.userInfo, this.host, this.port);
    }
 
    /**

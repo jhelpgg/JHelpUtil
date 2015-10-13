@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import jhelp.util.HashCode;
 import jhelp.util.debug.Debug;
 
 import org.junit.Assert;
@@ -79,14 +80,7 @@ public class UtilIOTest
       @Override
       public int hashCode()
       {
-         final int prime = 31;
-         int result = 1;
-         result = (prime * result) + this.getOuterType().hashCode();
-         result = (prime * result) + this.integer;
-         result = (prime * result) + ((this.name == null)
-               ? 0
-               : this.name.hashCode());
-         return result;
+         return HashCode.computeHashCode(this.getOuterType(), this.integer, this.name);
       }
 
       @Override
@@ -290,7 +284,8 @@ public class UtilIOTest
    // @BeforeClass
    public static void initialiazeForCodeCoverage() throws IOException
    {
-      UtilIO.copy(new File("/home/jhelp/travo/worksp/JHelpUtil/testDirectory"), new File("/home/jhelp/travo/worksp/.metadata/.plugins/com.mountainminds.eclemma.core/.instr/testDirectory"));
+      UtilIO.copy(new File("/home/jhelp/travo/worksp/JHelpUtil/testDirectory"), new File(
+            "/home/jhelp/travo/worksp/.metadata/.plugins/com.mountainminds.eclemma.core/.instr/testDirectory"));
    }
 
    /**
@@ -476,7 +471,8 @@ public class UtilIOTest
    {
       UtilIO.unzip(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP), UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP_FILE));
 
-      Assert.assertTrue(UtilIOTest.compareDirectories(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP), UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_ZIP)));
+      Assert.assertTrue(UtilIOTest.compareDirectories(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP),
+            UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_ZIP)));
 
       UtilIO.delete(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP));
    }
@@ -492,7 +488,8 @@ public class UtilIOTest
    {
       UtilIO.write(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP_FILE), UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_ZIP_FILE));
 
-      Assert.assertTrue(UtilIOTest.compareFiles(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP_FILE), UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_ZIP_FILE)));
+      Assert.assertTrue(UtilIOTest.compareFiles(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_UNZIP_FILE),
+            UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_ZIP_FILE)));
 
       UtilIO.delete(UtilIO.obtainExternalFile(UtilIOTest.TEST_DIRECTORY_ZIP_FILE));
    }

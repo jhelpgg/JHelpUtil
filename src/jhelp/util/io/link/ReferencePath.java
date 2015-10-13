@@ -1,5 +1,6 @@
 package jhelp.util.io.link;
 
+import jhelp.util.HashCode;
 import jhelp.util.text.StringCutter;
 
 /**
@@ -315,13 +316,13 @@ public class ReferencePath
    @Override
    public int hashCode()
    {
-      int hashCode = this.pathName.hashCode();
+      final HashCode hashCode = new HashCode();
+      hashCode.add(this.pathName);
       ReferencePath referencePath = this.parent;
 
       while(referencePath != null)
       {
-         hashCode *= 31;
-         hashCode += referencePath.pathName.hashCode();
+         hashCode.add(referencePath.pathName);
          referencePath = referencePath.parent;
       }
 
@@ -329,12 +330,11 @@ public class ReferencePath
 
       while(referencePath != null)
       {
-         hashCode *= 31;
-         hashCode += referencePath.pathName.hashCode();
+         hashCode.add(referencePath.pathName);
          referencePath = referencePath.child;
       }
 
-      return hashCode;
+      return hashCode.getHashCode();
    }
 
    /**

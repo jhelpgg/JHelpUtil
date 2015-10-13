@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 
+import jhelp.util.HashCode;
 import jhelp.util.math.UtilMath;
 import jhelp.util.text.UtilText;
 
@@ -557,11 +558,7 @@ public class BigRational
    @Override
    public int hashCode()
    {
-      final int prime = 127;
-      int result = 1;
-      result = (prime * result) + this.denominator.hashCode();
-      result = (prime * result) + this.numerator.hashCode();
-      return result;
+      return HashCode.computeHashCode(this.denominator, this.numerator);
    }
 
    /**

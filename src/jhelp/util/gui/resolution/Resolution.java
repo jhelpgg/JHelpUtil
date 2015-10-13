@@ -104,4 +104,34 @@ public final class Resolution
 
       return (int) (this.pixelPerInch * value);
    }
+
+   /**
+    * Convert a number of pixels to a measure unit
+    * 
+    * @param pixels
+    *           Number of pixels
+    * @param measureUnit
+    *           Measure to convert
+    * @return Converted value
+    */
+   public double pixelsToMeasure(final double pixels, final MeasureUnit measureUnit)
+   {
+      final double inch = pixels / this.pixelPerInch;
+
+      switch(measureUnit)
+      {
+         case CENTIMETER:
+            return UtilMath.inchToCentimeter(inch);
+         case INCH:
+            return inch;
+         case MILLIMETER:
+            return UtilMath.inchToMillimeter(inch);
+         case PICA:
+            return UtilMath.inchToPica(inch);
+         case POINT:
+            return UtilMath.inchToPoint(inch);
+         default:
+            throw new IllegalArgumentException("measureUnit not managed : " + measureUnit);
+      }
+   }
 }

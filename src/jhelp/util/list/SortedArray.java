@@ -527,7 +527,7 @@ public final class SortedArray<TYPE>
    }
 
    /**
-    * Search an element similar to the object. Because it use the comparator, is the comparator say the object is the same of
+    * Search an element similar to the object. Because it use the comparator, if the comparator say the object is the same of
     * one element inside the array, they are declared similar
     * 
     * @param object
@@ -549,7 +549,7 @@ public final class SortedArray<TYPE>
    }
 
    /**
-    * Search index of similar element. Because it use the comparator, is the comparator say the object is the same of one
+    * Search index of similar element. Because it use the comparator, if the comparator say the object is the same of one
     * element inside the array, they are declared similar
     * 
     * @param object

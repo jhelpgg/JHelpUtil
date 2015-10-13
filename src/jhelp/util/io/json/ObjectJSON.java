@@ -3,6 +3,7 @@ package jhelp.util.io.json;
 import java.util.HashMap;
 import java.util.Set;
 
+import jhelp.util.HashCode;
 import jhelp.util.list.Pair;
 
 /**
@@ -193,7 +194,7 @@ public class ObjectJSON
    @Override
    public int hashCode()
    {
-      return this.values.hashCode();
+      return HashCode.computeHashCode(this.values);
    }
 
    /**

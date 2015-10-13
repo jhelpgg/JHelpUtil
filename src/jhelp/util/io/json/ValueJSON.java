@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import jhelp.util.HashCode;
 import jhelp.util.io.UtilIO;
 import jhelp.util.list.Pair;
 import jhelp.util.math.UtilMath;
@@ -638,15 +639,7 @@ public final class ValueJSON
    @Override
    public int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + ((this.valueType == null)
-            ? 0
-            : this.valueType.hashCode());
-      result = (prime * result) + ((this.value == null)
-            ? 0
-            : this.value.hashCode());
-      return result;
+      return HashCode.computeHashCode(this.valueType, this.value);
    }
 
    /**

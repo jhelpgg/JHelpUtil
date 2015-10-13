@@ -1,5 +1,6 @@
 package jhelp.util.gui;
 
+import jhelp.util.HashCode;
 import jhelp.util.text.UtilText;
 
 /**
@@ -140,13 +141,7 @@ public class Clip
    @Override
    public int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.xMin;
-      result = (prime * result) + this.xMax;
-      result = (prime * result) + this.yMin;
-      result = (prime * result) + this.yMax;
-      return result;
+      return HashCode.computeHashCode(this.xMin, this.xMax, this.yMin, this.yMax);
    }
 
    /**

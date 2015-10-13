@@ -99,6 +99,40 @@ public class Ring<TYPE>
    }
 
    /**
+    * Indicates if given element inside the ring
+    * 
+    * @param element
+    *           Element searched
+    * @return {@code true} if given element inside the ring
+    */
+   public boolean contains(final TYPE element)
+   {
+      if((element == null) || (this.current == null))
+      {
+         return false;
+      }
+
+      if(this.current.element.equals(element) == true)
+      {
+         return true;
+      }
+
+      Element<TYPE> elementLocal = this.current.next;
+
+      while(elementLocal != this.current)
+      {
+         if(elementLocal.element.equals(element) == true)
+         {
+            return true;
+         }
+
+         elementLocal = elementLocal.next;
+      }
+
+      return false;
+   }
+
+   /**
     * Current element or {@code null} if ring is empty
     * 
     * @return Current element or {@code null} if ring is empty
@@ -153,6 +187,48 @@ public class Ring<TYPE>
       {
          this.current = this.current.previous;
       }
+   }
+
+   /**
+    * Try to reach ring element that equals to given element.<br>
+    * If succeed the stored instance equals to given is returned and the ring is on its position
+    * 
+    * @param element
+    *           Element search
+    * @return The element stored equals to given element and ring position on it OR {@code null} if not found and ring position
+    *         not changed
+    */
+   public TYPE reach(final TYPE element)
+   {
+      if(element == null)
+      {
+         throw new NullPointerException("element musn't be null");
+      }
+
+      if(this.current == null)
+      {
+         return null;
+      }
+
+      if(this.current.element.equals(element) == true)
+      {
+         return this.current.element;
+      }
+
+      Element<TYPE> elementLocal = this.current.next;
+
+      while(elementLocal != this.current)
+      {
+         if(elementLocal.element.equals(element) == true)
+         {
+            this.current = elementLocal;
+            return this.current.element;
+         }
+
+         elementLocal = elementLocal.next;
+      }
+
+      return null;
    }
 
    /**

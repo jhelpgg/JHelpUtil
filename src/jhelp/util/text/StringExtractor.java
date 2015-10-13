@@ -204,6 +204,19 @@ public class StringExtractor
                   break;
                }
             }
+
+            if(openClose != null)
+            {
+               if(Utilities.contains(character, this.separators) == true)
+               {
+                  if(start < this.index)
+                  {
+                     end = this.index;
+
+                     break;
+                  }
+               }
+            }
          }
 
          if(openClose == null)

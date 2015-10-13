@@ -995,7 +995,7 @@ public class JHelpImage
     * Note : If the image is not in draw mode, all visible sprite will be consider as a part of the image
     * 
     * @param outputStream
-    *           Stream where write
+    *           Stream where write, not closed by this method
     * @param image
     *           Image to save
     * @throws IOException

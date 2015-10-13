@@ -17,6 +17,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
+import jhelp.util.HashCode;
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 import jhelp.util.io.UtilIO;
@@ -143,12 +144,7 @@ public class Compiler
       @Override
       public int hashCode()
       {
-         final int prime = 31;
-         int result = 1;
-         result = (prime * result) + ((this.name == null)
-               ? 0
-               : this.name.hashCode());
-         return result;
+         return HashCode.computeHashCode(this.name);
       }
    }
 

@@ -1,5 +1,6 @@
 package jhelp.util.math.rational;
 
+import jhelp.util.HashCode;
 import jhelp.util.math.UtilMath;
 import jhelp.util.text.UtilText;
 
@@ -65,7 +66,8 @@ public class Rational
          return rational1;
       }
 
-      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator), rational1.denominator * rational2.denominator);
+      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator), rational1.denominator
+            * rational2.denominator);
    }
 
    /**
@@ -220,7 +222,8 @@ public class Rational
          return Rational.INVALID;
       }
 
-      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator), rational1.denominator * rational2.denominator * 2);
+      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator), rational1.denominator
+            * rational2.denominator * 2);
    }
 
    /**
@@ -403,7 +406,8 @@ public class Rational
    {
       if((numberPositive < 0) || (numberNegative < 0))
       {
-         throw new IllegalArgumentException(UtilText.concatenate("Number of positive and negative can't be negative. Here we have numberPositive=", numberPositive, " and numberNegative=", numberNegative));
+         throw new IllegalArgumentException(UtilText.concatenate("Number of positive and negative can't be negative. Here we have numberPositive=",
+               numberPositive, " and numberNegative=", numberNegative));
       }
 
       final Rational rational = Rational.createRational(numberPositive, numberPositive + numberNegative);
@@ -465,7 +469,8 @@ public class Rational
          return Rational.ZERO;
       }
 
-      return Rational.createRational((rational1.numerator * rational2.denominator) - (rational2.numerator * rational1.denominator), rational1.denominator * rational2.denominator);
+      return Rational.createRational((rational1.numerator * rational2.denominator) - (rational2.numerator * rational1.denominator), rational1.denominator
+            * rational2.denominator);
    }
 
    /** Denominator */
@@ -649,11 +654,7 @@ public class Rational
    @Override
    public int hashCode()
    {
-      final int prime = 127;
-      int result = 1;
-      result = (prime * result) + this.denominator;
-      result = (prime * result) + this.numerator;
-      return result;
+      return HashCode.computeHashCode(this.denominator, this.numerator);
    }
 
    /**

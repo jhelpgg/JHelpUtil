@@ -224,6 +224,8 @@ public class BitmapHeader
          case IMAGE_8_BITS:
             numColors = 256;
          break;
+         default:
+         break;
       }
 
       this.colorTable = new int[numColors];
@@ -266,6 +268,8 @@ public class BitmapHeader
          break;
          case IMAGE_8_BITS:
             ((Image8Bit) rasterImage).setColors(0, this.colorTable);
+         break;
+         default:
          break;
       }
    }

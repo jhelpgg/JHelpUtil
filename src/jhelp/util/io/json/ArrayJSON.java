@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jhelp.util.HashCode;
 import jhelp.util.list.Pair;
 
 /**
@@ -163,7 +164,7 @@ public class ArrayJSON
    @Override
    public int hashCode()
    {
-      return this.values.hashCode();
+      return HashCode.computeHashCode(this.values);
    }
 
    /**

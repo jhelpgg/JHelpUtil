@@ -118,6 +118,8 @@ public class IcoElementImage
             xor = new Image32Bit(this.width, this.height);
             ((Image32Bit) xor).parseBitmapStream(inputStream);
          break;
+         default:
+         break;
       }
 
       this.rasterXor = xor;

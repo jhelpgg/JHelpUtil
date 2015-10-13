@@ -279,6 +279,24 @@ public class HashInt<TYPE>
    }
 
    /**
+    * Hash int keys
+    * 
+    * @return Hash int keys
+    */
+   public int[] getKeys()
+   {
+      final ArrayInt keys = new ArrayInt();
+
+      for(final Element<TYPE> element : this.treeSet)
+      {
+         keys.add(element.hash);
+      }
+
+      keys.sort();
+      return keys.toArray();
+   }
+
+   /**
     * Number of elements in the table
     * 
     * @return Number of elements in the table
@@ -314,7 +332,7 @@ public class HashInt<TYPE>
    }
 
    /**
-    * Associate an elemnt to a key
+    * Associate an element to a key
     * 
     * @param key
     *           Key

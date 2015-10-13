@@ -1,11 +1,12 @@
 package jhelp.util.math.rational;
 
 import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import jhelp.util.HashCode;
+
 /**
- * Matrix based on {@link Rational}
+ * Matrix with rational insides
  * 
  * @author JHelp
  */
@@ -515,12 +516,7 @@ public class MatrixRational
    @Override
    public int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + this.width;
-      result = (prime * result) + this.height;
-      result = (prime * result) + Arrays.hashCode(this.matrix);
-      return result;
+      return HashCode.computeHashCode(this.width, this.height, this.matrix);
    }
 
    /**

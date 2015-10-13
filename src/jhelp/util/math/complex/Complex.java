@@ -1,5 +1,6 @@
 package jhelp.util.math.complex;
 
+import jhelp.util.HashCode;
 import jhelp.util.math.UtilMath;
 
 /**
@@ -424,18 +425,7 @@ public class Complex
    @Override
    public int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      long temp;
-      temp = Double.doubleToLongBits(this.angle);
-      result = (prime * result) + (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(this.imaginary);
-      result = (prime * result) + (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(this.length);
-      result = (prime * result) + (int) (temp ^ (temp >>> 32));
-      temp = Double.doubleToLongBits(this.real);
-      result = (prime * result) + (int) (temp ^ (temp >>> 32));
-      return result;
+      return HashCode.computeHashCode(this.angle, this.imaginary, this.length, this.real);
    }
 
    /**

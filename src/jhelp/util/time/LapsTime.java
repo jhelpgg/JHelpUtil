@@ -7,6 +7,8 @@
  */
 package jhelp.util.time;
 
+import jhelp.util.HashCode;
+
 /**
  * For measure a laps of time <br>
  * <br>
@@ -530,10 +532,7 @@ public class LapsTime
    @Override
    public int hashCode()
    {
-      final int prime = 31;
-      int result = 1;
-      result = (prime * result) + (int) (this.microseconds ^ (this.microseconds >>> 32));
-      return result;
+      return HashCode.computeHashCode(this.microseconds);
    }
 
    /**
