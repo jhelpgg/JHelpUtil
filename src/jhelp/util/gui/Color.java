@@ -11,6 +11,23 @@ public class Color
    /** Precision for decide if two colors are similar */
    static int precision = 0;
 
+   public static Color brigthness(final Color color, final double factor)
+   {
+      return new Color(Color.brigthness(color.color, factor));
+   }
+
+   public static int brigthness(final int color, final double factor)
+   {
+      final int alpha = color & 0xFF000000;
+      final int red = (color >> 16) & 0xFF;
+      final int green = (color >> 8) & 0xFF;
+      final int blue = color & 0xFF;
+      final double y = JHelpImage.computeY(red, green, blue) * factor;
+      final double u = JHelpImage.computeU(red, green, blue);
+      final double v = JHelpImage.computeV(red, green, blue);
+      return alpha | (JHelpImage.computeRed(y, u, v) << 16) | (JHelpImage.computeGreen(y, u, v) << 8) | JHelpImage.computeBlue(y, u, v);
+   }
+
    /**
     * Indicates if 2 colors are similar
     * 
@@ -28,7 +45,8 @@ public class Color
     */
    public static boolean isNear(final int red, final int green, final int blue, final int color, final int precision)
    {
-      return (Math.abs(red - ((color >> 16) & 0xFF)) <= precision) && (Math.abs(green - ((color >> 8) & 0xFF)) <= precision) && (Math.abs(blue - (color & 0xFF)) <= precision);
+      return (Math.abs(red - ((color >> 16) & 0xFF)) <= precision) && (Math.abs(green - ((color >> 8) & 0xFF)) <= precision)
+            && (Math.abs(blue - (color & 0xFF)) <= precision);
    }
 
    /**
@@ -63,8 +81,10 @@ public class Color
    int color;
    /** Color green */
    int green;
+
    /** Additional information */
    int info;
+
    /** Color red */
    int red;
 
@@ -103,6 +123,11 @@ public class Color
       this.blue = blue & 0xFF;
 
       this.color = (alpha << 24) | (red << 16) | (green << 8) | blue;
+   }
+
+   public Color brigthness(final double factor)
+   {
+      return Color.brigthness(this, factor);
    }
 
    /**
@@ -178,6 +203,7 @@ public class Color
     */
    public boolean isNear(final Color color, final int precision)
    {
-      return (Math.abs(this.red - color.red) <= precision) && (Math.abs(this.green - color.green) <= precision) && (Math.abs(this.blue - color.blue) <= precision);
+      return (Math.abs(this.red - color.red) <= precision) && (Math.abs(this.green - color.green) <= precision)
+            && (Math.abs(this.blue - color.blue) <= precision);
    }
 }

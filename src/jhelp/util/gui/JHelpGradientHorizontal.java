@@ -173,7 +173,7 @@ public class JHelpGradientHorizontal
    @Override
    public void initializePaint(final int width, final int height)
    {
-      this.width = width;
+      this.width = Math.max(1, width);
    }
 
    /**

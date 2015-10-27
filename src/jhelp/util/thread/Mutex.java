@@ -50,7 +50,8 @@ public class Mutex
     */
    private String createMutexInformation(final StackTraceElement traceCaller)
    {
-      return UtilText.concatenate(" MUTEX ", this.id, " : ", traceCaller.getClassName(), '.', traceCaller.getMethodName(), " at ", traceCaller.getLineNumber(), " : ", this.createThreadID());
+      return UtilText.concatenate(" MUTEX ", this.id, " : ", traceCaller.getClassName(), '.', traceCaller.getMethodName(), " at ", traceCaller.getLineNumber(),
+            " : ", this.createThreadID());
    }
 
    /**

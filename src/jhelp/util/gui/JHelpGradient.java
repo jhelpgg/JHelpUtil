@@ -138,9 +138,9 @@ public class JHelpGradient
    @Override
    public void initializePaint(final int width, final int height)
    {
-      this.width = width;
-      this.height = height;
-      this.size = width * height;
+      this.width = Math.max(1, width);
+      this.height = Math.max(1, height);
+      this.size = this.width * this.height;
    }
 
    /**
@@ -162,7 +162,8 @@ public class JHelpGradient
       final int xx = this.width - x;
       final int yy = this.height - y;
 
-      return ((((((this.alphaUpLeft * xx) + (this.alphaUpRight * x)) * yy) + (((this.alphaDownLeft * xx) + (this.alphaDownRight * x)) * y)) / this.size) << 24) | //
+      return ((((((this.alphaUpLeft * xx) + (this.alphaUpRight * x)) * yy) + (((this.alphaDownLeft * xx) + (this.alphaDownRight * x)) * y)) / this.size) << 24)
+            | //
             ((((((this.redUpLeft * xx) + (this.redUpRight * x)) * yy) + (((this.redDownLeft * xx) + (this.redDownRight * x)) * y)) / this.size) << 16) | //
             ((((((this.greenUpLeft * xx) + (this.greenUpRight * x)) * yy) + (((this.greenDownLeft * xx) + (this.greenDownRight * x)) * y)) / this.size) << 8) | //
             (((((this.blueUpLeft * xx) + (this.blueUpRight * x)) * yy) + (((this.blueDownLeft * xx) + (this.blueDownRight * x)) * y)) / this.size);

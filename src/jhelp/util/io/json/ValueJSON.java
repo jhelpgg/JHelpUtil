@@ -282,6 +282,23 @@ public final class ValueJSON
    }
 
    /**
+    * Create boolean value
+    * 
+    * @param value
+    *           Value
+    * @return Created value
+    */
+   public static ValueJSON newValue(final boolean value)
+   {
+      if(value == true)
+      {
+         return ValueJSON.TRUE;
+      }
+
+      return ValueJSON.FALSE;
+   }
+
+   /**
     * Create JSON value with a number inside
     * 
     * @param number
@@ -386,6 +403,7 @@ public final class ValueJSON
 
    /** Value content */
    private final Object    value;
+
    /** Value type */
    private final ValueType valueType;
 
