@@ -24,6 +24,8 @@ public final class UtilMath
    public static double           CENTIMETER_IN_POINT = 72.0 / 2.54;
    /** Epsilon */
    public static final double     EPSILON             = UtilMath.max(Double.MIN_NORMAL, Math.abs(Math.E - Math.exp(1)), Math.abs(Math.PI - Math.acos(-1)));
+   public static final float      EPSILON_FLOAT       = UtilMath.max(Float.MIN_NORMAL, Math.abs((float) Math.E - (float) Math.exp(1)),
+                                                            Math.abs((float) Math.PI - (float) Math.acos(-1)));
    /** One grade in degree */
    public static double           GRADE_IN_DEGREE     = 0.9;
    /** One grade in radian */
@@ -633,6 +635,11 @@ public final class UtilMath
       return Math.abs(real) <= UtilMath.EPSILON;
    }
 
+   public static boolean isNul(final float real)
+   {
+      return Math.abs(real) <= UtilMath.EPSILON_FLOAT;
+   }
+
    /**
     * Limit an integer between 2 values.<br>
     * If the integer is between given bounds, the integer is returned.<br>
@@ -788,6 +795,20 @@ public final class UtilMath
       return max;
    }
 
+   public static float max(final float... floats)
+   {
+      float max = floats[0];
+
+      for(final float real : floats)
+      {
+         max = real > max
+               ? real
+               : max;
+      }
+
+      return max;
+   }
+
    /**
     * Maximum of several integers
     * 
@@ -913,6 +934,11 @@ public final class UtilMath
       return UtilMath.moduloInterval(real, 0, modulo);
    }
 
+   public static float modulo(final float real, final float modulo)
+   {
+      return UtilMath.moduloInterval(real, 0, modulo);
+   }
+
    /**
     * Mathematical modulo.<br>
     * For computer -1 modulo 2 is -1, but in Mathematic -1[2]=1 (-1[2] : -1 modulo 2)
@@ -992,6 +1018,32 @@ public final class UtilMath
       real = (real - min) / space;
 
       return (space * (real - Math.floor(real))) + min;
+   }
+
+   public static float moduloInterval(float real, float min, float max)
+   {
+      if(min > max)
+      {
+         final float temp = min;
+         min = max;
+         max = temp;
+      }
+
+      if((real >= min) && (real <= max))
+      {
+         return real;
+      }
+
+      final float space = max - min;
+
+      if(UtilMath.isNul(space) == true)
+      {
+         throw new IllegalArgumentException("Can't take modulo in empty interval");
+      }
+
+      real = (real - min) / space;
+
+      return (float) (space * (real - Math.floor(real))) + min;
    }
 
    /**
@@ -1310,6 +1362,21 @@ public final class UtilMath
     * @return Double sign (-1, 0 or 1)
     */
    public static int sign(final double real)
+   {
+      if(UtilMath.isNul(real) == true)
+      {
+         return 0;
+      }
+
+      if(real < 0)
+      {
+         return -1;
+      }
+
+      return 1;
+   }
+
+   public static int sign(final float real)
    {
       if(UtilMath.isNul(real) == true)
       {

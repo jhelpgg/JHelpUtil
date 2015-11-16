@@ -5691,6 +5691,64 @@ public class JHelpImage
    }
 
    /**
+    * Fill rectangle and invert colors
+    * 
+    * @param x
+    *           Up left corner X
+    * @param y
+    *           Up left corner Y
+    * @param width
+    *           Rectangle width
+    * @param height
+    *           Rectangle height
+    */
+   public void fillRectangleInverseColor(final int x, final int y, final int width, final int height)
+   {
+      if(this.drawMode == false)
+      {
+         throw new IllegalStateException("Must be in draw mode !");
+      }
+
+      if((width <= 0) || (height <= 0))
+      {
+         return;
+      }
+
+      final int x1 = x;
+      final int y1 = y;
+      final int x2 = (x + width) - 1;
+      final int y2 = (y + height) - 1;
+
+      final int startX = UtilMath.maxIntegers(this.clip.xMin, x1, 0);
+      final int endX = UtilMath.minIntegers(this.clip.xMax, x2, this.width - 1);
+      final int startY = UtilMath.maxIntegers(this.clip.yMin, y1, 0);
+      final int endY = UtilMath.minIntegers(this.clip.yMax, y2, this.height - 1);
+
+      if((startX > endX) || (startY > endY))
+      {
+         return;
+      }
+
+      int line = startX + (startY * this.width);
+      int pix, color;
+
+      for(int yy = startY; yy <= endY; yy++)
+      {
+         pix = line;
+
+         for(int xx = startX; xx <= endX; xx++)
+         {
+            color = this.pixels[pix];
+            this.pixels[pix] = (color & 0xFF000000) | ((~color) & 0x00FFFFFF);
+
+            pix++;
+         }
+
+         line += this.width;
+      }
+   }
+
+   /**
     * Fill a rectangle with an image.<br>
     * The image is scaled to fit rectangle size<br>
     * Note : if the texture is not in draw moe, all of it's visible sprte will be condider like a part of he texture<br>
