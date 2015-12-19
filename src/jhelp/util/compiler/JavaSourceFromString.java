@@ -1,9 +1,12 @@
 /**
- * Project : InjectionExemples<br>
- * Package : jhelp.injection.dynamic<br>
- * Class : JavaSourceFromString<br>
- * Date : 24 nov. 2009<br>
- * By JHelp
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ * 
+ * @author JHelp
  */
 package jhelp.util.compiler;
 
@@ -34,7 +37,7 @@ public class JavaSourceFromString
     * @param code
     *           the source code for the compilation unit represented by this file object
     */
-   public JavaSourceFromString(String name, String code)
+   public JavaSourceFromString(final String name, final String code)
    {
       super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
       this.code = code;
@@ -49,7 +52,7 @@ public class JavaSourceFromString
     * @see javax.tools.SimpleJavaFileObject#getCharContent(boolean)
     */
    @Override
-   public CharSequence getCharContent(boolean ignoreEncodingErrors)
+   public CharSequence getCharContent(final boolean ignoreEncodingErrors)
    {
       return this.code;
    }

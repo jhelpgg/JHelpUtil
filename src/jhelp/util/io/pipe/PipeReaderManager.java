@@ -1,3 +1,13 @@
+/**
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ * 
+ * @author JHelp
+ */
 package jhelp.util.io.pipe;
 
 import java.util.ArrayList;
@@ -134,12 +144,12 @@ public class PipeReaderManager<BINARIZABLE extends Binarizable>
    private final List<PipeReaderManagerListener<BINARIZABLE>> listeners;
    /** Pipe reader to use */
    private PipeReader                                         pipeReader;
-   /** Task for signal a message */
-   private final TaskSignalMessage<BINARIZABLE>               taskSignalListener = new TaskSignalMessage<BINARIZABLE>();
    /** Task for read messages from pipe */
    private final TaskReadPipe                                 taskReadPipe;
+   /** Task for signal a message */
+   private final TaskSignalMessage<BINARIZABLE>               taskSignalListener = new TaskSignalMessage<BINARIZABLE>();
    /** Indicates if manager is alive */
-   final AtomicBoolean                                        alive               = new AtomicBoolean(false);
+   final AtomicBoolean                                        alive              = new AtomicBoolean(false);
    /** Type of binarizable to read */
    Class<BINARIZABLE>                                         binarizebleClass;
 
@@ -180,7 +190,8 @@ public class PipeReaderManager<BINARIZABLE extends Binarizable>
       {
          for(final PipeReaderManagerListener<BINARIZABLE> listener : this.listeners)
          {
-            ThreadManager.THREAD_MANAGER.doThread(this.taskSignalListener, new Triplet<PipeReaderManagerListener<BINARIZABLE>, PipeReader, BINARIZABLE>(listener, this.pipeReader, message));
+            ThreadManager.THREAD_MANAGER.doThread(this.taskSignalListener, new Triplet<PipeReaderManagerListener<BINARIZABLE>, PipeReader, BINARIZABLE>(
+                  listener, this.pipeReader, message));
          }
       }
    }

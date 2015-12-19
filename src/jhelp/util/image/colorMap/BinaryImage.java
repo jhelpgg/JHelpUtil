@@ -1,3 +1,13 @@
+/**
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ * 
+ * @author JHelp
+ */
 package jhelp.util.image.colorMap;
 
 import java.io.IOException;
@@ -71,6 +81,83 @@ public class BinaryImage
       this.data = new byte[(this.width * this.height) >> 3];
       final int length = this.data.length;
       final int[] pixels = image.getPixels(0, 0, this.width, this.height);
+
+      if(this.asAlpha(pixels) == true)
+      {
+         this.extractByAlpha(pixels, length);
+      }
+      else
+      {
+         this.extractByColors(pixels, length);
+      }
+   }
+
+   /**
+    * Indicates if image has alpha
+    * 
+    * @param pixels
+    *           Image pixels
+    * @return {@code true} if image has alpha
+    */
+   private boolean asAlpha(final int[] pixels)
+   {
+      for(final int pixel : pixels)
+      {
+         if((pixel >>> 24) < 255)
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   /**
+    * Create binary image using image alphas
+    * 
+    * @param pixels
+    *           Image pixels
+    * @param length
+    *           Data lenght
+    */
+   private void extractByAlpha(final int[] pixels, final int length)
+   {
+      int pix = 0;
+      int color;
+      int value;
+      int mask;
+
+      for(int index = 0; index < length; index++)
+      {
+         value = 0;
+         mask = 0x80;
+
+         for(int i = 0; i < 8; i++)
+         {
+            color = pixels[pix++];
+
+            if((color >>> 24) > 127)
+            {
+               value |= mask;
+            }
+
+            mask >>= 1;
+         }
+
+         this.data[index] = (byte) value;
+      }
+   }
+
+   /**
+    * Create binary image using image colors
+    * 
+    * @param pixels
+    *           Image pixels
+    * @param length
+    *           Data length
+    */
+   private void extractByColors(final int[] pixels, final int length)
+   {
       int pix = 0;
       int color;
       double yy;

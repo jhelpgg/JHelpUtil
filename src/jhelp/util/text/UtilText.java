@@ -1,6 +1,7 @@
 package jhelp.util.text;
 
 import java.nio.charset.Charset;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -1298,6 +1299,16 @@ public final class UtilText
       return new String(array, offset, length, UtilText.UTF8);
    }
 
+   public static char removeAccent(final char character)
+   {
+      return UtilText.removeAccent(String.valueOf(character)).charAt(0);
+   }
+
+   public static String removeAccent(final String string)
+   {
+      return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+   }
+
    /**
     * Remove all white characters of a string
     * 
@@ -1709,48 +1720,9 @@ public final class UtilText
     *           Character to upper case
     * @return Upper case result
     */
-   public static char upperCaseWithoutAccent(char character)
+   public static char upperCaseWithoutAccent(final char character)
    {
-      character = Character.toUpperCase(character);
-
-      switch(character)
-      {
-         case 'À':
-         case 'Â':
-         case 'Ä':
-         case 'Á':
-         case 'Ã':
-            return 'A';
-         case 'Ç':
-            return 'C';
-         case 'Ê':
-         case 'Ë':
-         case 'É':
-         case 'È':
-            return 'E';
-         case 'Î':
-         case 'Ï':
-         case 'Ì':
-         case 'Í':
-            return 'I';
-         case 'Ô':
-         case 'Ö':
-            return 'O';
-         case 'Û':
-         case 'Ü':
-         case 'Ù':
-         case 'Ú':
-            return 'U';
-         case 'Ñ':
-            return 'N';
-         case 'Ŷ':
-         case 'Ÿ':
-            return 'Y';
-         case 'Ŕ':
-            return 'R';
-      }
-
-      return character;
+      return UtilText.removeAccent(Character.toUpperCase(character));
    }
 
    /**
@@ -1762,59 +1734,7 @@ public final class UtilText
     */
    public static String upperCaseWithoutAccent(final String text)
    {
-      final char[] characters = text.toUpperCase().toCharArray();
-      final int lenght = characters.length;
-
-      for(int i = 0; i < lenght; i++)
-      {
-         switch(characters[i])
-         {
-            case 'À':
-            case 'Â':
-            case 'Ä':
-            case 'Á':
-            case 'Ã':
-               characters[i] = 'A';
-            break;
-            case 'Ç':
-               characters[i] = 'C';
-            break;
-            case 'Ê':
-            case 'Ë':
-            case 'É':
-            case 'È':
-               characters[i] = 'E';
-            break;
-            case 'Î':
-            case 'Ï':
-            case 'Ì':
-            case 'Í':
-               characters[i] = 'I';
-            break;
-            case 'Ô':
-            case 'Ö':
-               characters[i] = 'O';
-            break;
-            case 'Û':
-            case 'Ü':
-            case 'Ù':
-            case 'Ú':
-               characters[i] = 'U';
-            break;
-            case 'Ñ':
-               characters[i] = 'N';
-            break;
-            case 'Ŷ':
-            case 'Ÿ':
-               characters[i] = 'Y';
-            break;
-            case 'Ŕ':
-               characters[i] = 'R';
-            break;
-         }
-      }
-
-      return new String(characters);
+      return UtilText.removeAccent(text.toUpperCase());
    }
 
    /** To avoid instance */

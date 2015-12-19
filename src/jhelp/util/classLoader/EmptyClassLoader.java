@@ -1,9 +1,12 @@
 /**
- * Project : JHelpUtil<br>
- * Package : jhelp.util.classLoader<br>
- * Class : EmptyClassLoader<br>
- * Date : 5 juin 2010<br>
- * By JHelp
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ * 
+ * @author JHelp
  */
 package jhelp.util.classLoader;
 
@@ -49,7 +52,8 @@ public class EmptyClassLoader
     */
    private static String createFile()
    {
-      final File file = new File(UtilIO.obtainTemporaryDirectory(), UtilText.concatenate("EmptyClassLoader", File.separator, "file", EmptyClassLoader.tempFileIndex++));
+      final File file = new File(UtilIO.obtainTemporaryDirectory(), UtilText.concatenate("EmptyClassLoader", File.separator, "file",
+            EmptyClassLoader.tempFileIndex++));
       UtilIO.createFile(file);
       return UtilText.concatenate('"', file.getAbsolutePath().replace("\\", "\\\\"), '"');
    }
@@ -118,7 +122,8 @@ public class EmptyClassLoader
     * @throws ClassNotFoundException
     *            If class not found
     */
-   private void appendContent(final boolean internal, final String decal, final String name, final StringBuilder stringBuilder, final Class<?> classInJar, final String simpleName) throws ClassNotFoundException
+   private void appendContent(final boolean internal, final String decal, final String name, final StringBuilder stringBuilder, final Class<?> classInJar,
+         final String simpleName) throws ClassNotFoundException
    {
       // write header
       stringBuilder.append(decal);
@@ -788,7 +793,8 @@ public class EmptyClassLoader
          {
             if((this.onCreation.contains(imp) == false) && (this.classes.containsKey(imp) == false))
             {
-               if((imp.startsWith("java.") == false) && (imp.startsWith("javax.") == false) && (imp.startsWith("com.sun.") == false) && (imp.startsWith("sun.") == false) && (imp.startsWith("sunw.") == false))
+               if((imp.startsWith("java.") == false) && (imp.startsWith("javax.") == false) && (imp.startsWith("com.sun.") == false)
+                     && (imp.startsWith("sun.") == false) && (imp.startsWith("sunw.") == false))
                {
                   this.compileClass(imp, needCompile);
                }
@@ -1048,7 +1054,8 @@ public class EmptyClassLoader
          return claz;
       }
 
-      if((name.startsWith("java.") == true) || (name.startsWith("javax.") == true) || (name.startsWith("com.sun.") == true) || (name.startsWith("sun.") == true) || (name.startsWith("sunw.") == true))
+      if((name.startsWith("java.") == true) || (name.startsWith("javax.") == true) || (name.startsWith("com.sun.") == true)
+            || (name.startsWith("sun.") == true) || (name.startsWith("sunw.") == true))
       {
          try
          {

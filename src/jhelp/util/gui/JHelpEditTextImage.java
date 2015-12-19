@@ -1,3 +1,13 @@
+/**
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ * 
+ * @author JHelp
+ */
 package jhelp.util.gui;
 
 import java.awt.Dimension;
@@ -47,7 +57,8 @@ public final class JHelpEditTextImage
       }
 
       final Dimension dimension = JHelpEditTextImage.computeDimension(font, size);
-      return new JHelpEditTextImage(dimension.width, dimension.height, font, color, null, null, colorCursor, Math.max(3, dimension.height >> 3), dimension.height);
+      return new JHelpEditTextImage(dimension.width, dimension.height, font, color, null, null, colorCursor, Math.max(3, dimension.height >> 3),
+            dimension.height);
    }
 
    /**
@@ -76,7 +87,8 @@ public final class JHelpEditTextImage
       }
 
       final Dimension dimension = JHelpEditTextImage.computeDimension(font, size);
-      return new JHelpEditTextImage(dimension.width, dimension.height, font, 0, JHelpImage.createResizedImage(texture, dimension.width, dimension.height), null, colorCursor, Math.max(3, dimension.height >> 3), dimension.height);
+      return new JHelpEditTextImage(dimension.width, dimension.height, font, 0, JHelpImage.createResizedImage(texture, dimension.width, dimension.height),
+            null, colorCursor, Math.max(3, dimension.height >> 3), dimension.height);
    }
 
    /**
@@ -155,7 +167,8 @@ public final class JHelpEditTextImage
     * @param cursorHeight
     *           Cursor height
     */
-   private JHelpEditTextImage(final int width, final int height, final JHelpFont font, final int color, final JHelpImage texture, final JHelpPaint paint, final int colorCursor, final int cursorWitdh, final int cursorHeight)
+   private JHelpEditTextImage(final int width, final int height, final JHelpFont font, final int color, final JHelpImage texture, final JHelpPaint paint,
+         final int colorCursor, final int cursorWitdh, final int cursorHeight)
    {
       super(width, height);
 

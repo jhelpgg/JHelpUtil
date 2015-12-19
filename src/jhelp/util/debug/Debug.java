@@ -1,3 +1,13 @@
+/**
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ * 
+ * @author JHelp
+ */
 package jhelp.util.debug;
 
 import java.util.Calendar;
@@ -377,7 +387,8 @@ public final class Debug
          final StackTraceElement[] traces = throwable.getStackTrace();
          final StackTraceElement stackTraceElement = traces[2];
 
-         Debug.printMessage(debugLevel, traces[1], "Called from ", stackTraceElement.getClassName(), '.', stackTraceElement.getMethodName(), " at ", stackTraceElement.getLineNumber());
+         Debug.printMessage(debugLevel, traces[1], "Called from ", stackTraceElement.getClassName(), '.', stackTraceElement.getMethodName(), " at ",
+               stackTraceElement.getLineNumber());
       }
       finally
       {
