@@ -8,11 +8,12 @@
  * 
  * @author JHelp
  */
-package jhelp.util.gui.aimport java.awt.Dimension;
+package jhelp.util.gui.alphabet;
+
+import java.awt.Dimension;
 
 import jhelp.util.gui.GIF;
 import jhelp.util.gui.JHelpImage;
-elpImage;
 
 /**
  * Alphabet with "graphitti" letters
