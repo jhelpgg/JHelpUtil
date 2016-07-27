@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jhelp.util.debug.Debug;
+import sun.security.util.SecurityConstants;
 
 /**
  * Manage clip board<br>
@@ -33,7 +34,7 @@ import jhelp.util.debug.Debug;
  * <br>
  * Last modification : 16 mai 2009<br>
  * Version 0.0.0<br>
- * 
+ *
  * @author JHelp
  */
 public class ClipBoardManager
@@ -44,7 +45,7 @@ public class ClipBoardManager
     * <br>
     * Last modification : 16 juin 2010<br>
     * Version 0.0.0<br>
-    * 
+    *
     * @author JHelp
     */
    private class AllPermissionSecuryManager
@@ -59,7 +60,7 @@ public class ClipBoardManager
 
       /**
        * Check if permission is allowed
-       * 
+       *
        * @param perm
        *           Tested permission
        * @see java.lang.SecurityManager#checkPermission(java.security.Permission)
@@ -90,7 +91,14 @@ public class ClipBoardManager
 
       try
       {
-         securityManager.checkSystemClipboardAccess();
+         Permission permission = SecurityConstants.AWT.ACCESS_CLIPBOARD_PERMISSION;
+
+         if(permission == null)
+         {
+            permission = SecurityConstants.ALL_PERMISSION;
+         }
+
+         securityManager.checkPermission(permission);
          this.clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       }
       catch(final Exception exception)
@@ -106,7 +114,7 @@ public class ClipBoardManager
 
    /**
     * Decode a content store in byte buffer in clip board to string
-    * 
+    *
     * @param dataFlavor
     *           Nature of data
     * @return Decode string or {@code null} if decode failed
@@ -128,7 +136,7 @@ public class ClipBoardManager
 
    /**
     * Decode a content store in char buffer in clip board to string
-    * 
+    *
     * @param dataFlavor
     *           Nature of data
     * @return Decode string or {@code null} if decode failed
@@ -150,7 +158,7 @@ public class ClipBoardManager
 
    /**
     * Decode a content store in input stream in clip board to string
-    * 
+    *
     * @param dataFlavor
     *           Nature of data
     * @return Decode string or {@code null} if decode failed
@@ -184,7 +192,7 @@ public class ClipBoardManager
 
    /**
     * Decode a content store in reader in clip board to string
-    * 
+    *
     * @param dataFlavor
     *           Nature of data
     * @return Decode string or {@code null} if decode failed
@@ -220,7 +228,7 @@ public class ClipBoardManager
 
    /**
     * Indicates if clip board contains a file list
-    * 
+    *
     * @return {@code true} if clip board contains a file list
     */
    public boolean isFileListStore()
@@ -237,7 +245,7 @@ public class ClipBoardManager
 
    /**
     * Indicates if clip board contains a string
-    * 
+    *
     * @return {@code true} if clip board contains a string
     */
    public boolean isStringStore()
@@ -247,7 +255,7 @@ public class ClipBoardManager
 
    /**
     * Obtain list of file from clip board
-    * 
+    *
     * @return List of file from clip board
     */
    public List<File> obtainListOfFile()
@@ -283,7 +291,7 @@ public class ClipBoardManager
 
    /**
     * Obtain the stored string in clip board
-    * 
+    *
     * @return Stored string or {@code null} if no string inside
     */
    public String obtainString()
@@ -340,7 +348,7 @@ public class ClipBoardManager
 
    /**
     * Store file list in clip board
-    * 
+    *
     * @param files
     *           File list to store
     * @return {@code true} if store append
@@ -359,7 +367,7 @@ public class ClipBoardManager
 
    /**
     * Store a file list
-    * 
+    *
     * @param fileList
     *           File list
     * @return {@code true} if store append
@@ -378,7 +386,7 @@ public class ClipBoardManager
 
    /**
     * Store string in clip board
-    * 
+    *
     * @param text
     *           String to stroe
     */

@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.classLoader;
@@ -23,7 +23,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
 import jhelp.util.list.EnumerationIterator;
 import jhelp.util.text.UtilText;
 
@@ -32,7 +31,7 @@ import jhelp.util.text.UtilText;
  * <br>
  * Last modification : 26 mai 2009<br>
  * Version 0.0.0<br>
- * 
+ *
  * @author JHelp
  */
 public class JHelpJarClassLoader
@@ -45,6 +44,8 @@ public class JHelpJarClassLoader
 
    /** Already loaded classes */
    private final Hashtable<String, Class<?>> loadedClass;
+   /** Current spy/listener */
+   private JHelpJarClassLoaderSpy            spy;
 
    /**
     * Constructs JHelpClassLoader
@@ -59,7 +60,7 @@ public class JHelpJarClassLoader
 
    /**
     * Create a new instance of JHelpJarClassLoader
-    * 
+    *
     * @param classLoader
     *           Reference class loader
     */
@@ -73,7 +74,7 @@ public class JHelpJarClassLoader
 
    /**
     * Load a class
-    * 
+    *
     * @param name
     *           Class complete name
     * @param resolve
@@ -86,12 +87,15 @@ public class JHelpJarClassLoader
    @Override
    protected synchronized Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException
    {
-      Debug.println(DebugLevel.VERBOSE, "JHelpClassLoader -> loadClass : ", name);
-
       Class<?> clazz = this.loadedClass.get(name);
 
       if(clazz != null)
       {
+         if(this.spy != null)
+         {
+            this.spy.aleradyKnown(clazz);
+         }
+
          return clazz;
       }
 
@@ -143,6 +147,11 @@ public class JHelpJarClassLoader
 
             this.loadedClass.put(name, clazz);
 
+            if(this.spy != null)
+            {
+               this.spy.loadByJHelpJarClassLoader(clazz);
+            }
+
             return clazz;
          }
          catch(final Exception exception)
@@ -160,6 +169,11 @@ public class JHelpJarClassLoader
             {
                this.loadedClass.put(name, clazz);
 
+               if(this.spy != null)
+               {
+                  this.spy.loadByOtherClassLoader(clazz);
+               }
+
                return clazz;
             }
          }
@@ -174,7 +188,17 @@ public class JHelpJarClassLoader
       {
          this.loadedClass.put(name, clazz);
 
+         if(this.spy != null)
+         {
+            this.spy.loadByDefaultClassLoader(clazz);
+         }
+
          return clazz;
+      }
+
+      if(this.spy != null)
+      {
+         this.spy.notLoad(name);
       }
 
       throw new ClassNotFoundException("Can't find : " + name);
@@ -182,7 +206,7 @@ public class JHelpJarClassLoader
 
    /**
     * Add a jar file
-    * 
+    *
     * @param file
     *           Jar file to add
     * @throws IOException
@@ -195,7 +219,7 @@ public class JHelpJarClassLoader
 
    /**
     * Add a jar file
-    * 
+    *
     * @param jarFile
     *           Jar file to add
     */
@@ -206,7 +230,7 @@ public class JHelpJarClassLoader
 
    /**
     * Add a jar file
-    * 
+    *
     * @param name
     *           Jar file path
     * @throws IOException
@@ -219,7 +243,7 @@ public class JHelpJarClassLoader
 
    /**
     * Get URL for a resource
-    * 
+    *
     * @param name
     *           Resource complete name
     * @return URL on resource or {@code null} if resource not found
@@ -236,7 +260,7 @@ public class JHelpJarClassLoader
          {
             try
             {
-               return new URL(UtilText.concatenate("jar:file:/", jarFile.getName(), "!/", name));
+               return new URL(UtilText.concatenate("jar:file:", jarFile.getName(), "!/", name));
             }
             catch(final Exception exception)
             {
@@ -250,7 +274,7 @@ public class JHelpJarClassLoader
 
    /**
     * Get stream for read a resource
-    * 
+    *
     * @param name
     *           Resource complete name
     * @return Stream for read or {@code null} if resource not found
@@ -273,7 +297,7 @@ public class JHelpJarClassLoader
 
    /**
     * Get all resources with same name
-    * 
+    *
     * @param name
     *           Resource name
     * @return List of resources URL
@@ -294,7 +318,7 @@ public class JHelpJarClassLoader
          {
             try
             {
-               urls.add(new URL(UtilText.concatenate("jar:file:/", jarFile.getName(), "!/", name)));
+               urls.add(new URL(UtilText.concatenate("jar:file:", jarFile.getName(), "!/", name)));
             }
             catch(final Exception exception)
             {
@@ -314,7 +338,7 @@ public class JHelpJarClassLoader
 
    /**
     * List of classes are directly internal to a given one
-    * 
+    *
     * @param name
     *           Class base name
     * @return List of internal
@@ -350,7 +374,7 @@ public class JHelpJarClassLoader
 
    /**
     * Load a class
-    * 
+    *
     * @param name
     *           Class complete name
     * @return Loaded class
@@ -365,8 +389,43 @@ public class JHelpJarClassLoader
    }
 
    /**
+    * Indicates if given resource is defined inside of one of embed jar
+    *
+    * @param name
+    *           Resource path
+    * @return {@code true} if given resource is defined inside of one of embed jar
+    */
+   public boolean resourceDefinedInside(final String name)
+   {
+      JarEntry jarEntry = null;
+
+      for(final JarFile jarFile : this.arrayList)
+      {
+         jarEntry = jarFile.getJarEntry(name);
+
+         if(jarEntry != null)
+         {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   /**
+    * Define the spy/listener of activities
+    *
+    * @param spy
+    *           Spy/listener to register
+    */
+   public void setSpy(final JHelpJarClassLoaderSpy spy)
+   {
+      this.spy = spy;
+   }
+
+   /**
     * Un load a class
-    * 
+    *
     * @param name
     *           Class complete name
     */

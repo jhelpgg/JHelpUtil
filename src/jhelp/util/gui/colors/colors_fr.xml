@@ -1,0 +1,17 @@
+<Texts>
+	<Text key="white">Blanc</Text>
+	<Text key="black">Noir</Text>
+	<Text key="blue">Bleu</Text>
+	<Text key="green">Vert</Text>
+	<Text key="red">Rouge</Text>
+	<Text key="yellow">Jaune</Text>
+	<Text key="cyan">Cyan</Text>
+	<Text key="pink">Rose</Text>
+	<Text key="magenta">Violet</Text>
+	<Text key="brown">Maron</Text>
+	<Text key="orange">Orange</Text>
+	<Text key="grey">Gris</Text>
+
+	<Text key="dark">Foncé</Text>
+	<Text key="light">Clair</Text>
+</Texts>

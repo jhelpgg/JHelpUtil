@@ -1,5 +1,6 @@
 package jhelp.util.text;
 
+import java.awt.Dimension;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -10,12 +11,13 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import jhelp.util.Utilities;
+import jhelp.util.gui.JHelpFont;
 import jhelp.util.list.Pair;
 import jhelp.util.reflection.Reflector;
 
 /**
  * Textual utilities
- * 
+ *
  * @author JHelp
  */
 public final class UtilText
@@ -35,7 +37,7 @@ public final class UtilText
 
    /**
     * Append an object to string buffer
-    * 
+    *
     * @param stringBuffer
     *           Where append
     * @param object
@@ -139,7 +141,7 @@ public final class UtilText
    /**
     * Return a list of indexes pairs. Each pair contains a start index and a end index. Each couple delimit where an integer is
     * inside a string.
-    * 
+    *
     * @param string
     *           String where search all integers inside
     * @return List of couple information to know where find the integers inside the given string
@@ -189,7 +191,7 @@ public final class UtilText
    /**
     * Return a list of indexes pairs. Each pair contains a start index and a end index. Each couple delimit where a real is
     * inside a string.
-    * 
+    *
     * @param string
     *           String where search all reals inside
     * @return List of couple information to know where find the reals inside the given string
@@ -255,7 +257,7 @@ public final class UtilText
 
    /**
     * Add \ before each " we can chose do treat the ' as normal character or add \ before it also
-    * 
+    *
     * @param string
     *           String to replace
     * @param simpleQuote
@@ -426,7 +428,7 @@ public final class UtilText
 
    /**
     * Color to text representation
-    * 
+    *
     * @param color
     *           Color to convert
     * @return Text representation
@@ -448,7 +450,7 @@ public final class UtilText
     * To compute how "far" are the tow texts, we take all words of each and if a word of one not exits in the other, we decide
     * they are more far than if the word is in the second but not in the same place. If the word is in same place, we say
     * distance is zero
-    * 
+    *
     * @param text1
     *           First text
     * @param text2
@@ -554,7 +556,7 @@ public final class UtilText
     * Compute a "distance" between 2 words. <br>
     * It says hw "far" a test word is from a reference word <br>
     * 0 means they are the same word
-    * 
+    *
     * @param test
     *           Word to test
     * @param reference
@@ -605,8 +607,56 @@ public final class UtilText
    }
 
    /**
+    * Compute font with maximum size with given constraints for given text.
+    *
+    * @param text
+    *           Text that must respect the constraints
+    * @param maximumWidth
+    *           Maximum width that the text can take
+    * @param maximumHeight
+    *           Maximum height that the text can take
+    * @param familly
+    *           Font family to use
+    * @param bold
+    *           Indicates if bold text
+    * @param italic
+    *           Indicates if italic text
+    * @param underline
+    *           Indicates if underline text
+    * @return Computed font
+    */
+   public static JHelpFont computeMaximumSizedFont(final String text, final int maximumWidth, final int maximumHeight, final String familly, final boolean bold,
+         final boolean italic, final boolean underline)
+   {
+      int max = maximumHeight << 1;
+      int min = 1;
+      int size;
+      JHelpFont font;
+      Dimension dimension;
+
+      do
+      {
+         size = (max + min) >> 1;
+         font = new JHelpFont(familly, size, bold, italic, underline);
+         dimension = font.stringSize(text);
+
+         if((dimension.width > maximumWidth) || (dimension.height > maximumHeight))
+         {
+            max = size;
+         }
+         else
+         {
+            min = size;
+         }
+      }
+      while((min + 1) < max);
+
+      return font;
+   }
+
+   /**
     * Compute a name not inside a set of name
-    * 
+    *
     * @param base
     *           Base name
     * @param names
@@ -626,7 +676,7 @@ public final class UtilText
    /**
     * Compute an other name for a String name. It add a number or increase the number at the end of the String.<br>
     * Use for auto generate names
-    * 
+    *
     * @param name
     *           Name base
     * @return Computed name
@@ -661,7 +711,7 @@ public final class UtilText
 
    /**
     * Concatenate several object to make a string representation
-    * 
+    *
     * @param objects
     *           Objects to concatenate
     * @return String representation
@@ -685,7 +735,7 @@ public final class UtilText
 
    /**
     * Cut String in several parts
-    * 
+    *
     * @param string
     *           String to cut
     * @param separator
@@ -714,13 +764,13 @@ public final class UtilText
          {
             return new String[]
             {
-               ""
+                  ""
             };
          }
 
          return new String[]
          {
-            string
+               string
          };
       }
 
@@ -771,7 +821,7 @@ public final class UtilText
 
    /**
     * Extract all double inside a string
-    * 
+    *
     * @param string
     *           String where extract the doubles
     * @return Doubles founds inside the given string
@@ -799,7 +849,7 @@ public final class UtilText
 
    /**
     * Extract all float inside a string
-    * 
+    *
     * @param string
     *           String where extract the floats
     * @return Floats founds inside the given string
@@ -827,7 +877,7 @@ public final class UtilText
 
    /**
     * Extract all integers inside a string
-    * 
+    *
     * @param string
     *           String where extract the integers
     * @return Integers founds inside the given string
@@ -855,7 +905,7 @@ public final class UtilText
 
    /**
     * Extract all longs inside a string
-    * 
+    *
     * @param string
     *           String where extract the longs
     * @return Longs founds inside the given string
@@ -883,7 +933,7 @@ public final class UtilText
 
    /**
     * Compute the first index in the char sequence of one of given characters
-    * 
+    *
     * @param charSequence
     *           Char sequence where search one character
     * @param characters
@@ -898,7 +948,7 @@ public final class UtilText
 
    /**
     * Compute the first index >= at the given offset in the char sequence of one of given characters
-    * 
+    *
     * @param charSequence
     *           Char sequence where search one character
     * @param offset
@@ -932,7 +982,7 @@ public final class UtilText
 
    /**
     * Index of a string in string array
-    * 
+    *
     * @param tableau
     *           Array where search
     * @param chaine
@@ -958,7 +1008,7 @@ public final class UtilText
    /**
     * Compute the index of a character in a string on ignoring characters between " or ' an in ignore characters with \ just
     * before them
-    * 
+    *
     * @param string
     *           String where search
     * @param character
@@ -973,7 +1023,7 @@ public final class UtilText
    /**
     * Compute the index of a character in a string on ignoring characters between " or ' an in ignore characters with \ just
     * before them
-    * 
+    *
     * @param string
     *           String where search
     * @param character
@@ -1035,7 +1085,7 @@ public final class UtilText
     * int index=indexOfIgnoreStrings("Hello 'this is a test' and this end", "this", 0, UtilText.DEFAULT_STRING_LIMITERS);
     * </code> <br>
     * The index will be 26 (not 6)
-    * 
+    *
     * @param text
     *           Text where search
     * @param search
@@ -1104,7 +1154,7 @@ public final class UtilText
    /**
     * Replace character that follow an \ by it's symbol : \n by carriage return, \t by tabulation and \&lt;other&gt; by
     * &lt;other&gt;
-    * 
+    *
     * @param string
     *           String to replace
     * @return Result string
@@ -1133,6 +1183,15 @@ public final class UtilText
                case 't':
                   stringBuffer.append('\t');
                break;
+               case 'f':
+                  stringBuffer.append('\f');
+               break;
+               case 'r':
+                  stringBuffer.append('\r');
+               break;
+               case 'b':
+                  stringBuffer.append('\b');
+               break;
                default:
                   stringBuffer.append(car);
                break;
@@ -1150,7 +1209,7 @@ public final class UtilText
 
    /**
     * Compute the last index in the char sequence of one of given characters
-    * 
+    *
     * @param charSequence
     *           Char sequence where search one character
     * @param characters
@@ -1165,7 +1224,7 @@ public final class UtilText
 
    /**
     * Compute the last index <= of given offset in the char sequence of one of given characters
-    * 
+    *
     * @param charSequence
     *           Char sequence where search one character
     * @param offset
@@ -1198,7 +1257,7 @@ public final class UtilText
 
    /**
     * Parse an hexadecimal string to integer
-    * 
+    *
     * @param string
     *           String to parse
     * @return Integer
@@ -1209,8 +1268,8 @@ public final class UtilText
       final int length = characters.length;
       if(length > 8)
       {
-         throw new IllegalArgumentException(UtilText.concatenate("The number in hexadecimal can't be more than 8 characters, so '", string,
-               "' can't be converted"));
+         throw new IllegalArgumentException(
+               UtilText.concatenate("The number in hexadecimal can't be more than 8 characters, so '", string, "' can't be converted"));
       }
 
       int integer = 0;
@@ -1239,7 +1298,7 @@ public final class UtilText
 
    /**
     * Parse a string to integer
-    * 
+    *
     * @param string
     *           String to parse
     * @return Integer
@@ -1255,8 +1314,8 @@ public final class UtilText
       final int length = characters.length;
       if(length > 8)
       {
-         throw new IllegalArgumentException(UtilText.concatenate("The number in hexadecimal can't be more than 8 characters (after the 0x), so '", string,
-               "' can't be converted"));
+         throw new IllegalArgumentException(
+               UtilText.concatenate("The number in hexadecimal can't be more than 8 characters (after the 0x), so '", string, "' can't be converted"));
       }
 
       int integer = 0;
@@ -1285,7 +1344,7 @@ public final class UtilText
 
    /**
     * Read a UTF-8 string from a part of byte array
-    * 
+    *
     * @param array
     *           Array to read
     * @param offset
@@ -1299,19 +1358,33 @@ public final class UtilText
       return new String(array, offset, length, UtilText.UTF8);
    }
 
+   /**
+    * Remove accent of given character
+    *
+    * @param character
+    *           Character to transform
+    * @return Character without accent
+    */
    public static char removeAccent(final char character)
    {
       return UtilText.removeAccent(String.valueOf(character)).charAt(0);
    }
 
+   /**
+    * Remove all accent inside given String
+    *
+    * @param string
+    *           String to transform
+    * @return String without accent
+    */
    public static String removeAccent(final String string)
    {
-      return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+      return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", " ");
    }
 
    /**
     * Remove all white characters of a string
-    * 
+    *
     * @param string
     *           String to "clean"
     * @return String without white characters
@@ -1341,7 +1414,7 @@ public final class UtilText
 
    /**
     * Create a String full of same character
-    * 
+    *
     * @param character
     *           Character to repeat
     * @param time
@@ -1366,7 +1439,7 @@ public final class UtilText
 
    /**
     * Create string that repeat always the same string
-    * 
+    *
     * @param string
     *           String to repeat
     * @param time
@@ -1393,8 +1466,7 @@ public final class UtilText
    /**
     * Replace "hole" by a value.<br>
     * holes are like {0}, {8}, ... That means that the first replacement replace every holes {0}, then ninth every {8}, ...<br>
-    * Example:
-    * <table border>
+    * Example: <table border>
     * <tr>
     * <td><center><b>originalString</b></center></td>
     * <td><center><b>replacement</b></center></td>
@@ -1411,7 +1483,7 @@ public final class UtilText
     * <td>I saw a <b>dog</b> run after a <b>cat</b>. I wonder if the <b>cat</b> can escape from the <b>dog</b></td>
     * </tr>
     * </table>
-    * 
+    *
     * @param originalString
     *           String with "holes"
     * @param replacement
@@ -1487,8 +1559,7 @@ public final class UtilText
     * of <b>#</b> to put. By example, for <b>foot</b> become <b>feet</b>, we have to remove the 3 last letters (So have to put 3
     * <b>#</b>) then add letters <b>"eet"</b>, so have to write : <b>foot{2_###eet}</b>. That's means if third number is under
     * 2, <b>foot</b> is write, and if third number is 2 or over, <b>foot</b> is write, and 3 last letters are removed (Because
-    * of the 3 <b>#</b>) and <b>"eet"</b> is add, so its become <b>feet</b>. Examples:
-    * <table border>
+    * of the 3 <b>#</b>) and <b>"eet"</b> is add, so its become <b>feet</b>. Examples: <table border>
     * <tr>
     * <td><center><b>originalString</b></center></td>
     * <td><center><b>replacement</b></center></td>
@@ -1515,7 +1586,7 @@ public final class UtilText
     * <td>There 5 cats and 3 feet</td>
     * </tr>
     * </table>
-    * 
+    *
     * @param originalString
     *           String with "holes"
     * @param values
@@ -1604,7 +1675,7 @@ public final class UtilText
 
    /**
     * Replace all white characters by a given characters
-    * 
+    *
     * @param text
     *           Text where replace white characters
     * @param c
@@ -1629,7 +1700,7 @@ public final class UtilText
 
    /**
     * Convert a byte array to hexadecimal representation
-    * 
+    *
     * @param array
     *           Array to convert
     * @return Hexadecimal representation
@@ -1655,7 +1726,7 @@ public final class UtilText
 
    /**
     * Convert string to UTF-8 array
-    * 
+    *
     * @param string
     *           String to convert
     * @return Converted string
@@ -1668,7 +1739,7 @@ public final class UtilText
    /**
     * Generic trim to string, it permits to remove any character at start at at end of a string.<br>
     * It does like {@link String#trim()} except remove white characters it remove given list of characters
-    * 
+    *
     * @param stringToTrim
     *           String to trim
     * @param charactersToRemove
@@ -1715,7 +1786,7 @@ public final class UtilText
 
    /**
     * Compute the upper case version of character, and remove all accent.
-    * 
+    *
     * @param character
     *           Character to upper case
     * @return Upper case result
@@ -1727,7 +1798,7 @@ public final class UtilText
 
    /**
     * Compute the upper case version of string, and remove all accent.
-    * 
+    *
     * @param text
     *           Text to upper case
     * @return Upper case result

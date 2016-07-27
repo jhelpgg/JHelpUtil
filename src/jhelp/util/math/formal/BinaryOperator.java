@@ -1,34 +1,45 @@
 package jhelp.util.math.formal;
 
 import jhelp.util.Utilities;
+import jhelp.util.math.UtilMath;
 
 /**
  * Operator with 2 parameters <br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 public abstract class BinaryOperator
       extends Function
 {
+   /** Index of addition in priority order */
+   private static final int    INDEX_ADDITION       = 1;
+   /** Index of division in priority order */
+   private static final int    INDEX_DIVIDE         = 4;
+   /** Index of multiplication in priority order */
+   private static final int    INDEX_MULTIPLICATION = 3;
+   /** Index of power in priority order */
+   private static final int    INDEX_POWER          = 0;
+   /** Index of subtraction in priority order */
+   private static final int    INDEX_SUBTRACTION    = 2;
    /**
     * Symbols list of operator concern.<br>
     * Operators are sort by priority, the less priority to the most
     */
-   private static final String OPERATORS[] =
-                                           {
-         "+", "-", "*", "/"
-                                           };
+   private static final String OPERATORS[]          =
+   {
+         "^", "+", "-", "*", "/"
+   };
 
    /**
     * Try parse a string to a binary operator.<br>
     * {@code null} is return if the string is not a binary operator
-    * 
+    *
     * @param string
     *           String to parse
     * @return Binary operator or {@code null}
     */
-   protected static BinaryOperator parseBinaryOperator(final String string)
+   protected static Function parseBinaryOperator(final String string)
    {
       String firstParameter = Function.getArgument(string);
       int operatorIndex = firstParameter.length() + 2;
@@ -85,13 +96,46 @@ public abstract class BinaryOperator
          final Function func2 = Function.parse(secondParameter);
          switch(index)
          {
-            case 0: // Addition
+            case INDEX_POWER:
+               if(func2 instanceof Constant)
+               {
+                  final Constant constant = (Constant) func2;
+
+                  if(constant.isUndefined() == true)
+                  {
+                     return Constant.UNDEFINED;
+                  }
+
+                  if(constant.isNul() == true)
+                  {
+                     return Constant.ONE;
+                  }
+
+                  if(constant.isOne() == true)
+                  {
+                     return func1;
+                  }
+
+                  if(constant.isPositive() == true)
+                  {
+                     final double value = func2.obtainRealValueNumber();
+                     final double integer = Math.floor(value);
+
+                     if((integer < 100) && (UtilMath.equals(value, integer) == true))
+                     {
+                        return Function.createMultiplication(func1, (int) integer);
+                     }
+                  }
+               }
+
+               return new Exponential(new Multiplication(func2, new Logarithm(func1)));
+            case INDEX_ADDITION: // Addition
                return new Addition(func1, func2);
-            case 1: // Substraction
+            case INDEX_SUBTRACTION: // Substraction
                return new Subtraction(func1, func2);
-            case 2: // Multiplication
+            case INDEX_MULTIPLICATION: // Multiplication
                return new Multiplication(func1, func2);
-            case 3: // Division
+            case INDEX_DIVIDE: // Division
                return new Division(func1, func2);
          }
       }
@@ -115,7 +159,7 @@ public abstract class BinaryOperator
 
    /**
     * Constructs a binary operator
-    * 
+    *
     * @param operatorStringRepresentation
     *           String represents the operator
     * @param parameter1
@@ -135,7 +179,7 @@ public abstract class BinaryOperator
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param function
     *           Function sure be the instance of the function
     * @return Comparison
@@ -158,7 +202,7 @@ public abstract class BinaryOperator
 
    /**
     * First parameter in binary operation
-    * 
+    *
     * @return First parameter in binary operation
     */
    public Function getParameter1()
@@ -168,7 +212,7 @@ public abstract class BinaryOperator
 
    /**
     * Second parameter in binary operation
-    * 
+    *
     * @return Second parameter in binary operation
     */
    public Function getParameter2()
@@ -179,7 +223,7 @@ public abstract class BinaryOperator
    /**
     * Indicates if function can see as real number, that is to say that the value of {@link #obtainRealValueNumber()} as as
     * meaning
-    * 
+    *
     * @return {@code false}
     * @see jhelp.util.math.formal.Function#isRealValueNumber()
     */
@@ -191,7 +235,7 @@ public abstract class BinaryOperator
 
    /**
     * Real value of function, if the function can be represents by a real number. Else {@link Double#NaN} is return
-    * 
+    *
     * @return {@link Double#NaN}
     * @see jhelp.util.math.formal.Function#obtainRealValueNumber()
     */
@@ -203,7 +247,7 @@ public abstract class BinaryOperator
 
    /**
     * String representation of the function
-    * 
+    *
     * @return String representation of the function
     * @see jhelp.util.math.formal.Function#toString()
     */
@@ -240,7 +284,7 @@ public abstract class BinaryOperator
 
    /**
     * Variable list contains in this function
-    * 
+    *
     * @return Variable list contains in this function
     * @see jhelp.util.math.formal.Function#variableList()
     */

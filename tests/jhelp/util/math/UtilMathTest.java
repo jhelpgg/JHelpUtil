@@ -1,5 +1,7 @@
 package jhelp.util.math;
 
+import java.awt.geom.Point2D;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -86,6 +88,37 @@ public class UtilMathTest
    {
       Assert.assertEquals(0.0, UtilMath.interpolationSinus(0), UtilMath.EPSILON);
       Assert.assertEquals(1.0, UtilMath.interpolationSinus(1), UtilMath.EPSILON);
+   }
+
+   /**
+    * Test {@link UtilMath#isConvex(java.awt.geom.Point2D...)}
+    */
+   @Test
+   public void testIsConvex()
+   {
+      final Point2D[] pointsRectangle =
+      {
+            new Point2D.Double(0, 0), new Point2D.Double(10, 0), new Point2D.Double(10, 10), new Point2D.Double(0, 10)
+      };
+      Assert.assertTrue(UtilMath.isConvex(pointsRectangle));
+
+      final Point2D[] pointsRectangleReverse =
+      {
+            new Point2D.Double(0, 0), new Point2D.Double(0, 10), new Point2D.Double(10, 10), new Point2D.Double(10, 0)
+      };
+      Assert.assertTrue(UtilMath.isConvex(pointsRectangleReverse));
+
+      final Point2D[] pointsHole =
+      {
+            new Point2D.Double(0, 0), new Point2D.Double(10, 0), new Point2D.Double(10, 10), new Point2D.Double(5, 5), new Point2D.Double(0, 10)
+      };
+      Assert.assertFalse(UtilMath.isConvex(pointsHole));
+
+      final Point2D[] pointsTime =
+      {
+            new Point2D.Double(0, 0), new Point2D.Double(10, 0), new Point2D.Double(0, 10), new Point2D.Double(10, 10)
+      };
+      Assert.assertFalse(UtilMath.isConvex(pointsTime));
    }
 
    /**

@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -26,7 +26,7 @@ import jhelp.util.io.UtilIO;
  * Represents a mask.<br>
  * A mask is image with light on (foreground) pixels and light off (background) pixels.<br>
  * Because there are only 2 possible value per pixels (on or off) the memory size is optimized
- * 
+ *
  * @author JHelp
  */
 public class JHelpMask
@@ -35,54 +35,8 @@ public class JHelpMask
    public static final JHelpMask DUMMY = new JHelpMask(1, 1);
 
    /**
-    * Create mask with thick line
-    * 
-    * @param x1
-    *           First point x
-    * @param y1
-    *           First point y
-    * @param x2
-    *           Second point x
-    * @param y2
-    *           Second point y
-    * @param thickness
-    *           Line thickness
-    * @return Created mask
-    */
-   public static JHelpMask createThickLineMask(final int x1, final int y1, final int x2, final int y2, final int thickness)
-   {
-      if(thickness < 1)
-      {
-         return JHelpMask.DUMMY;
-      }
-
-      final int width = Math.abs(x1 - x2) + (thickness << 1);
-      final int height = Math.abs(y1 - y2) + (thickness << 1);
-
-      if((width < 1) || (height < 1))
-      {
-         return JHelpMask.DUMMY;
-      }
-
-      final int xMin = Math.min(x1, x2);
-      final int yMin = Math.min(y1, y2);
-
-      final JHelpImage model = new JHelpImage(thickness, thickness);
-      model.startDrawMode();
-      model.fillEllipse(0, 0, thickness, thickness, 0xFFFFFFFF);
-      model.endDrawMode();
-
-      final JHelpImage image = new JHelpImage(width, height);
-      image.startDrawMode();
-      image.repeatOnLine((x1 - xMin) + thickness, (y1 - yMin) + thickness, (x2 - xMin) + thickness, (y2 - yMin) + thickness, model);
-      image.endDrawMode();
-
-      return image.createMask(0xFFFFFFFF, 1);
-   }
-
-   /**
     * Load the mask from a stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Loaded mask
@@ -107,7 +61,7 @@ public class JHelpMask
 
    /**
     * Create a new instance of JHelpMask
-    * 
+    *
     * @param width
     *           Mask width
     * @param height
@@ -124,7 +78,7 @@ public class JHelpMask
 
    /**
     * Create a new instance of JHelpMask
-    * 
+    *
     * @param width
     *           Mask width
     * @param height
@@ -155,7 +109,7 @@ public class JHelpMask
 
    /**
     * Use a character for mask
-    * 
+    *
     * @param character
     *           Character to use
     * @param family
@@ -188,7 +142,7 @@ public class JHelpMask
 
    /**
     * Light on a pixel and all pixels of around, the filling is stopped by pixels already on
-    * 
+    *
     * @param x
     *           X fill start
     * @param y
@@ -244,7 +198,7 @@ public class JHelpMask
 
    /**
     * Mask height
-    * 
+    *
     * @return Mask height
     */
    public int getHeight()
@@ -254,7 +208,7 @@ public class JHelpMask
 
    /**
     * Indicates if a pixel in on
-    * 
+    *
     * @param x
     *           Pixel x
     * @param y
@@ -272,7 +226,7 @@ public class JHelpMask
 
    /**
     * Mask width
-    * 
+    *
     * @return Mask width
     */
    public int getWidth()
@@ -282,7 +236,7 @@ public class JHelpMask
 
    /**
     * Save the mask in a stream
-    * 
+    *
     * @param outputStream
     *           Stream where write the mask
     * @throws IOException
@@ -297,7 +251,7 @@ public class JHelpMask
 
    /**
     * Change a pixel value
-    * 
+    *
     * @param x
     *           Pixel X
     * @param y

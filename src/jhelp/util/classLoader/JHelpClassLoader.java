@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.classLoader;
@@ -19,10 +19,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
 import jhelp.util.list.EnumerationIterator;
 import jhelp.util.text.UtilText;
 
@@ -31,7 +32,7 @@ import jhelp.util.text.UtilText;
  * <br>
  * Last modification : 26 mai 2010<br>
  * Version 0.0.0<br>
- * 
+ *
  * @author JHelp
  */
 public class JHelpClassLoader
@@ -43,6 +44,8 @@ public class JHelpClassLoader
    private Hashtable<String, Class<?>> loadedClass;
    /** Class loaders */
    private ArrayList<ClassLoader>      loaders;
+   /** Manually defined classes waiting to be load at least one time. map : class complete name <=> byte code */
+   private Map<String, byte[]>         manualDefined;
 
    /**
     * Constructs JHelpClassLoader
@@ -54,7 +57,7 @@ public class JHelpClassLoader
 
    /**
     * Constructs JHelpClassLoader
-    * 
+    *
     * @param parent
     *           Class loader parent
     */
@@ -73,11 +76,12 @@ public class JHelpClassLoader
       this.files = new ArrayList<File>();
       this.loaders = new ArrayList<ClassLoader>();
       this.loadedClass = new Hashtable<String, Class<?>>();
+      this.manualDefined = new HashMap<String, byte[]>();
    }
 
    /**
     * Load a class
-    * 
+    *
     * @param name
     *           Class complete name
     * @param resolve
@@ -90,12 +94,26 @@ public class JHelpClassLoader
    @Override
    protected synchronized Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException
    {
-      Debug.println(DebugLevel.VERBOSE, "JHelpClassLoader -> loadClass : ", name);
-
       Class<?> clazz = this.loadedClass.get(name);
 
       if(clazz != null)
       {
+         return clazz;
+      }
+
+      final byte[] code = this.manualDefined.get(name);
+
+      if(code != null)
+      {
+         this.manualDefined.remove(name);
+         clazz = this.defineClass(name, code, 0, code.length);
+
+         if(resolve == true)
+         {
+            this.resolveClass(clazz);
+         }
+
+         this.loadedClass.put(name, clazz);
          return clazz;
       }
 
@@ -204,7 +222,7 @@ public class JHelpClassLoader
 
    /**
     * Add class loader
-    * 
+    *
     * @param classLoader
     *           Class loader to add
     */
@@ -219,8 +237,8 @@ public class JHelpClassLoader
    /**
     * Add a file. <br>
     * The file must be in the same hierarchy as its package.<br>
-    * for exemple for : pack1.pack2.pack3.MyClasss the path must end like this : .../pack1/pack2/pack3/MyClass.class
-    * 
+    * for example for : pack1.pack2.pack3.MyClasss the path must end like this : .../pack1/pack2/pack3/MyClass.class
+    *
     * @param file
     *           File to add
     */
@@ -233,8 +251,22 @@ public class JHelpClassLoader
    }
 
    /**
+    * Add a class with its byte code
+    *
+    * @param name
+    *           Class complete name
+    * @param byteCode
+    *           Class byte code
+    */
+   public void addClass(final String name, final byte[] byteCode)
+   {
+      this.unloadClass(name);
+      this.manualDefined.put(name, byteCode);
+   }
+
+   /**
     * URL for a resources
-    * 
+    *
     * @param name
     *           Resource complete name
     * @return URL of resource or {@code null} if not found
@@ -305,7 +337,7 @@ public class JHelpClassLoader
 
    /**
     * Get resource as stream for read
-    * 
+    *
     * @param name
     *           Resource complete name
     * @return Stream for read or {@code null} if not found
@@ -328,7 +360,7 @@ public class JHelpClassLoader
 
    /**
     * List of resources of same name
-    * 
+    *
     * @param name
     *           Resource complete name
     * @return List of resource
@@ -394,7 +426,7 @@ public class JHelpClassLoader
 
    /**
     * Un load a class
-    * 
+    *
     * @param name
     *           Class complete name
     */

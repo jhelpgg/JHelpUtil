@@ -1,13 +1,33 @@
 package jhelp.util.math.random;
 
-import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import jhelp.util.debug.Debug;
+import jhelp.util.debug.DebugLevel;
+
 public class JHelpRandomTest
 {
+   // @Test
+   // public void testProbability()
+   // {
+   // Debug.println(DebugLevel.INFORMATION, "START");
+   // final int[] diceCount = new int[6];
+   // final int total = 10000000;
+   //
+   // for(int i = 0; i < total; i++)
+   // {
+   // diceCount[JHelpRandom.random(6)]++;
+   // }
+   //
+   // Rational rational;
+   // for(int i = 0; i < 6; i++)
+   // {
+   // rational = Rational.createRational(diceCount[i], total);
+   // Debug.println(DebugLevel.INFORMATION, i + 1, ':', rational, " ~=~ ", rational.value());
+   // }
+   // }
+
    /**
     * Test of {@link JHelpRandom#random(int, int)}
     */

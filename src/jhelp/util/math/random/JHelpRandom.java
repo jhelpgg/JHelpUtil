@@ -2,18 +2,20 @@ package jhelp.util.math.random;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
+import jhelp.util.math.UtilMath;
 import jhelp.util.reflection.Reflector;
 import jhelp.util.text.UtilText;
 
 /**
  * Able to choice an object randomly.<br>
  * The chance to have an object can be different than to have an other one.<br>
- * For example if <font color="#008800">"A"</font> have 50% chance, <font color="#008800">"B"</font> 25%, <font
- * color="#008800">"C"</font> 12%, <font color="#008800">"D"</font> 6%,<font color="#008800">"E"</font> 3%, <font
- * color="#008800">"F"</font> 2%, <font color="#008800">"G"</font> 1% and <font color="#008800">"H"</font> 1% :<br>
+ * For example if <font color="#008800">"A"</font> have 50% chance, <font color="#008800">"B"</font> 25%,
+ * <font color="#008800">"C"</font> 12%, <font color="#008800">"D"</font> 6%,<font color="#008800">"E"</font> 3%,
+ * <font color="#008800">"F"</font> 2%, <font color="#008800">"G"</font> 1% and <font color="#008800">"H"</font> 1% :<br>
  * <code lang="java"><!--
  * JHelpRandom<String> random = new JHelpRandom<String>();
  * random.addChoice(50, "A");
@@ -36,8 +38,8 @@ import jhelp.util.text.UtilText;
  * 1% chance to be <font color="#008800">"G"</font> and <br>
  * 1% chance to be <font color="#008800">"H"</font><br>
  * <br>
- * You can also see things like this, you have a set of element compose of 55 <font color="#008800">"P"</font> and 87 <font
- * color="#008800">"R"</font> :<br>
+ * You can also see things like this, you have a set of element compose of 55 <font color="#008800">"P"</font> and 87
+ * <font color="#008800">"R"</font> :<br>
  * <code lang="java"><!--
  * JHelpRandom<String> random = new JHelpRandom<String>();
  * random.addChoice(55, "P");
@@ -45,9 +47,9 @@ import jhelp.util.text.UtilText;
  * --></code> After each time you do<br>
  * <code lang="java"><!--
  * String choice = random.choose();
- * --></code> Choice have 55 chance of 142 to be <font color="#008800">"P"</font> and 87 chance of 142 to be <font
- * color="#008800">"R"</font>
- * 
+ * --></code> Choice have 55 chance of 142 to be <font color="#008800">"P"</font> and 87 chance of 142 to be
+ * <font color="#008800">"R"</font>
+ *
  * @author JHelp
  * @param <CHOICE>
  *           Choice type
@@ -57,7 +59,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * A registered limit.<br>
     * This is a couple of value maximum and element
-    * 
+    *
     * @author JHelp
     * @param <ELEMENT>
     *           Element type
@@ -71,7 +73,7 @@ public final class JHelpRandom<CHOICE>
 
       /**
        * Create a new instance of Limit
-       * 
+       *
        * @param maximum
        *           Maximum value
        * @param element
@@ -88,7 +90,7 @@ public final class JHelpRandom<CHOICE>
        * <br>
        * <b>Parent documentation:</b><br>
        * {@inheritDoc}
-       * 
+       *
        * @return String representation
        * @see java.lang.Object#toString()
        */
@@ -99,10 +101,13 @@ public final class JHelpRandom<CHOICE>
       }
    }
 
+   /** Random instance to use on static methods to avoid any influence of other "random" */
+   private static final Random RANDOM = new Random();
+
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -115,7 +120,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -128,7 +133,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -140,7 +145,7 @@ public final class JHelpRandom<CHOICE>
 
    /**
     * Choose a value of an enum
-    * 
+    *
     * @param <E>
     *           Enum to get a value
     * @param clas
@@ -172,7 +177,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -185,7 +190,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -197,7 +202,7 @@ public final class JHelpRandom<CHOICE>
 
    /**
     * Give a random value between 0 (include) and given limit (exclude)
-    * 
+    *
     * @param limit
     *           Limit to respect
     * @return Random value
@@ -209,12 +214,12 @@ public final class JHelpRandom<CHOICE>
          throw new IllegalArgumentException("limit can't be 0");
       }
 
-      return (int) (Math.random() * limit);
+      return UtilMath.sign(limit) * JHelpRandom.RANDOM.nextInt(Math.abs(limit));
    }
 
    /**
     * Give random number inside an interval, each limit are includes
-    * 
+    *
     * @param minimum
     *           Minimum value
     * @param maximum
@@ -226,13 +231,13 @@ public final class JHelpRandom<CHOICE>
       final int min = Math.min(minimum, maximum);
       final int max = Math.max(minimum, maximum);
 
-      return min + (int) (Math.random() * ((max - min) + 1));
+      return min + JHelpRandom.random((max - min) + 1);
    }
 
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -245,7 +250,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Return an element of a list.<br>
     * {@code null} is return if the list is {@code null} or empty
-    * 
+    *
     * @param <T>
     *           Type of list's element
     * @param list
@@ -265,7 +270,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -278,7 +283,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Take randomly a element of the array.<br>
     * The array musn't be {@code null} or empty
-    * 
+    *
     * @param array
     *           Array to get one element
     * @return Taken element
@@ -291,7 +296,7 @@ public final class JHelpRandom<CHOICE>
    /**
     * Return an element of an array.<br>
     * {@code null} is return is the array is {@code null} or empty
-    * 
+    *
     * @param <T>
     *           Type of array's element
     * @param array
@@ -312,19 +317,22 @@ public final class JHelpRandom<CHOICE>
    private final ArrayList<Limit<CHOICE>> limits;
    /** Actual maximum */
    private int                            maximum;
+   /** Random instance to use, link to this instance */
+   private final Random                   random;
 
    /**
     * Create a new instance of JHelpRandom
     */
    public JHelpRandom()
    {
+      this.random = new Random();
       this.limits = new ArrayList<JHelpRandom<CHOICE>.Limit<CHOICE>>();
       this.maximum = 0;
    }
 
    /**
     * Add a choice
-    * 
+    *
     * @param number
     *           Frequency of the choice (Can't be < 1)
     * @param choice
@@ -344,7 +352,7 @@ public final class JHelpRandom<CHOICE>
 
    /**
     * Choose a value randomly
-    * 
+    *
     * @return Chosen value
     */
    public CHOICE choose()
@@ -356,7 +364,7 @@ public final class JHelpRandom<CHOICE>
          return null;
       }
 
-      final int random = JHelpRandom.random(this.maximum);
+      final int random = this.random.nextInt(this.maximum);
 
       for(final Limit<CHOICE> limit : this.limits)
       {
@@ -375,7 +383,7 @@ public final class JHelpRandom<CHOICE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return String representation
     * @see java.lang.Object#toString()
     */

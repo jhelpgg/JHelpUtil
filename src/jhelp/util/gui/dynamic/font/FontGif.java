@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui.dynamic.font;
@@ -15,21 +15,72 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import jhelp.util.debug.Debug;
 import jhelp.util.gui.GIF;
 import jhelp.util.list.Pair;
+import jhelp.util.resources.ResourceElement;
+import jhelp.util.resources.Resources;
+import jhelp.util.resources.ResourcesSystem;
 import jhelp.util.text.StringCutter;
 
 /**
  * Font base on GIF animations
- * 
+ *
  * @author JHelp
  */
 public class FontGif
 {
    /** File that describe a font */
-   private static final String           CHARACRCTERS = "characters.txt";
+   private static final String      CHARACRCTERS;
+   /** Resources to access GIF images */
+   private static final Resources   RESSOURCES;
+   /** List of available font GIF names */
+   public static final List<String> FONT_GIF_NAMES;
+
+   static
+   {
+      final List<String> names = new ArrayList<String>();
+      CHARACRCTERS = "characters.txt";
+      RESSOURCES = new Resources(FontGif.class);
+
+      try
+      {
+         final ResourcesSystem resourcesSystem = FontGif.RESSOURCES.obtainResourcesSystem();
+         boolean valid;
+
+         for(final ResourceElement resourceElement : resourcesSystem.obtainList(ResourcesSystem.ROOT))
+         {
+            if(resourceElement.isDirectory() == true)
+            {
+               valid = false;
+
+               for(final ResourceElement element : resourcesSystem.obtainList(resourceElement))
+               {
+                  if((element.isDirectory() == false) && FontGif.CHARACRCTERS.equals(element.getName()))
+                  {
+                     valid = true;
+                     break;
+                  }
+               }
+
+               if(valid == true)
+               {
+                  names.add(resourceElement.getName());
+               }
+            }
+         }
+      }
+      catch(final IOException exception)
+      {
+         Debug.printException(exception);
+      }
+
+      Collections.sort(names);
+      FONT_GIF_NAMES = Collections.unmodifiableList(names);
+   }
    /** List of association between a list of character and a GIF image */
    private final List<Pair<String, GIF>> gifs;
    /** Font height */
@@ -39,7 +90,7 @@ public class FontGif
 
    /**
     * Create a new instance of FontGif
-    * 
+    *
     * @param font
     *           Font folder name
     * @throws IOException
@@ -54,7 +105,7 @@ public class FontGif
 
    /**
     * Parse font description
-    * 
+    *
     * @param font
     *           Font folder
     * @throws IOException
@@ -71,7 +122,7 @@ public class FontGif
 
       try
       {
-         bufferedReader = new BufferedReader(new InputStreamReader(FontGif.class.getResourceAsStream(header + FontGif.CHARACRCTERS)));
+         bufferedReader = new BufferedReader(new InputStreamReader(FontGif.RESSOURCES.obtainResourceStream(header + FontGif.CHARACRCTERS)));
          String line = bufferedReader.readLine();
          int index;
          String key, image;
@@ -92,7 +143,7 @@ public class FontGif
                   {
                      image = line.substring(index + 1);
 
-                     inputStream = FontGif.class.getResourceAsStream(header + image);
+                     inputStream = FontGif.RESSOURCES.obtainResourceStream(header + image);
                      gif = new GIF(inputStream);
                      inputStream.close();
                      inputStream = null;
@@ -139,7 +190,7 @@ public class FontGif
 
    /**
     * Compute text description from a String
-    * 
+    *
     * @param text
     *           String to get text description
     * @return Text description

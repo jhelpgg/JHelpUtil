@@ -57,6 +57,7 @@ public class FileFilter
       fileFilter.addExtension("gif");
       fileFilter.addExtension("jpg");
       fileFilter.addExtension("bmp");
+      fileFilter.addExtension("pcx");
 
       fileFilter.setInformation("Images");
 
@@ -215,8 +216,10 @@ public class FileFilter
    {
       try
       {
-         if((file == null) || ((this.acceptHidden == false) && (file.isHidden() == true))
-               || ((this.acceptVirtualLink == false) && (file.getCanonicalPath().equals(file.getAbsolutePath()) == false)) || (file.exists() == false)
+         if((file == null) //
+               || ((this.acceptHidden == false) && (file.isHidden() == true))//
+               || ((this.acceptVirtualLink == false) && (file.getCanonicalPath().equals(file.getAbsolutePath()) == false))//
+               || (file.exists() == false)//
                || (file.canRead() == false))
          {
             return false;

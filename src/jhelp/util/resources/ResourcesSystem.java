@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -20,7 +21,7 @@ import jhelp.util.list.EnumerationIterator;
  * operations are possible.<br>
  * The path separator is /, what ever the system you are, convertions are made for you.<br>
  * To have an instance use {@link Resources#obtainResourcesSystem()}
- * 
+ *
  * @author JHelp
  */
 public class ResourcesSystem
@@ -38,7 +39,7 @@ public class ResourcesSystem
 
    /**
     * Create a new instance of ResourcesSystem in outside directory mode
-    * 
+    *
     * @param resources
     *           {@link Resources} reference to find resources
     * @param rootFile
@@ -54,7 +55,7 @@ public class ResourcesSystem
 
    /**
     * Create a new instance of ResourcesSystem in jar embed mode
-    * 
+    *
     * @param resources
     *           {@link Resources} reference to find resources
     * @param jarFile
@@ -72,7 +73,7 @@ public class ResourcesSystem
 
    /**
     * Create a resources directory (Only available if resources are in outside directory, check with {@link #insideJar()})
-    * 
+    *
     * @param resourceDirectory
     *           Resources directory to create
     * @return {@code true} if directory created (or allready exists). {@code false} if failed to create (Two situations, inside
@@ -95,7 +96,7 @@ public class ResourcesSystem
 
    /**
     * Create a resources file (Only available if resources are in outside directory, check with {@link #insideJar()})
-    * 
+    *
     * @param resourceFile
     *           Resources file to create
     * @return {@code true} if file created (or allready exists). {@code false} if failed to create (Two situations, inside a jar
@@ -119,7 +120,7 @@ public class ResourcesSystem
    /**
     * Obtain the parent of a resource element (file or directory).<br>
     * {@code null} is return for the parent of the root directory (By definition root don't have parent)
-    * 
+    *
     * @param resourceElement
     *           Resource elemnt to have its parent directory
     * @return Resource directory parent or {@code null} if the elemnt is the root directory
@@ -155,7 +156,7 @@ public class ResourcesSystem
 
    /**
     * Indicates if resources are inside a jar
-    * 
+    *
     * @return {@code true} if resources are inside a jar. {@code false} if resources are outside directory
     */
    public boolean insideJar()
@@ -165,7 +166,7 @@ public class ResourcesSystem
 
    /**
     * Test if a resource element (file or directory) exists.
-    * 
+    *
     * @param resourceElement
     *           Resource element to test
     * @return {@code true} if element exists
@@ -198,7 +199,7 @@ public class ResourcesSystem
 
    /**
     * Obtain a input stram for read a resource file
-    * 
+    *
     * @param resourceFile
     *           Resource file to read
     * @return Stream on the resource file
@@ -215,7 +216,7 @@ public class ResourcesSystem
 
    /**
     * Obtain the list of resources elements (files or directories) inside a resource directory
-    * 
+    *
     * @param resourceDirectory
     *           Resource directory to obtain its list of elements
     * @return List of resources elements inside the given directory
@@ -276,6 +277,7 @@ public class ResourcesSystem
       final int min = start.length();
       int index;
       String name;
+      final TreeSet<String> directories = new TreeSet<String>();
 
       for(final JarEntry entry : new EnumerationIterator<JarEntry>(this.jarFile.entries()))
       {
@@ -285,9 +287,21 @@ public class ResourcesSystem
          {
             index = name.indexOf('/', min + 1);
 
-            if((index == (name.length() - 1)) || ((index < 0) && (name.endsWith("/") == true)))
+            if((index > 0) || ((index < 0) && (name.endsWith("/") == true)))
             {
-               list.add(new ResourceDirectory(name.substring(indexRoot)));
+               if(index > 0)
+               {
+                  name = name.substring(indexRoot, index);
+               }
+               else
+               {
+                  name = name.substring(indexRoot);
+               }
+
+               if(directories.add(name) == true)
+               {
+                  list.add(new ResourceDirectory(name));
+               }
             }
             else if(index < 0)
             {
@@ -303,7 +317,7 @@ public class ResourcesSystem
    /**
     * Obtain the list of resources elements child of an other resource element.<br>
     * If the resource element is a file, {@code null} is return because a file can't have any children
-    * 
+    *
     * @param resourceElement
     *           Resource elemnt to have its children
     * @return List of children or {@code null} if given element is a file
@@ -326,7 +340,7 @@ public class ResourcesSystem
    /**
     * Obtain an outputstream to write a resource file.<br>
     * Only available if resources are in outside directory (Can be check with {@link #insideJar()})
-    * 
+    *
     * @param resourceFile
     *           Resource file to have stream for write
     * @return Output stream for write the file
@@ -357,7 +371,7 @@ public class ResourcesSystem
 
    /**
     * Obtain the real file or directory corresponds to a resource element if resources are in outside directory
-    * 
+    *
     * @param resourceElement
     *           Resource element to have its real file
     * @return Real file or {@code null} if resources are inside a jar

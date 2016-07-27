@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -18,6 +18,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.font.LineMetrics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import jhelp.util.text.UtilText;
 
 /**
  * Represents a font with underline information
- * 
+ *
  * @author JHelp
  */
 public final class JHelpFont
@@ -39,7 +40,7 @@ public final class JHelpFont
 {
    /**
     * Possible font type
-    * 
+    *
     * @author JHelp
     */
    public static enum Type
@@ -53,7 +54,7 @@ public final class JHelpFont
    /**
     * Choice in {@link JHelpFont#createFont(Type, InputStream, int, Value, Value, boolean)} to be able say : "as it defines in
     * the stream"
-    * 
+    *
     * @author JHelp
     */
    public static enum Value
@@ -76,7 +77,7 @@ public final class JHelpFont
 
    /**
     * Create a font from a stream
-    * 
+    *
     * @param type
     *           Font type
     * @param stream
@@ -92,6 +93,40 @@ public final class JHelpFont
     * @return Created font
     */
    public static JHelpFont createFont(final Type type, final InputStream stream, int size, final Value bold, final Value italic, final boolean underline)
+   {
+      final JHelpFont font = JHelpFont.obtainFont(type, stream, size, bold, italic, underline);
+
+      if(font == null)
+      {
+         if(size < 1)
+         {
+            size = 18;
+         }
+
+         return new JHelpFont("Arial", size, bold == Value.TRUE, italic == Value.TRUE, underline);
+      }
+
+      return font;
+   }
+
+   /**
+    * Create a font from a stream
+    *
+    * @param type
+    *           Font type
+    * @param stream
+    *           Stream to get the font data
+    * @param size
+    *           Size of created font
+    * @param bold
+    *           Bold value
+    * @param italic
+    *           Italic value
+    * @param underline
+    *           Indicates if have to underline or not
+    * @return Created font OR {@code null} if stream not a managed font
+    */
+   public static JHelpFont obtainFont(final Type type, final InputStream stream, final int size, final Value bold, final Value italic, final boolean underline)
    {
       try
       {
@@ -150,13 +185,7 @@ public final class JHelpFont
       catch(final Exception exception)
       {
          Debug.printException(exception, "Failed to create the font");
-
-         if(size < 1)
-         {
-            size = 18;
-         }
-
-         return new JHelpFont("Arial", size, bold == Value.TRUE, italic == Value.TRUE, underline);
+         return null;
       }
    }
 
@@ -171,7 +200,7 @@ public final class JHelpFont
 
    /**
     * Create a new instance of JHelpFont
-    * 
+    *
     * @param font
     *           Based font
     * @param underline
@@ -184,6 +213,7 @@ public final class JHelpFont
 
       final BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
       final Graphics2D graphics2d = bufferedImage.createGraphics();
+      this.applyHints(graphics2d);
       this.fontMetrics = graphics2d.getFontMetrics(this.font);
       graphics2d.dispose();
       bufferedImage.flush();
@@ -191,7 +221,7 @@ public final class JHelpFont
 
    /**
     * Create a new instance of JHelpFont not bold, not italic, not underline
-    * 
+    *
     * @param familly
     *           Font family name
     * @param size
@@ -204,7 +234,7 @@ public final class JHelpFont
 
    /**
     * Create a new instance of JHelpFont not italic, not underline
-    * 
+    *
     * @param familly
     *           Font family name
     * @param size
@@ -219,7 +249,7 @@ public final class JHelpFont
 
    /**
     * Create a new instance of JHelpFont not underline
-    * 
+    *
     * @param familly
     *           Font family name
     * @param size
@@ -236,7 +266,7 @@ public final class JHelpFont
 
    /**
     * Create a new instance of JHelpFont
-    * 
+    *
     * @param familly
     *           Font family name
     * @param size
@@ -268,14 +298,48 @@ public final class JHelpFont
 
       final BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
       final Graphics2D graphics2d = bufferedImage.createGraphics();
+      this.applyHints(graphics2d);
       this.fontMetrics = graphics2d.getFontMetrics(this.font);
       graphics2d.dispose();
       bufferedImage.flush();
    }
 
    /**
+    * Apply hints on given graphics
+    *
+    * @param graphics2d
+    *           Graphics where aplly hints
+    */
+   private void applyHints(final Graphics2D graphics2d)
+   {
+      graphics2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+      if(ConstantsGUI.FONT_RENDER_CONTEXT.isAntiAliased() == true)
+      {
+         graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      }
+      else
+      {
+         graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+      }
+
+      graphics2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+      graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      graphics2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+      if(ConstantsGUI.FONT_RENDER_CONTEXT.usesFractionalMetrics() == true)
+      {
+         graphics2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+      }
+      else
+      {
+         graphics2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+      }
+   }
+
+   /**
     * Compute shape of a string
-    * 
+    *
     * @param string
     *           String
     * @param x
@@ -292,7 +356,7 @@ public final class JHelpFont
 
    /**
     * Compute text lines representation with this font
-    * 
+    *
     * @param text
     *           Text to use
     * @param textAlign
@@ -306,7 +370,7 @@ public final class JHelpFont
 
    /**
     * Compute text lines representation with this font
-    * 
+    *
     * @param text
     *           Text to use
     * @param textAlign
@@ -322,7 +386,7 @@ public final class JHelpFont
 
    /**
     * Compute text lines representation with this font
-    * 
+    *
     * @param text
     *           Text to use
     * @param textAlign
@@ -340,7 +404,7 @@ public final class JHelpFont
 
    /**
     * Compute text lines representation with this font
-    * 
+    *
     * @param text
     *           Text to use
     * @param textAlign
@@ -474,8 +538,144 @@ public final class JHelpFont
    }
 
    /**
+    * Compute text lines representation with this font with alpha mask
+    *
+    * @param text
+    *           Text to use
+    * @param textAlign
+    *           Align to use
+    * @param limitWidth
+    *           Number maximum of pixels in width
+    * @param limitHeight
+    *           Limit height in pixels
+    * @param trim
+    *           Indicates if have to trim lines
+    * @return The couple of the list of each computed lines and the total size of all lines together
+    */
+   public Pair<List<JHelpTextLineAlpha>, Dimension> computeTextLinesAlpha(final String text, final JHelpTextAlign textAlign, final int limitWidth,
+         final int limitHeight, final boolean trim)
+   {
+      final int limit = Math.max(this.getMaximumCharacterWidth() + 2, limitWidth);
+
+      final ArrayList<JHelpTextLineAlpha> textLines = new ArrayList<JHelpTextLineAlpha>();
+      final StringExtractor lines = new StringExtractor(text, "\n\f\r", "", "");
+      final Dimension size = new Dimension();
+
+      int width, index, start;
+      final int height = this.getHeight();
+
+      String line = lines.next();
+      String head, tail;
+
+      while(line != null)
+      {
+         if(trim == true)
+         {
+            line = line.trim();
+         }
+
+         width = this.stringWidth(line);
+         index = line.length() - 1;
+         head = line;
+         tail = "";
+
+         while((width > limit) && (index > 0))
+         {
+            start = index;
+            index = UtilText.lastIndexOf(line, index, ' ', '\t', '\'', '&', '~', '"', '#', '{', '(', '[', '-', '|', '`', '_', '\\', '^', '@', '°', ')', ']',
+                  '+', '=', '}', '"', 'µ', '*', ',', '?', '.', ';', ':', '/', '!', '§', '<', '>', '²');
+
+            if(index >= 0)
+            {
+               if(trim == true)
+               {
+                  head = line.substring(0, index).trim();
+                  tail = line.substring(index).trim();
+               }
+               else
+               {
+                  head = line.substring(0, index);
+                  tail = line.substring(index);
+               }
+            }
+            else
+            {
+               start--;
+               index = start;
+               head = line.substring(0, index) + "-";
+               tail = line.substring(index);
+            }
+
+            width = this.stringWidth(head);
+
+            if(width <= limit)
+            {
+               size.width = Math.max(size.width, width);
+
+               textLines.add(new JHelpTextLineAlpha(head, 0, size.height, width, height, this.createImage(head, 0xFFFFFFFF, 0), false));
+
+               size.height += height;
+
+               line = tail;
+               head = tail;
+               tail = "";
+               width = this.stringWidth(line);
+               index = line.length() - 1;
+
+               if(size.height >= limitHeight)
+               {
+                  break;
+               }
+            }
+            else
+            {
+               index--;
+            }
+         }
+
+         if(size.height >= limitHeight)
+         {
+            break;
+         }
+
+         size.width = Math.max(size.width, width);
+
+         textLines.add(new JHelpTextLineAlpha(line, 0, size.height, width, height, this.createImage(line, 0xFFFFFFFF, 0), true));
+
+         size.height += height;
+
+         if(size.height >= limitHeight)
+         {
+            break;
+         }
+
+         line = lines.next();
+      }
+
+      for(final JHelpTextLineAlpha textLine : textLines)
+      {
+         switch(textAlign)
+         {
+            case CENTER:
+               textLine.x = (size.width - textLine.getWidth()) >> 1;
+            break;
+            case LEFT:
+               textLine.x = 0;
+            break;
+            case RIGHT:
+               textLine.x = size.width - textLine.getWidth();
+            break;
+         }
+      }
+
+      size.width = Math.max(1, size.width);
+      size.height = Math.max(1, size.height);
+      return new Pair<List<JHelpTextLineAlpha>, Dimension>(Collections.unmodifiableList(textLines), size);
+   }
+
+   /**
     * Compute text lines drawing text vertically (one character per line)
-    * 
+    *
     * @param text
     *           Text to write
     * @param limitHeight
@@ -515,8 +715,55 @@ public final class JHelpFont
    }
 
    /**
+    * Create image with text draw on it.<br>
+    * Image size fit exactly to the text
+    *
+    * @param string
+    *           Text to create its image
+    * @param foreground
+    *           Foreground color
+    * @param background
+    *           Background color
+    * @return Created image
+    */
+   public JHelpImage createImage(final String string, final int foreground, final int background)
+   {
+      final int width = Math.max(1, this.stringWidth(string));
+      final int height = Math.max(1, this.getHeight());
+      final int ascent = this.fontMetrics.getAscent();
+
+      final int nb = width * height;
+      int[] pixels = new int[nb];
+
+      for(int i = 0; i < nb; i++)
+      {
+         pixels[i] = background;
+      }
+
+      final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+      bufferedImage.setRGB(0, 0, width, height, pixels, 0, width);
+      final Graphics2D graphics2d = bufferedImage.createGraphics();
+      this.applyHints(graphics2d);
+      graphics2d.setColor(new Color(foreground, true));
+      graphics2d.setFont(this.font);
+      graphics2d.drawString(string, 0, ascent);
+
+      if(this.underline == true)
+      {
+         final int y = this.underlinePosition(string, 0);
+         graphics2d.drawLine(0, y, width, y);
+      }
+
+      pixels = bufferedImage.getRGB(0, 0, width, height, pixels, 0, width);
+      final JHelpImage image = new JHelpImage(width, height, pixels);
+      graphics2d.dispose();
+      bufferedImage.flush();
+      return image;
+   }
+
+   /**
     * Create a mask from a string
-    * 
+    *
     * @param string
     *           String to convert in mask
     * @return Created mask
@@ -531,13 +778,7 @@ public final class JHelpFont
       final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
       bufferedImage.setRGB(0, 0, width, height, pixels, 0, width);
       final Graphics2D graphics2d = bufferedImage.createGraphics();
-
-      graphics2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-      graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      graphics2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-      graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-      graphics2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-      graphics2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+      this.applyHints(graphics2d);
 
       graphics2d.setColor(Color.WHITE);
       graphics2d.setFont(this.font);
@@ -568,7 +809,7 @@ public final class JHelpFont
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param object
     *           Compared object
     * @return {@code true} if equals
@@ -604,7 +845,7 @@ public final class JHelpFont
 
    /**
     * Font family
-    * 
+    *
     * @return Font family
     */
    public String getFamily()
@@ -614,7 +855,7 @@ public final class JHelpFont
 
    /**
     * {@link Font} embed by this font
-    * 
+    *
     * @return {@link Font} embed by this font
     */
    public Font getFont()
@@ -624,7 +865,7 @@ public final class JHelpFont
 
    /**
     * Font height
-    * 
+    *
     * @return Font height
     */
    public int getHeight()
@@ -634,7 +875,7 @@ public final class JHelpFont
 
    /**
     * Maximum character width
-    * 
+    *
     * @return Biggest width of one character
     */
    public int getMaximumCharacterWidth()
@@ -652,7 +893,7 @@ public final class JHelpFont
 
    /**
     * Font size
-    * 
+    *
     * @return Font size
     */
    public int getSize()
@@ -662,7 +903,7 @@ public final class JHelpFont
 
    /**
     * Indicates if font is bold
-    * 
+    *
     * @return {@code true} if font is bold
     */
    public boolean isBold()
@@ -672,7 +913,7 @@ public final class JHelpFont
 
    /**
     * Indicates if font is italic
-    * 
+    *
     * @return {@code true} if font is italic
     */
    public boolean isItalic()
@@ -682,7 +923,7 @@ public final class JHelpFont
 
    /**
     * Underline status
-    * 
+    *
     * @return Underline status
     */
    public boolean isUnderline()
@@ -692,31 +933,33 @@ public final class JHelpFont
 
    /**
     * Compute size of a string
-    * 
+    *
     * @param string
     *           String to measure
     * @return String size
     */
    public Dimension stringSize(final String string)
    {
-      return new Dimension(this.stringWidth(string), this.getHeight());
+      final Rectangle2D bounds = this.font.getStringBounds(string, ConstantsGUI.FONT_RENDER_CONTEXT);
+      return new Dimension((int) (Math.ceil(bounds.getWidth())), (int) (Math.ceil(bounds.getHeight())));
    }
 
    /**
     * Compute string width
-    * 
+    *
     * @param string
     *           String to measure
     * @return String width
     */
    public int stringWidth(final String string)
    {
-      return this.fontMetrics.stringWidth(string);
+      final Rectangle2D bounds = this.font.getStringBounds(string, ConstantsGUI.FONT_RENDER_CONTEXT);
+      return (int) Math.ceil(bounds.getWidth());
    }
 
    /**
     * Compute underline position
-    * 
+    *
     * @param string
     *           String
     * @param y

@@ -6,7 +6,7 @@ import jhelp.util.text.UtilText;
 /**
  * Represents a constant <br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 public class Constant
@@ -38,7 +38,7 @@ public class Constant
    /**
     * The constant is undefined due illegal operation like division by zero, take the logarithm of negative value, ...
     */
-   public static final Constant UNDEFINED      = new Constant((0.0D / 0.0D));
+   public static final Constant UNDEFINED      = new Constant(Double.NaN);
    /** Text used for undefined constants {@link #UNDEFINED} */
    public static final String   UNDEFINED_TEXT = "UNDEFINED";
    /**
@@ -48,7 +48,7 @@ public class Constant
 
    /**
     * Give the -1<sup>n</sup> constant
-    * 
+    *
     * @param n
     *           Power to apply to -1
     * @return The constant result
@@ -75,7 +75,7 @@ public class Constant
 
    /**
     * Constructs the constant
-    * 
+    *
     * @param real
     *           Value
     */
@@ -89,7 +89,7 @@ public class Constant
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param function
     *           Function sure be the instance of the function
     * @return Comparison
@@ -115,7 +115,7 @@ public class Constant
 
    /**
     * Absolute value of constant
-    * 
+    *
     * @return Absolute value of constant
     */
    public Constant absoluteValue()
@@ -140,7 +140,7 @@ public class Constant
 
    /**
     * Derive the function
-    * 
+    *
     * @param variable
     *           Variable for derive
     * @return Derived
@@ -154,7 +154,7 @@ public class Constant
 
    /**
     * Indicates if a function is equals to this function
-    * 
+    *
     * @param function
     *           Function tested
     * @return {@code true} if there sure equals. {@code false} dosen't mean not equals, but not sure about equality
@@ -185,7 +185,7 @@ public class Constant
 
    /**
     * Copy the function
-    * 
+    *
     * @return Copy
     * @see jhelp.util.math.formal.Function#getCopy()
     */
@@ -197,7 +197,7 @@ public class Constant
 
    /**
     * Indicates if the constant is -1
-    * 
+    *
     * @return {@code true} the constant is -1
     */
    public boolean isMinusOne()
@@ -207,7 +207,7 @@ public class Constant
 
    /**
     * Indicates if constants is < 0
-    * 
+    *
     * @return {@code true} if constants is < 0
     */
    public boolean isNegative()
@@ -217,7 +217,7 @@ public class Constant
 
    /**
     * Indicates if the constant is 0
-    * 
+    *
     * @return {@code true} if the constant is 0
     */
    public boolean isNul()
@@ -227,7 +227,7 @@ public class Constant
 
    /**
     * Indicates if the constant is 1
-    * 
+    *
     * @return {@code true} if the constant is 1
     */
    public boolean isOne()
@@ -237,7 +237,7 @@ public class Constant
 
    /**
     * Indicates if constants is > 0
-    * 
+    *
     * @return {@code true} if constants is > 0
     */
    public boolean isPositive()
@@ -248,7 +248,7 @@ public class Constant
    /**
     * Indicates if function can see as real number, that is to say that the value of {@link #obtainRealValueNumber()} as as
     * meaning
-    * 
+    *
     * @return {@code true}
     * @see jhelp.util.math.formal.Function#isRealValueNumber()
     */
@@ -260,7 +260,7 @@ public class Constant
 
    /**
     * Indicates if the constant is undefined
-    * 
+    *
     * @return {@code true} if the constant is undefined
     */
    public boolean isUndefined()
@@ -270,7 +270,7 @@ public class Constant
 
    /**
     * Return the constant divide by Pi
-    * 
+    *
     * @return Constant divide by Pi
     */
    public Constant multipleDePi()
@@ -280,19 +280,24 @@ public class Constant
 
    /**
     * Real value of function, if the function can be represents by a real number. Else {@link Double#NaN} is return
-    * 
+    *
     * @return Variable value or {@link Double#NaN} if not define
     * @see jhelp.util.math.formal.Function#obtainRealValueNumber()
     */
    @Override
    public double obtainRealValueNumber()
    {
-      return this.real;
+      if(Double.isFinite(this.real))
+      {
+         return this.real;
+      }
+
+      return Double.NaN;
    }
 
    /**
     * Return the Neperian logarithm apply to the constant
-    * 
+    *
     * @return Neperian logarithm apply to the constant
     */
    public Constant puissanceDeE()
@@ -302,7 +307,7 @@ public class Constant
 
    /**
     * Real string representation
-    * 
+    *
     * @return Real string representation
     */
    @Override
@@ -313,7 +318,7 @@ public class Constant
 
    /**
     * Replace variable list by function
-    * 
+    *
     * @param variable
     *           Variable to replace
     * @param function
@@ -329,7 +334,7 @@ public class Constant
 
    /**
     * Constant sign
-    * 
+    *
     * @return Constant sign
     */
    public Constant sign()
@@ -349,7 +354,7 @@ public class Constant
 
    /**
     * String that represents the function
-    * 
+    *
     * @return String representation
     */
    @Override
@@ -392,7 +397,7 @@ public class Constant
 
    /**
     * Variable list contains in this function
-    * 
+    *
     * @return Variable list contains in this function
     * @see jhelp.util.math.formal.Function#variableList()
     */

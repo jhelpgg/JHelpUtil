@@ -6,7 +6,7 @@ import jhelp.util.text.UtilText;
 
 /**
  * Represents a rational number
- * 
+ *
  * @author JHelp
  */
 public class Rational
@@ -28,7 +28,7 @@ public class Rational
 
    /**
     * Indicates if 2 reals are equals in epsilon precision
-    * 
+    *
     * @param f1
     *           First real
     * @param f2
@@ -42,7 +42,7 @@ public class Rational
 
    /**
     * Add 2 rational
-    * 
+    *
     * @param rational1
     *           First rational
     * @param rational2
@@ -66,14 +66,14 @@ public class Rational
          return rational1;
       }
 
-      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator), rational1.denominator
-            * rational2.denominator);
+      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator),
+            rational1.denominator * rational2.denominator);
    }
 
    /**
     * Create rational from real.<br>
     * It founds the nearest rational at epsilon precision
-    * 
+    *
     * @param f
     *           Real to found nearest rational
     * @return Rational created
@@ -120,7 +120,7 @@ public class Rational
 
    /**
     * Create rational from integer
-    * 
+    *
     * @param integer
     *           Integer source
     * @return Result rational
@@ -132,7 +132,7 @@ public class Rational
 
    /**
     * Create a rational
-    * 
+    *
     * @param numerator
     *           Numerator
     * @param denominator
@@ -174,7 +174,7 @@ public class Rational
 
    /**
     * Divide 2 rational
-    * 
+    *
     * @param rational1
     *           First rational
     * @param rational2
@@ -208,7 +208,7 @@ public class Rational
 
    /**
     * Compute the rational just in the middle of 2 other rational
-    * 
+    *
     * @param rational1
     *           First rational
     * @param rational2
@@ -222,13 +222,13 @@ public class Rational
          return Rational.INVALID;
       }
 
-      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator), rational1.denominator
-            * rational2.denominator * 2);
+      return Rational.createRational((rational1.numerator * rational2.denominator) + (rational2.numerator * rational1.denominator), //
+            rational1.denominator * rational2.denominator * 2);
    }
 
    /**
     * Multiply 2 rational
-    * 
+    *
     * @param rational1
     *           First rational
     * @param rational2
@@ -275,8 +275,8 @@ public class Rational
     * String must be {@link #INVALID_RATIONAL} or &lt;integer&gt; or &lt;integer&gt; &lt;space&gt;* / &lt;space&gt;*
     * &lt;integer&gt;<br>
     * Where &lt;integer&gt; := [0-9]+ AND &lt;space&gt; := {SPACE, \t, \n, \r, \f}.<br>
-    * If the string is not well dormated {@link IllegalArgumentException} will be throw
-    * 
+    * If the string is not well formated {@link IllegalArgumentException} will be throw
+    *
     * @param string
     *           String to parse
     * @return Parsed rational
@@ -320,7 +320,7 @@ public class Rational
 
    /**
     * Compute rational raise to power
-    * 
+    *
     * @param rational
     *           Rational to raise to power
     * @param power
@@ -391,7 +391,7 @@ public class Rational
 
    /**
     * Compute a string representation of a proportion
-    * 
+    *
     * @param numberPositive
     *           Number of "positive" value
     * @param positiveSymbol
@@ -440,7 +440,7 @@ public class Rational
 
    /**
     * Subtract 2 rational
-    * 
+    *
     * @param rational1
     *           First rational
     * @param rational2
@@ -469,8 +469,8 @@ public class Rational
          return Rational.ZERO;
       }
 
-      return Rational.createRational((rational1.numerator * rational2.denominator) - (rational2.numerator * rational1.denominator), rational1.denominator
-            * rational2.denominator);
+      return Rational.createRational((rational1.numerator * rational2.denominator) - (rational2.numerator * rational1.denominator),
+            rational1.denominator * rational2.denominator);
    }
 
    /** Denominator */
@@ -481,7 +481,7 @@ public class Rational
 
    /**
     * Create a new instance of Rational
-    * 
+    *
     * @param numerator
     *           Numerator
     * @param denominator
@@ -495,7 +495,7 @@ public class Rational
 
    /**
     * Add an other rational
-    * 
+    *
     * @param rational
     *           Rational to add
     * @return Addition result
@@ -512,7 +512,8 @@ public class Rational
     * <tr>
     * <th>&lt;&nbsp;0<br>
     * </th>
-    * <td>If&nbsp;<b>&nbsp;this&nbsp;</b>&nbsp;rational&nbsp;is&nbsp;<b>&nbsp;&lt;&nbsp;</b>&nbsp;the&nbsp;given&nbsp;rational<br>
+    * <td>If&nbsp;<b>&nbsp;this&nbsp;</b>&nbsp;rational&nbsp;is&nbsp;<b>&nbsp;&lt;&nbsp;</b>&nbsp;the&nbsp;given&nbsp;rational
+    * <br>
     * </td>
     * </tr>
     * <tr>
@@ -525,7 +526,8 @@ public class Rational
     * <tr>
     * <th>&gt;&nbsp;0<br>
     * </th>
-    * <td>If&nbsp;<b>&nbsp;this&nbsp;</b>&nbsp;rational&nbsp;is&nbsp;<b>&nbsp;&gt;&nbsp;</b>&nbsp;the&nbsp;given&nbsp;rational<br>
+    * <td>If&nbsp;<b>&nbsp;this&nbsp;</b>&nbsp;rational&nbsp;is&nbsp;<b>&nbsp;&gt;&nbsp;</b>&nbsp;the&nbsp;given&nbsp;rational
+    * <br>
     * </td>
     * </tr>
     * </table>
@@ -533,7 +535,7 @@ public class Rational
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param rational
     *           Rational to compare with
     * @return Comparison result
@@ -574,7 +576,7 @@ public class Rational
 
    /**
     * Divide an other rational
-    * 
+    *
     * @param rational
     *           Rational to divide
     * @return Division result
@@ -589,7 +591,7 @@ public class Rational
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param obj
     *           Object to test
     * @return {@code true} in equality
@@ -624,7 +626,7 @@ public class Rational
 
    /**
     * Denominator
-    * 
+    *
     * @return Denominator
     */
    public int getDenominator()
@@ -634,7 +636,7 @@ public class Rational
 
    /**
     * Numerator
-    * 
+    *
     * @return Numerator
     */
    public int getNumerator()
@@ -647,7 +649,7 @@ public class Rational
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return Hash code
     * @see java.lang.Object#hashCode()
     */
@@ -659,7 +661,7 @@ public class Rational
 
    /**
     * Inverse the rational
-    * 
+    *
     * @return Inverted
     */
    public Rational inverse()
@@ -675,7 +677,7 @@ public class Rational
    /**
     * Indicates if rational can be see as integer.<br>
     * Can get the value with the {@link #getNumerator() numerator}
-    * 
+    *
     * @return {@code true} if the rational is an integer
     */
    public boolean isInteger()
@@ -685,7 +687,7 @@ public class Rational
 
    /**
     * Indicates if rational is strictly negative
-    * 
+    *
     * @return {@code true} if rational is strictly negative
     */
    public boolean isNegative()
@@ -695,7 +697,7 @@ public class Rational
 
    /**
     * Indicates if rational is strictly positive
-    * 
+    *
     * @return {@code true} if ration is strictly positive
     */
    public boolean isPositive()
@@ -705,7 +707,7 @@ public class Rational
 
    /**
     * Multiply an other rational
-    * 
+    *
     * @param rational
     *           Rational to multiply
     * @return Multiplication result
@@ -717,7 +719,7 @@ public class Rational
 
    /**
     * Rational opposite
-    * 
+    *
     * @return Opposite
     */
    public Rational opposite()
@@ -747,7 +749,7 @@ public class Rational
 
    /**
     * Compute rational raise to power
-    * 
+    *
     * @param power
     *           Power to use (Warning not always accurate if power < 0)
     * @return The result
@@ -773,7 +775,7 @@ public class Rational
     * <td>If rational is >0</td>
     * </tr>
     * </table>
-    * 
+    *
     * @return Rational sign
     */
    public int sign()
@@ -783,7 +785,7 @@ public class Rational
 
    /**
     * Subtract an other rational
-    * 
+    *
     * @param rational
     *           Rational to subtract
     * @return Subtraction result
@@ -798,7 +800,7 @@ public class Rational
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return String representation
     * @see java.lang.Object#toString()
     */
@@ -820,7 +822,7 @@ public class Rational
 
    /**
     * Real value
-    * 
+    *
     * @return Real value
     */
    public float value()

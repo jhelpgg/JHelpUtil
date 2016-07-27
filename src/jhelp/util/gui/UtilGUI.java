@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -14,6 +14,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -24,10 +25,15 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 
 import jhelp.util.Utilities;
 import jhelp.util.debug.Debug;
@@ -38,7 +44,7 @@ import jhelp.util.math.UtilMath;
 
 /**
  * Utilities for GUI
- * 
+ *
  * @author JHelp
  */
 public final class UtilGUI
@@ -51,10 +57,18 @@ public final class UtilGUI
    private static Cursor                   INVISIBLE_CURSOR;
    /** Robot for simulate keyboard and mouse events */
    private final static Robot              ROBOT;
+   /** Special character for delete */
+   public static final char                CHARACTER_DELETE = '\b';
+   /** Special character for escape */
+   public static final char                CHARACTER_ESCAPE = (char) 0x1B;
    /** Current graphics environment */
    public static final GraphicsEnvironment GRAPHICS_ENVIRONMENT;
    /** Current screen resolution */
    public static final Resolution          SCREEN_RESOLUTION;
+   /** Font use for sub title */
+   public static final Font                SUB_TITLE_FONT   = new Font("Arial", Font.PLAIN, 22);
+   /** Font use for title */
+   public static final Font                TITLE_FONT       = new Font("Arial", Font.BOLD, 24);
    /** Current toolkit */
    public static final Toolkit             TOOLKIT;
 
@@ -87,7 +101,7 @@ public final class UtilGUI
 
    /**
     * Check if a screen index is valid
-    * 
+    *
     * @param screenIndex
     *           Screen index to check
     */
@@ -101,8 +115,50 @@ public final class UtilGUI
    }
 
    /**
+    * Add sub-title to component to have a title but visually less important than title add with
+    * {@link #addTitle(JComponent, String)}
+    *
+    * @param component
+    *           Component to add sub-title
+    * @param title
+    *           Sub-title text
+    */
+   public static void addSubTitle(final JComponent component, final String title)
+   {
+      if((component == null) || (title == null))
+      {
+         return;
+      }
+
+      component.setBorder(//
+            BorderFactory.createTitledBorder(//
+                  BorderFactory.createEtchedBorder(), //
+                  title, TitledBorder.CENTER, TitledBorder.TOP, UtilGUI.SUB_TITLE_FONT));
+   }
+
+   /**
+    * Add title to component
+    *
+    * @param component
+    *           Component to add title
+    * @param title
+    *           Title
+    */
+   public static void addTitle(final JComponent component, final String title)
+   {
+      if((component == null) || (title == null))
+      {
+         return;
+      }
+
+      component.setBorder(//
+            BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), //
+                  title, TitledBorder.CENTER, TitledBorder.TOP, UtilGUI.TITLE_FONT));
+   }
+
+   /**
     * Center a window on its screen
-    * 
+    *
     * @param window
     *           Widow to center
     */
@@ -111,13 +167,13 @@ public final class UtilGUI
       final Dimension dimension = window.getSize();
       final Rectangle screen = UtilGUI.computeScreenRectangle(window);
       Debug.println(DebugLevel.DEBUG, dimension, " | ", screen);
-      window.setLocation(screen.x + ((screen.width - dimension.width) / 2),//
+      window.setLocation(screen.x + ((screen.width - dimension.width) / 2), //
             screen.y + ((screen.height - dimension.height) / 2));
    }
 
    /**
     * Change a window of screen
-    * 
+    *
     * @param window
     *           Widow to translate
     * @param screenIndex
@@ -135,13 +191,67 @@ public final class UtilGUI
       final Rectangle destinationScreen = graphicsConfiguration.getBounds();
       final Insets insets = UtilGUI.TOOLKIT.getScreenInsets(graphicsConfiguration);
 
-      window.setLocation(x + destinationScreen.x + insets.left,//
+      window.setLocation(x + destinationScreen.x + insets.left, //
             y + destinationScreen.y + insets.top);
    }
 
    /**
+    * Compute the key code to use for short cut that use a given character.<br>
+    * It is possible to use {@link #CHARACTER_DELETE} or {@link #CHARACTER_ESCAPE} character if you want build short cut for
+    * respectively delete key, escape key
+    *
+    * @param character
+    *           Character to compute the key code to use
+    * @return Computed key code
+    */
+   public static int charToKeyCodeForShortCut(final char character)
+   {
+      switch(character)
+      {
+         case '0':
+            return KeyEvent.VK_NUMPAD0;
+         case '1':
+            return KeyEvent.VK_NUMPAD1;
+         case '2':
+            return KeyEvent.VK_NUMPAD2;
+         case '3':
+            return KeyEvent.VK_NUMPAD3;
+         case '4':
+            return KeyEvent.VK_NUMPAD4;
+         case '5':
+            return KeyEvent.VK_NUMPAD5;
+         case '6':
+            return KeyEvent.VK_NUMPAD6;
+         case '7':
+            return KeyEvent.VK_NUMPAD7;
+         case '8':
+            return KeyEvent.VK_NUMPAD8;
+         case '9':
+            return KeyEvent.VK_NUMPAD9;
+         case '+':
+            return KeyEvent.VK_ADD;
+         case '-':
+            return KeyEvent.VK_SUBTRACT;
+         case '*':
+            return KeyEvent.VK_MULTIPLY;
+         case '/':
+            return KeyEvent.VK_DIVIDE;
+         case '.':
+            return KeyEvent.VK_PERIOD;
+         case CHARACTER_ESCAPE:
+            return KeyEvent.VK_ESCAPE;
+         case CHARACTER_DELETE:
+            return KeyEvent.VK_BACK_SPACE;
+         case '\n':
+            return KeyEvent.VK_ENTER;
+         default:
+            return KeyEvent.getExtendedKeyCodeForChar(character);
+      }
+   }
+
+   /**
     * Compute the maximum dimension of a component
-    * 
+    *
     * @param component
     *           Component to compute it's maximum size
     * @return Maximum size
@@ -169,7 +279,7 @@ public final class UtilGUI
 
    /**
     * Compute the minimum dimension of a component
-    * 
+    *
     * @param component
     *           Component to compute it's minimum size
     * @return Minimum size
@@ -197,7 +307,7 @@ public final class UtilGUI
 
    /**
     * Compute the preferred dimension of a component
-    * 
+    *
     * @param component
     *           Component to compute it's preferred size
     * @return Preferred size
@@ -225,7 +335,7 @@ public final class UtilGUI
 
    /**
     * Compute the rectangle of the screen where is a window
-    * 
+    *
     * @param window
     *           Window we looking for its screen
     * @return Screen's rectangle
@@ -273,8 +383,138 @@ public final class UtilGUI
    }
 
    /**
+    * Create key stroke short cut for a character type without any special key like shitf, control, ...
+    *
+    * @param character
+    *           Character short cut
+    * @return Created shortcut
+    */
+   public static KeyStroke createKeyStroke(final char character)
+   {
+      return UtilGUI.createKeyStroke(character, false, false, false, false, false);
+   }
+
+   /**
+    * Create key stroke short cut for given key combination
+    *
+    * @param character
+    *           Character
+    * @param control
+    *           Indicates if control down
+    * @return Creates key stroke short cut for given key combination
+    */
+   public static KeyStroke createKeyStroke(final char character, final boolean control)
+   {
+      return UtilGUI.createKeyStroke(character, control, false, false, false, false);
+   }
+
+   /**
+    * Create key stroke short cut for given key combination
+    *
+    * @param character
+    *           Character
+    * @param control
+    *           Indicates if control down
+    * @param alt
+    *           Indicates if alt is down
+    * @return Creates key stroke short cut for given key combination
+    */
+   public static KeyStroke createKeyStroke(final char character, final boolean control, final boolean alt)
+   {
+      return UtilGUI.createKeyStroke(character, control, alt, false, false, false);
+   }
+
+   /**
+    * Create key stroke short cut for given key combination
+    *
+    * @param character
+    *           Character
+    * @param control
+    *           Indicates if control down
+    * @param alt
+    *           Indicates if alt is down
+    * @param shift
+    *           Indicates if shift is down
+    * @return Creates key stroke short cut for given key combination
+    */
+   public static KeyStroke createKeyStroke(final char character, final boolean control, final boolean alt, final boolean shift)
+   {
+      return UtilGUI.createKeyStroke(character, control, alt, shift, false, false);
+   }
+
+   /**
+    * Create key stroke short cut for given key combination
+    *
+    * @param character
+    *           Character
+    * @param control
+    *           Indicates if control down
+    * @param alt
+    *           Indicates if alt is down
+    * @param shift
+    *           Indicates if shift is down
+    * @param altGraph
+    *           Indicates if alt graph is down
+    * @return Creates key stroke short cut for given key combination
+    */
+   public static KeyStroke createKeyStroke(final char character, final boolean control, final boolean alt, final boolean shift, final boolean altGraph)
+   {
+      return UtilGUI.createKeyStroke(character, control, alt, shift, altGraph, false);
+   }
+
+   /**
+    * Create key stroke short cut for given key combination
+    *
+    * @param character
+    *           Character
+    * @param control
+    *           Indicates if control down
+    * @param alt
+    *           Indicates if alt is down
+    * @param shift
+    *           Indicates if shift is down
+    * @param altGraph
+    *           Indicates if alt graph is down
+    * @param meta
+    *           Indicates if meta is down
+    * @return Creates key stroke short cut for given key combination
+    */
+   public static KeyStroke createKeyStroke(final char character, final boolean control, final boolean alt, final boolean shift, final boolean altGraph,
+         final boolean meta)
+   {
+      int modifiers = 0;
+
+      if(control == true)
+      {
+         modifiers |= InputEvent.CTRL_DOWN_MASK;
+      }
+
+      if(alt == true)
+      {
+         modifiers |= InputEvent.ALT_DOWN_MASK;
+      }
+
+      if(shift == true)
+      {
+         modifiers |= InputEvent.SHIFT_DOWN_MASK;
+      }
+
+      if(altGraph == true)
+      {
+         modifiers |= InputEvent.ALT_GRAPH_DOWN_MASK;
+      }
+
+      if(meta == true)
+      {
+         modifiers |= InputEvent.META_DOWN_MASK;
+      }
+
+      return KeyStroke.getKeyStroke(UtilGUI.charToKeyCodeForShortCut(character), modifiers);
+   }
+
+   /**
     * Obtain frame parent of a container
-    * 
+    *
     * @param container
     *           Container to get its parent
     * @return Parent frame
@@ -296,7 +536,7 @@ public final class UtilGUI
 
    /**
     * Give the relative of a component for an other one
-    * 
+    *
     * @param component
     *           Component to search its position
     * @param parent
@@ -324,7 +564,7 @@ public final class UtilGUI
 
    /**
     * Give bounds of a screen
-    * 
+    *
     * @param screen
     *           Screen index
     * @return Screen bounds
@@ -350,7 +590,7 @@ public final class UtilGUI
 
    /**
     * Screen identifier
-    * 
+    *
     * @param screenIndex
     *           Screen index
     * @return Screen identifier
@@ -385,7 +625,7 @@ public final class UtilGUI
 
    /**
     * Place the mouse on a location on the screen
-    * 
+    *
     * @param x
     *           X screen position
     * @param y
@@ -403,7 +643,7 @@ public final class UtilGUI
 
    /**
     * Place the mouse over the middle of a component
-    * 
+    *
     * @param component
     *           Component mouse go over
     */
@@ -426,7 +666,7 @@ public final class UtilGUI
 
    /**
     * Place the mouse over a component
-    * 
+    *
     * @param component
     *           Component mouse go over
     * @param x
@@ -453,7 +693,7 @@ public final class UtilGUI
 
    /**
     * Number of screen
-    * 
+    *
     * @return Number of screen
     */
    public static int numberOfScreen()
@@ -463,7 +703,7 @@ public final class UtilGUI
 
    /**
     * Invisible cursor
-    * 
+    *
     * @return Invisible cursor
     */
    public static Cursor obtainInvisbleCursor()
@@ -495,7 +735,7 @@ public final class UtilGUI
 
    /**
     * Number of screen
-    * 
+    *
     * @return Number of screen
     */
    public static int obtainNumberOffScreen()
@@ -505,7 +745,7 @@ public final class UtilGUI
 
    /**
     * Obtain index of the screen where is the window
-    * 
+    *
     * @param window
     *           Considered window
     * @return Screen index
@@ -538,7 +778,7 @@ public final class UtilGUI
    /**
     * Put a window in it's pack size<br>
     * Size is automatic limited to the window's screen
-    * 
+    *
     * @param window
     *           Window to pack
     */
@@ -564,7 +804,7 @@ public final class UtilGUI
 
    /**
     * Make a screen shot
-    * 
+    *
     * @return Screen shot
     */
    public static BufferedImage screenShot()
@@ -610,7 +850,7 @@ public final class UtilGUI
 
    /**
     * Create a screen shot on JHelpImage
-    * 
+    *
     * @return JHelpImage with screen shot
     */
    public static JHelpImage screenShotJHelpImage()
@@ -620,7 +860,7 @@ public final class UtilGUI
 
    /**
     * Search JFrame parent of a component
-    * 
+    *
     * @param component
     *           Component search it's JFram parent
     * @return JFrame parent or {@code null} if component haven't a JFrame parent
@@ -649,7 +889,7 @@ public final class UtilGUI
 
    /**
     * Simulate a key press
-    * 
+    *
     * @param keyCode
     *           Key code
     */
@@ -665,7 +905,7 @@ public final class UtilGUI
 
    /**
     * Simulate a key release
-    * 
+    *
     * @param keyCode
     *           Key code
     */
@@ -681,7 +921,7 @@ public final class UtilGUI
 
    /**
     * Simulate (If system allow it) a mouse click
-    * 
+    *
     * @param time
     *           Duration of down state
     */
@@ -699,7 +939,7 @@ public final class UtilGUI
 
    /**
     * Simulate a mouse press
-    * 
+    *
     * @param button
     *           Mouse buttons
     */
@@ -715,7 +955,7 @@ public final class UtilGUI
 
    /**
     * Simulate a mouse release
-    * 
+    *
     * @param button
     *           Mouse buttons
     */
@@ -731,7 +971,7 @@ public final class UtilGUI
 
    /**
     * Simulate mouse wheel move
-    * 
+    *
     * @param tick
     *           Number of "notches" to move the mouse wheel Negative values indicate movement up/away from the user, positive
     *           values indicate movement down/towards the user.
@@ -748,7 +988,7 @@ public final class UtilGUI
 
    /**
     * Simulate a release then press mouse button
-    * 
+    *
     * @param time
     *           Time between release and press
     */
@@ -766,7 +1006,7 @@ public final class UtilGUI
 
    /**
     * Make widow take all it's screen
-    * 
+    *
     * @param window
     *           Window to maximize
     */

@@ -564,7 +564,7 @@ public class PCX
       int lineData = 0;
       int pix = 0;
       int x;
-      int read, index, start;
+      int read, index, start, write;
 
       for(int y = 0; y < this.height; y++)
       {
@@ -573,18 +573,18 @@ public class PCX
          start = 0;
          index = 0;
          x = 0;
-         read = pix;
+         write = pix;
 
          while(x < this.width)
          {
             read = scanLine[index];
 
-            pixels[read++] = ((read >> 4) & 0xF) << 20;
+            pixels[write++] = ((read >> 4) & 0xF) << 20;
             x++;
 
             if(x < this.width)
             {
-               pixels[read++] = (read & 0xF) << 20;
+               pixels[write++] = (read & 0xF) << 20;
                x++;
             }
          }
@@ -592,18 +592,18 @@ public class PCX
          start += this.numberBitsPerScanline;
          index = start;
          x = 0;
-         read = pix;
+         write = pix;
 
          while(x < this.width)
          {
             read = scanLine[index];
 
-            pixels[read++] |= ((read >> 4) & 0xF) << 12;
+            pixels[write++] |= ((read >> 4) & 0xF) << 12;
             x++;
 
             if(x < this.width)
             {
-               pixels[read++] |= (read & 0xF) << 12;
+               pixels[write++] |= (read & 0xF) << 12;
                x++;
             }
          }
@@ -611,18 +611,18 @@ public class PCX
          start += this.numberBitsPerScanline;
          index = start;
          x = 0;
-         read = pix;
+         write = pix;
 
          while(x < this.width)
          {
             read = scanLine[index];
 
-            pixels[read++] |= ((read >> 4) & 0xF) << 4;
+            pixels[write++] |= ((read >> 4) & 0xF) << 4;
             x++;
 
             if(x < this.width)
             {
-               pixels[read++] |= (read & 0xF) << 4;
+               pixels[write++] |= (read & 0xF) << 4;
                x++;
             }
          }
@@ -630,18 +630,18 @@ public class PCX
          start += this.numberBitsPerScanline;
          index = start;
          x = 0;
-         read = pix;
+         write = pix;
 
          while(x < this.width)
          {
             read = scanLine[index];
 
-            pixels[read++] |= ((read >> 4) & 0xF) << 28;
+            pixels[write++] |= ((read >> 4) & 0xF) << 28;
             x++;
 
             if(x < this.width)
             {
-               pixels[read++] |= (read & 0xF) << 28;
+               pixels[write++] |= (read & 0xF) << 28;
                x++;
             }
          }
@@ -694,7 +694,7 @@ public class PCX
       int lineData = 0;
       int pix = 0;
       int x;
-      int read, index, start;
+      int index, start, write;
 
       for(int y = 0; y < this.height; y++)
       {
@@ -702,38 +702,38 @@ public class PCX
 
          start = 0;
          index = 0;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] = scanLine[index++] << 16;
+            pixels[write++] = scanLine[index++] << 16;
          }
 
          start += this.numberBitsPerScanline;
          index = start;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] |= scanLine[index++] << 8;
+            pixels[write++] |= scanLine[index++] << 8;
          }
 
          start += this.numberBitsPerScanline;
          index = start;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] |= scanLine[index++];
+            pixels[write++] |= scanLine[index++];
          }
 
          start += this.numberBitsPerScanline;
          index = start;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] |= 0xFF000000;
+            pixels[write++] |= 0xFF000000;
          }
 
          pix += this.width;
@@ -758,7 +758,7 @@ public class PCX
       int lineData = 0;
       int pix = 0;
       int x;
-      int read, index, start;
+      int index, start, write;
 
       for(int y = 0; y < this.height; y++)
       {
@@ -766,38 +766,38 @@ public class PCX
 
          start = 0;
          index = 0;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] = scanLine[index++] << 16;
+            pixels[write++] = scanLine[index++] << 16;
          }
 
          start += this.numberBitsPerScanline;
          index = start;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] |= scanLine[index++] << 8;
+            pixels[write++] |= scanLine[index++] << 8;
          }
 
          start += this.numberBitsPerScanline;
          index = start;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] |= scanLine[index++];
+            pixels[write++] |= scanLine[index++];
          }
 
          start += this.numberBitsPerScanline;
          index = start;
-         read = pix;
+         write = pix;
 
          for(x = 0; x < this.width; x++)
          {
-            pixels[read++] |= scanLine[index++] << 24;
+            pixels[write++] |= scanLine[index++] << 24;
          }
 
          pix += this.width;

@@ -7,11 +7,11 @@ import java.util.Hashtable;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import jhelp.util.debug.Debug;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import jhelp.util.debug.Debug;
 
 /**
  * Parser of XML that describes a text resources for a language.<br>
@@ -21,11 +21,11 @@ import org.xml.sax.helpers.DefaultHandler;
  *       The text isself
  *    </Text>
  * </Texts>
- * --></code> The markup <b><font color="#008800">"Text"</font></b> defines an association to a <font
- * color="#008800">"key"</font> with some text. The parameter <font color="#008800">"key"</font> specify the text key. The text
- * between opening and closing markup <b><font color="#008800">"Text"</font></b> is the corresponding text in the specific
+ * --></code> The markup <b><font color="#008800">"Text"</font></b> defines an association to a
+ * <font color="#008800">"key"</font> with some text. The parameter <font color="#008800">"key"</font> specify the text key. The
+ * text between opening and closing markup <b><font color="#008800">"Text"</font></b> is the corresponding text in the specific
  * language.
- * 
+ *
  * @author JHelp
  */
 class ParserXMLText
@@ -44,7 +44,7 @@ class ParserXMLText
 
    /**
     * Create a new instance of ParserXMLText
-    * 
+    *
     * @param texts
     *           Hash map to fill with associations
     * @param url
@@ -91,7 +91,7 @@ class ParserXMLText
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param ch
     *           Array of read characters
     * @param start
@@ -116,7 +116,7 @@ class ParserXMLText
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param uri
     *           URI source
     * @param localName
@@ -147,7 +147,7 @@ class ParserXMLText
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param uri
     *           URI source
     * @param localName

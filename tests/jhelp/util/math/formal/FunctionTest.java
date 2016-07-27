@@ -5,14 +5,14 @@ import org.junit.Test;
 
 /**
  * Test of {@link Function}
- * 
+ *
  * @author JHelp
  */
 public class FunctionTest
 {
    /**
     * Simplify test
-    * 
+    *
     * @param start
     *           Expected function
     * @param end
@@ -41,7 +41,8 @@ public class FunctionTest
 
       Assert.assertEquals(Function.parse("cos(1+x)"), Function.parse("sin(1+x)").derive("x").simplifyMaximum(System.out));
 
-      Assert.assertEquals(Function.parse("(cos(x)*sin(x+1)-cos(x+1)*sin(x))/(sin(x+1)*sin(x+1))").simplifyMaximum(System.out), Function.parse("sin(x)/sin(x+1)").derive("x").simplifyMaximum(System.out));
+      Assert.assertEquals(Function.parse("(cos(x)*sin(x+1)-cos(x+1)*sin(x))/(sin(x+1)*sin(x+1))").simplifyMaximum(System.out),
+            Function.parse("sin(x)/sin(x+1)").derive("x").simplifyMaximum(System.out));
 
       Assert.assertEquals(Function.parse("2*x").simplifyMaximum(), Function.parse("x*x").derive("x").simplifyMaximum(System.out));
       Assert.assertEquals(Function.parse("5*x*x*x*x").simplifyMaximum(), Function.parse("x*x*x*x*x").derive("x").simplifyMaximum(System.out));
@@ -112,7 +113,8 @@ public class FunctionTest
       variableList.add("x", "y", "z");
       Assert.assertEquals(variableList, f.simplifyMaximum().variableList());
 
-      Assert.assertEquals(Function.parse("a+ln(y+E)-cos(sin(PI+z))*exp(tan(a))+a/z+exp(-y)").simplifyMaximum(), f.replace("x", new Variable("a")).simplifyMaximum(System.out));
+      Assert.assertEquals(Function.parse("a+ln(y+E)-cos(sin(PI+z))*exp(tan(a))+a/z+exp(-y)").simplifyMaximum(),
+            f.replace("x", new Variable("a")).simplifyMaximum(System.out));
 
       variableList.clear();
       variableList.add("a", "y", "z");
@@ -124,8 +126,7 @@ public class FunctionTest
    }
 
    /**
-    * 
-    Parsing test
+    * Parsing test
     */
    @Test
    public void testParse()
@@ -170,6 +171,15 @@ public class FunctionTest
       Assert.assertEquals(new Percent(new Constant(30)), Function.parse("%(10+20)").simplifyMaximum(System.out));
       Assert.assertEquals(Function.parse("2%").simplifyMaximum(System.out), Function.parse("10%*20%").simplifyMaximum(System.out));
       Assert.assertEquals(new Constant(0.5), Function.parse("10%/20%").simplifyMaximum(System.out));
+   }
+
+   @Test
+   public void testPower()
+   {
+      this.symplifyTest("5^2", "25");
+      this.symplifyTest("x^2", "x*x");
+      this.symplifyTest("x^7", "x*x*x*x*x*x*x");
+      this.symplifyTest("25^0.5", "exp(0.5*ln(25))");
    }
 
    @Test

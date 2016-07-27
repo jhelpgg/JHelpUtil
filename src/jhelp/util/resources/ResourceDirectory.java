@@ -2,7 +2,7 @@ package jhelp.util.resources;
 
 /**
  * Resource directory
- * 
+ *
  * @author JHelp
  */
 public class ResourceDirectory
@@ -14,7 +14,7 @@ public class ResourceDirectory
 
    /**
     * Create a new instance of ResourceDirectory
-    * 
+    *
     * @param path
     *           Directory path
     */
@@ -36,21 +36,21 @@ public class ResourceDirectory
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return Directory name
     * @see jhelp.util.resources.ResourceElement#getName()
     */
    @Override
    public String getName()
    {
-      final int index = this.path.lastIndexOf('/');
-
-      if(index < 0)
+      if(this.path.length() < 2)
       {
          return this.path;
       }
 
-      return this.path.substring(index + 1);
+      // Directory path end with /, so have to ignore it
+      final int index = this.path.lastIndexOf('/', this.path.length() - 2);
+      return this.path.substring(index + 1, this.path.length() - 1);
    }
 
    /**
@@ -58,7 +58,7 @@ public class ResourceDirectory
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return Directory path
     * @see jhelp.util.resources.ResourceElement#getPath()
     */
@@ -73,7 +73,7 @@ public class ResourceDirectory
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return {@code true}
     * @see jhelp.util.resources.ResourceElement#isDirectory()
     */
@@ -85,7 +85,7 @@ public class ResourceDirectory
 
    /**
     * Indicates if the directory is the resources root directory
-    * 
+    *
     * @return {@code true} if the directory is the resources root directory
     */
    public boolean isRoot()

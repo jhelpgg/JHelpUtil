@@ -5,17 +5,18 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui.transformation;
 
+import jhelp.util.math.UtilMath;
 import jhelp.util.text.UtilText;
 
 /**
  * Transform an image while drawing it.<br>
  * It translates some pixels in other place
- * 
+ *
  * @author JHelp
  */
 public class Transformation
@@ -31,7 +32,7 @@ public class Transformation
 
    /**
     * Create a new instance of Transformation that change nothing by default
-    * 
+    *
     * @param width
     *           Width
     * @param height
@@ -52,7 +53,7 @@ public class Transformation
 
    /**
     * Check if a position inside the transformation
-    * 
+    *
     * @param x
     *           Position X
     * @param y
@@ -70,7 +71,7 @@ public class Transformation
 
    /**
     * Combine actual transformation with horizontal sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude
@@ -83,7 +84,7 @@ public class Transformation
 
    /**
     * Combine actual transformation with horizontal sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude
@@ -120,7 +121,7 @@ public class Transformation
 
    /**
     * Combine actual transformation with vertical sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude
@@ -133,7 +134,7 @@ public class Transformation
 
    /**
     * Combine actual transformation with vertical sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude
@@ -168,7 +169,7 @@ public class Transformation
 
    /**
     * Height
-    * 
+    *
     * @return Height
     */
    public int getHeight()
@@ -178,7 +179,7 @@ public class Transformation
 
    /**
     * Obtain a vector transformation for a pixel
-    * 
+    *
     * @param x
     *           X
     * @param y
@@ -194,7 +195,7 @@ public class Transformation
 
    /**
     * Width
-    * 
+    *
     * @return Width
     */
    public int getWidth()
@@ -204,7 +205,7 @@ public class Transformation
 
    /**
     * Change a vector transformation for one pixel
-    * 
+    *
     * @param x
     *           Pixel X
     * @param y
@@ -225,7 +226,7 @@ public class Transformation
 
    /**
     * Change a vector transformation for one pixel
-    * 
+    *
     * @param x
     *           Pixel X
     * @param y
@@ -243,8 +244,50 @@ public class Transformation
    }
 
    /**
+    * Make transformation as a elliptic arc
+    *
+    * @param factor
+    *           Arc factor
+    */
+   public void toHorizontalEllpticArc(final double factor)
+   {
+      if(UtilMath.isNul(factor) == true)
+      {
+         this.toIdentity();
+         return;
+      }
+
+      final double center = this.width * 0.5;
+      double max = 0;
+
+      if(factor < 0)
+      {
+         max = factor * center;
+      }
+
+      final double ray = center * center;
+      int vy;
+      int pos;
+      Vector vector;
+
+      for(int x = 0; x < this.width; x++)
+      {
+         vy = (int) ((factor * Math.sqrt(ray - UtilMath.square(x - center))) - max);
+         pos = x;
+
+         for(int y = 0; y < this.height; y++)
+         {
+            vector = this.transformation[pos];
+            vector.vx = 0;
+            vector.vy = vy;
+            pos += this.width;
+         }
+      }
+   }
+
+   /**
     * Make transformation to horizontal sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude
@@ -257,7 +300,7 @@ public class Transformation
 
    /**
     * Make transformation to horizontal sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude
@@ -307,7 +350,7 @@ public class Transformation
 
    /**
     * Make transformation to vertical sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude
@@ -320,7 +363,7 @@ public class Transformation
 
    /**
     * Make transformation to vertical sinusoids
-    * 
+    *
     * @param numberOfWave
     *           Number of wave
     * @param amplitude

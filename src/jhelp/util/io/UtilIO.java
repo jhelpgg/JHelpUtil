@@ -11,10 +11,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Stack;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -29,7 +35,7 @@ import jhelp.util.text.UtilText;
 
 /**
  * Utilities for Input/Output streams
- * 
+ *
  * @author JHelp
  */
 public final class UtilIO
@@ -59,7 +65,7 @@ public final class UtilIO
    /**
     * Create a double from a byte array.<br>
     * Work good with byte array generated with {@link #doubleToByteArray(double)}
-    * 
+    *
     * @param array
     *           Array to convert
     * @return Double obtain
@@ -72,7 +78,7 @@ public final class UtilIO
    /**
     * Create a long from a byte array.<br>
     * Work good with byte array generated with {@link #longToByteArray(long)}
-    * 
+    *
     * @param array
     *           Array to convert
     * @return Long obtain
@@ -85,7 +91,7 @@ public final class UtilIO
 
    /**
     * Compute the SHA code of a stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return SHA code
@@ -124,7 +130,7 @@ public final class UtilIO
 
    /**
     * Compute SHA for a stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return MD5 of the stream
@@ -151,7 +157,7 @@ public final class UtilIO
 
    /**
     * Compute MD5 of an image
-    * 
+    *
     * @param bufferedImage
     *           Image to compute it's MD5
     * @return Image MD5
@@ -179,7 +185,7 @@ public final class UtilIO
 
    /**
     * Compute MD5 of a file
-    * 
+    *
     * @param file
     *           File to compute its MD5
     * @return Computed MD5
@@ -228,7 +234,7 @@ public final class UtilIO
 
    /**
     * Compute MD5 for a stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return MD5 of the stream
@@ -268,7 +274,7 @@ public final class UtilIO
 
    /**
     * Compute MD5 for an array of integer
-    * 
+    *
     * @param data
     *           Array to compute its MD5
     * @return Array MD5
@@ -284,7 +290,7 @@ public final class UtilIO
 
    /**
     * Compute MD5 and SHA for a file, can be us as unique ID
-    * 
+    *
     * @param file
     *           File to read
     * @return MD5, SHA pair unique ID of the file
@@ -333,7 +339,7 @@ public final class UtilIO
 
    /**
     * Compute MD5 and SHA for a stream, can be us as unique ID
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return MD5, SHA pair unique ID of the stream
@@ -386,7 +392,7 @@ public final class UtilIO
 
    /**
     * Compute relative path for go from a file to an other
-    * 
+    *
     * @param start
     *           Start file
     * @param destination
@@ -438,7 +444,7 @@ public final class UtilIO
 
    /**
     * Compute SHA for a file
-    * 
+    *
     * @param file
     *           File to read
     * @return SHA of the file
@@ -487,7 +493,7 @@ public final class UtilIO
 
    /**
     * Compute SHA for a stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return MD5 of the stream
@@ -527,7 +533,7 @@ public final class UtilIO
 
    /**
     * Copy a file or directory. If directory, all content and sub-directory are copied
-    * 
+    *
     * @param source
     *           File or directory source
     * @param destination
@@ -567,7 +573,7 @@ public final class UtilIO
 
    /**
     * Create a directory and its parents if needs
-    * 
+    *
     * @param directory
     *           Directory to create
     * @return {@code true} if creation succeed. {@code false} if failed
@@ -594,7 +600,7 @@ public final class UtilIO
 
    /**
     * Create a file and its parent directory if need
-    * 
+    *
     * @param file
     *           File to create
     * @return {@code true} if creation succeed. {@code false} if failed
@@ -629,9 +635,37 @@ public final class UtilIO
    }
 
    /**
+    * Create a temporary directory.<br>
+    * That is to say, a new empty directory inside the temporary directory
+    *
+    * @return Created directory
+    * @throws IOException
+    *            On creation issue
+    */
+   public static File createTemporaryDirectory() throws IOException
+   {
+      int name = 0;
+      File file = new File(UtilIO.obtainTemporaryDirectory(), "temp_" + name);
+
+      while(file.exists() == true)
+      {
+         name++;
+         file = new File(UtilIO.obtainTemporaryDirectory(), "temp_" + name);
+      }
+
+      if(UtilIO.createDirectory(file) == false)
+      {
+         throw new IOException("Can't create temporary directory " + file.getAbsolutePath());
+      }
+
+      file.deleteOnExit();
+      return file;
+   }
+
+   /**
     * Create a temporary file.<br>
     * That is to say, a file inside the temporary directory
-    * 
+    *
     * @param string
     *           File name
     * @return Created file
@@ -647,13 +681,14 @@ public final class UtilIO
          throw new IOException("Can't create temporary file " + file.getAbsolutePath());
       }
 
+      file.deleteOnExit();
       return file;
    }
 
    /**
     * Delete a file or a directory.<br>
     * If it is a directory, its delete all children first
-    * 
+    *
     * @param file
     *           File/directory to delete
     * @return {@code true} if succeed. {@code false} if failed, may be some deletion have happen
@@ -707,7 +742,7 @@ public final class UtilIO
    /**
     * Create a byte array from double.<br>
     * Can be revert with {@link #byteArrayToDouble(byte[])}
-    * 
+    *
     * @param d
     *           Double to convert
     * @return Byte array created
@@ -720,7 +755,7 @@ public final class UtilIO
    /**
     * Write a base 64 String to stream as decoded binary.<br>
     * Stream not close by the method
-    * 
+    *
     * @param base64
     *           Base 64 string
     * @param outputStream
@@ -739,7 +774,7 @@ public final class UtilIO
     * Indicates if a file is a virtual link.<br>
     * A virtual link in Linux system is a way to have a reference to a file/directory as if it is in place, but the real file is
     * other place. It is a way to share the same file by several directory
-    * 
+    *
     * @param file
     *           File to test
     * @return {@code true} if it is a virtual link
@@ -766,7 +801,7 @@ public final class UtilIO
    /**
     * Create a byte array from long.<br>
     * Can be revert with {@link #byteArrayToLong(byte[])}
-    * 
+    *
     * @param l
     *           Long to convert
     * @return Byte array created
@@ -790,7 +825,7 @@ public final class UtilIO
    /**
     * Obtain a file outside of the code.<br>
     * If this class is in a jar called A.jar, and this jar is in /My/Path/A.jar then the file will be relative to /My/Path
-    * 
+    *
     * @param path
     *           Relative path
     * @return The file
@@ -802,7 +837,7 @@ public final class UtilIO
 
    /**
     * Obtain a file relative to a directory
-    * 
+    *
     * @param directory
     *           Directory reference
     * @param path
@@ -816,7 +851,7 @@ public final class UtilIO
 
    /**
     * Obtain a file relative to a directory
-    * 
+    *
     * @param directory
     *           Directory reference
     * @param path
@@ -851,7 +886,7 @@ public final class UtilIO
 
    /**
     * Obtain "home" directory
-    * 
+    *
     * @return "Home" directory
     */
    public static File obtainHomeDirectory()
@@ -884,9 +919,78 @@ public final class UtilIO
       return UtilIO.homeDirectory;
    }
 
+   public static final InetAddress obtainLocalInetAddress(final boolean onlyIPv4)
+   {
+      try
+      {
+         InetAddress inetAddress = null;
+         final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+         NetworkInterface networkInterface;
+         Enumeration<InetAddress> inetAdresses;
+         InetAddress testedInetAddress;
+
+         while(networkInterfaces.hasMoreElements() == true)
+         {
+            networkInterface = networkInterfaces.nextElement();
+
+            if((networkInterface.isUp() == false) || (networkInterface.isLoopback() == true) || (networkInterface.isVirtual() == true))
+            {
+               continue;
+            }
+
+            inetAdresses = networkInterface.getInetAddresses();
+
+            while(inetAdresses.hasMoreElements() == true)
+            {
+               testedInetAddress = inetAdresses.nextElement();
+
+               if(testedInetAddress.isLoopbackAddress() == true)
+               {
+                  continue;
+               }
+
+               if(testedInetAddress instanceof Inet4Address)
+               {
+                  if(onlyIPv4 == true)
+                  {
+                     return testedInetAddress;
+                  }
+
+                  inetAddress = testedInetAddress;
+               }
+               else if((onlyIPv4 == false) && (testedInetAddress instanceof Inet6Address))
+               {
+                  return testedInetAddress;
+               }
+            }
+         }
+
+         if(inetAddress == null)
+         {
+            return InetAddress.getLocalHost();
+         }
+
+         return inetAddress;
+      }
+      catch(final Exception exception)
+      {
+         Debug.printException(exception);
+
+         try
+         {
+            return InetAddress.getLocalHost();
+         }
+         catch(final UnknownHostException exception1)
+         {
+            Debug.printException(exception1);
+            return null;
+         }
+      }
+   }
+
    /**
     * Obtain directory outside the code
-    * 
+    *
     * @return Directory outside the code
     */
    public static File obtainOutsideDirectory()
@@ -933,7 +1037,7 @@ public final class UtilIO
 
    /**
     * Temporary directory
-    * 
+    *
     * @return Temporary directory
     */
    public static File obtainTemporaryDirectory()
@@ -983,7 +1087,7 @@ public final class UtilIO
    /**
     * Read a {@link BigInteger} from a stream.<br>
     * Previously write with {@link #writeBigInteger(BigInteger, OutputStream)}
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return {@link BigInteger} read
@@ -1003,7 +1107,7 @@ public final class UtilIO
    /**
     * Read a {@link Binarizable} inside a stream.<br>
     * The {@link Binarizable} should be previously written by {@link #writeBinarizable(Binarizable, OutputStream)}
-    * 
+    *
     * @param <B>
     *           {@link Binarizable} type
     * @param clas
@@ -1033,7 +1137,7 @@ public final class UtilIO
    /**
     * Read a {@link Binarizable} inside a stream.<br>
     * The {@link Binarizable} should be previously written by {@link #writeBinarizableNamed(Binarizable, OutputStream)}
-    * 
+    *
     * @param <B>
     *           {@link Binarizable} type
     * @param inputStream
@@ -1066,7 +1170,7 @@ public final class UtilIO
 
    /**
     * Read a byte array from stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Read array
@@ -1091,7 +1195,7 @@ public final class UtilIO
 
    /**
     * Read double from stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Read double
@@ -1105,7 +1209,7 @@ public final class UtilIO
 
    /**
     * Read a file header (First bytes of a file)
-    * 
+    *
     * @param file
     *           File to read header
     * @return Header read
@@ -1146,7 +1250,7 @@ public final class UtilIO
 
    /**
     * Read float from a stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Float read
@@ -1160,7 +1264,7 @@ public final class UtilIO
 
    /**
     * Read float[] from a stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Float array read
@@ -1187,7 +1291,7 @@ public final class UtilIO
 
    /**
     * Read an integer from stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Integer read
@@ -1199,9 +1303,27 @@ public final class UtilIO
       return (inputStream.read() << 24) | (inputStream.read() << 16) | (inputStream.read() << 8) | inputStream.read();
    }
 
+   public static int[] readIntegerArray(final InputStream inputStream) throws IOException
+   {
+      final int length = UtilIO.readInteger(inputStream);
+
+      if(length < 0)
+      {
+         return null;
+      }
+
+      final int[] array = new int[length];
+      for(int a = 0; a < length; a++)
+      {
+         array[a] = UtilIO.readInteger(inputStream);
+      }
+
+      return array;
+   }
+
    /**
     * Read long from stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Read long
@@ -1229,7 +1351,7 @@ public final class UtilIO
     * The write in array start at begin.<br>
     * It stop to read stream if stream reach its end or the array is full.<br>
     * Do same as {@link #readStream(InputStream, byte[], int, int) readStream(inputStream, array, 0, array.length)}
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @param array
@@ -1249,7 +1371,7 @@ public final class UtilIO
     * It stop to read stream if stream reach its end or the array is full<br>
     * Do same as {@link #readStream(InputStream, byte[], int, int) readStream(inputStream, array, offset, array.length -
     * offset)}
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @param array
@@ -1269,7 +1391,7 @@ public final class UtilIO
     * Read stream and fill an array.<br>
     * The write in array start at the offset specify.<br>
     * It stop to read stream if stream reach its end or the specify length is reach
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @param array
@@ -1321,7 +1443,7 @@ public final class UtilIO
 
    /**
     * Read stream from stream
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Read string
@@ -1343,7 +1465,7 @@ public final class UtilIO
    /**
     * Do a prompt in console, waiting user type something (finish by enter) in console.<br>
     * {@code null} is return in case of issue
-    * 
+    *
     * @return The user input OR {@code null} in case of issue
     */
    public static String readUserInputInConsole()
@@ -1362,7 +1484,7 @@ public final class UtilIO
 
    /**
     * Rename a file
-    * 
+    *
     * @param source
     *           File source
     * @param destination
@@ -1384,7 +1506,7 @@ public final class UtilIO
    /**
     * Try skip bytes from given stream (unread bytes).<br>
     * It stop if reach the end of stream or if manage to skip the number of byte asked
-    * 
+    *
     * @param inputStream
     *           Stream to skip some bytes
     * @param count
@@ -1438,7 +1560,7 @@ public final class UtilIO
    /**
     * Transform a binary stream to base 64 string.<br>
     * Stream not close by the method
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Base 64 string
@@ -1455,7 +1577,7 @@ public final class UtilIO
 
    /**
     * Unzip a file inside a directory
-    * 
+    *
     * @param directoryDestination
     *           Directory where unzip
     * @param zip
@@ -1494,7 +1616,7 @@ public final class UtilIO
 
    /**
     * Unzip a stream inside a directory
-    * 
+    *
     * @param directoryDestination
     *           Directory where unzip
     * @param inputStreamZip
@@ -1540,7 +1662,7 @@ public final class UtilIO
 
    /**
     * Copy a file inside an other one
-    * 
+    *
     * @param fileSource
     *           Source file
     * @param fileDestination
@@ -1605,7 +1727,7 @@ public final class UtilIO
 
    /**
     * Write a file inside a stream
-    * 
+    *
     * @param fileSource
     *           Source file
     * @param outputStream
@@ -1644,7 +1766,7 @@ public final class UtilIO
 
    /**
     * Write a stream inside a file
-    * 
+    *
     * @param inputStream
     *           Stream source
     * @param fileDestination
@@ -1696,7 +1818,7 @@ public final class UtilIO
 
    /**
     * Write a stream inside on other one
-    * 
+    *
     * @param inputStream
     *           Stream source
     * @param outputStream
@@ -1721,7 +1843,7 @@ public final class UtilIO
    /**
     * Write a {@link BigInteger} in stream.<br>
     * To read later, you can use {@link #readBigInteger(InputStream)}
-    * 
+    *
     * @param bigInteger
     *           {@link BigInteger} to write
     * @param outputStream
@@ -1740,7 +1862,7 @@ public final class UtilIO
    /**
     * Write a {@link Binarizable} inside a stream.<br>
     * To read it later, use {@link #readBinarizable(Class, InputStream)}
-    * 
+    *
     * @param binarizable
     *           {@link Binarizable} to write
     * @param outputStream
@@ -1760,7 +1882,7 @@ public final class UtilIO
    /**
     * Write a {@link Binarizable} inside a stream.<br>
     * To read it later, use {@link #readBinarizableNamed(InputStream)}
-    * 
+    *
     * @param binarizable
     *           {@link Binarizable} to write
     * @param outputStream
@@ -1777,7 +1899,7 @@ public final class UtilIO
 
    /**
     * Write a part of byte array on stream
-    * 
+    *
     * @param array
     *           Array to write
     * @param offset
@@ -1800,7 +1922,7 @@ public final class UtilIO
    /**
     * Write an array on stream.<br>
     * Same as {@link #writeByteArray(byte[], int, int, OutputStream) writeByteArray(array, 0, array.length, outputStream)}
-    * 
+    *
     * @param array
     *           Array to write
     * @param outputStream
@@ -1815,7 +1937,7 @@ public final class UtilIO
 
    /**
     * Write double in a stream
-    * 
+    *
     * @param d
     *           Double to write
     * @param outputStream
@@ -1830,7 +1952,7 @@ public final class UtilIO
 
    /**
     * Write a float in stream
-    * 
+    *
     * @param f
     *           Float to write
     * @param outputStream
@@ -1845,7 +1967,7 @@ public final class UtilIO
 
    /**
     * Write a float[] in stream
-    * 
+    *
     * @param array
     *           Float array to write
     * @param outputStream
@@ -1873,7 +1995,7 @@ public final class UtilIO
 
    /**
     * Write an integer to stream
-    * 
+    *
     * @param integer
     *           Integer to write
     * @param outputStream
@@ -1889,9 +2011,27 @@ public final class UtilIO
       outputStream.write(integer & 0xFF);
    }
 
+   public static void writeIntegerArray(final int[] array, final OutputStream outputStream) throws IOException
+   {
+      if(array == null)
+      {
+         UtilIO.writeInteger(-1, outputStream);
+
+         return;
+      }
+
+      final int length = array.length;
+      UtilIO.writeInteger(length, outputStream);
+
+      for(int a = 0; a < length; a++)
+      {
+         UtilIO.writeInteger(array[a], outputStream);
+      }
+   }
+
    /**
     * Write long in a stream
-    * 
+    *
     * @param integer
     *           Long to write
     * @param outputStream
@@ -1913,7 +2053,7 @@ public final class UtilIO
 
    /**
     * Write string to stream
-    * 
+    *
     * @param string
     *           String to write
     * @param outputStream
@@ -1930,7 +2070,7 @@ public final class UtilIO
 
    /**
     * Zip a file or directory inside a file
-    * 
+    *
     * @param source
     *           File/directory to zip
     * @param destination
@@ -1945,7 +2085,7 @@ public final class UtilIO
 
    /**
     * Zip a file or directory inside a file
-    * 
+    *
     * @param source
     *           File/directory to zip
     * @param destination
@@ -1999,7 +2139,7 @@ public final class UtilIO
 
    /**
     * Zip a file or directory inside a stream
-    * 
+    *
     * @param source
     *           File/directory to zip
     * @param outputStreamZip
@@ -2014,7 +2154,7 @@ public final class UtilIO
 
    /**
     * Zip a file or directory inside a stream
-    * 
+    *
     * @param source
     *           File/directory to zip
     * @param outputStreamZip

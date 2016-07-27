@@ -6,7 +6,7 @@ import java.util.Arrays;
 /**
  * Array of integer.<br>
  * More optimized than {@link ArrayList ArrayList<Integer>}
- * 
+ *
  * @author JHelp
  */
 public class ArrayInt
@@ -28,7 +28,7 @@ public class ArrayInt
 
    /**
     * Create a new instance of ArrayInt
-    * 
+    *
     * @param initalSize
     *           Initial capacity
     */
@@ -42,7 +42,7 @@ public class ArrayInt
 
    /**
     * Check if an index is valid
-    * 
+    *
     * @param index
     *           Index checked
     * @throws IllegalArgumentException
@@ -58,7 +58,7 @@ public class ArrayInt
 
    /**
     * Expand, if need, the capacity
-    * 
+    *
     * @param more
     *           Number of free space at least need
     */
@@ -81,7 +81,7 @@ public class ArrayInt
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @throws Throwable
     *            On issue
     * @see java.lang.Object#finalize()
@@ -98,7 +98,7 @@ public class ArrayInt
 
    /**
     * Add an integer is the array
-    * 
+    *
     * @param integer
     *           Integer to add
     */
@@ -110,6 +110,25 @@ public class ArrayInt
 
       this.array[this.size] = integer;
       this.size++;
+   }
+
+   /***
+    * Add all elements of an array
+    *
+    * @param toAdd
+    *           Array to add its elements
+    */
+   public void addAll(final ArrayInt toAdd)
+   {
+      if(toAdd == null)
+      {
+         return;
+      }
+
+      for(int i = 0; i < toAdd.size; i++)
+      {
+         this.add(toAdd.array[i]);
+      }
    }
 
    /**
@@ -124,7 +143,7 @@ public class ArrayInt
    /**
     * Indicates if an integer is in the array.<br>
     * Search is on O(n)
-    * 
+    *
     * @param integer
     *           Integer search
     * @return {@code true} if the integer is inside
@@ -137,7 +156,7 @@ public class ArrayInt
    /**
     * Indicates if an integer is in the array.<br>
     * Search is in O(LN(n)) but work only if the array is sorted
-    * 
+    *
     * @param integer
     *           Integer search
     * @return {@code true} if the integer is inside
@@ -149,7 +168,7 @@ public class ArrayInt
 
    /**
     * Create a copy of the array
-    * 
+    *
     * @return The copy
     */
    public ArrayInt createCopy()
@@ -179,7 +198,7 @@ public class ArrayInt
    /**
     * Index of an integer or -1 if integer not in the array.<br>
     * Search is on O(n)
-    * 
+    *
     * @param integer
     *           Integer search
     * @return Integer index or -1 if integer not in the array
@@ -205,7 +224,7 @@ public class ArrayInt
    /**
     * Index of an integer or -1 if integer not in the array.<br>
     * Search is in O(LN(n)) but work only if the array is sorted
-    * 
+    *
     * @param integer
     *           Integer search
     * @return Integer index or -1 if integer not in the array
@@ -270,7 +289,7 @@ public class ArrayInt
 
    /**
     * Obtain an integer from the array
-    * 
+    *
     * @param index
     *           Integer index
     * @return Integer
@@ -284,7 +303,7 @@ public class ArrayInt
 
    /**
     * Array size
-    * 
+    *
     * @return Array size
     */
    public int getSize()
@@ -294,7 +313,7 @@ public class ArrayInt
 
    /**
     * Insert an integer to a given index
-    * 
+    *
     * @param integer
     *           Integer to insert
     * @param index
@@ -326,7 +345,7 @@ public class ArrayInt
 
    /**
     * Indicates if array is empty
-    * 
+    *
     * @return {@code true} if array is empty
     */
    public boolean isEmpty()
@@ -338,7 +357,7 @@ public class ArrayInt
     * Indicates if array is sorted.<br>
     * But it does it in fast way, so if the answer is {@code true}, its sure that the array is sorted, but if {@code false}
     * indicates that sorted is unknown
-    * 
+    *
     * @return {@code true} if array is sorted. {@code false} if not sure about sorted status
     */
    public boolean isSortedFast()
@@ -350,7 +369,7 @@ public class ArrayInt
     * Indicates if array is sorted.<br>
     * It is a slower method than {@link #isSortedFast()} but the answer is accurate, that means if {@code false} is answer, you
     * are sure that the array is not sorted
-    * 
+    *
     * @return {@code true} if array is sorted. {@code false} if array not sorted
     */
    public boolean isSortedSlow()
@@ -381,7 +400,7 @@ public class ArrayInt
 
    /**
     * remove an integer
-    * 
+    *
     * @param index
     *           Index of intger to remove
     */
@@ -400,7 +419,7 @@ public class ArrayInt
 
    /**
     * Change an integer on the array
-    * 
+    *
     * @param index
     *           Index to change
     * @param integer
@@ -412,7 +431,8 @@ public class ArrayInt
 
       this.array[index] = integer;
 
-      this.sorted = (this.sorted == true) && ((index == 0) || (integer >= this.array[index - 1])) && ((index == (this.size - 1)) || (integer <= this.array[index + 1]));
+      this.sorted = (this.sorted == true) && ((index == 0) || (integer >= this.array[index - 1]))
+            && ((index == (this.size - 1)) || (integer <= this.array[index + 1]));
    }
 
    /**
@@ -462,7 +482,7 @@ public class ArrayInt
 
    /**
     * Convert in int array
-    * 
+    *
     * @return Extracted array
     */
    public int[] toArray()
@@ -479,7 +499,7 @@ public class ArrayInt
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return String representation
     * @see java.lang.Object#toString()
     */

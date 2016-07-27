@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import jhelp.util.math.UtilMath;
 import jhelp.util.text.UtilText;
 
 /**
  * Represents a mathematical function in formal format <br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 public abstract class Function
@@ -19,7 +20,7 @@ public abstract class Function
    /**
     * Simplifier of function by default.<br>
     * It does nothing, it just return the function itself
-    * 
+    *
     * @author JHelp
     */
    class DefaultSimplifier
@@ -30,7 +31,7 @@ public abstract class Function
        * <br>
        * <b>Parent documentation:</b><br>
        * {@inheritDoc}
-       * 
+       *
        * @return More "simple" function
        * @see jhelp.util.math.formal.FunctionSimplifier#simplify()
        */
@@ -51,7 +52,7 @@ public abstract class Function
                                                        {
                                                           /**
                                                            * Compare 2 functions
-                                                           * 
+                                                           *
                                                            * @param function1
                                                            *           First function
                                                            * @param function2
@@ -67,7 +68,7 @@ public abstract class Function
 
    /**
     * Add parentheses to respect the operator priority
-    * 
+    *
     * @param string
     *           String to add parentheses
     * @return String with parentheses
@@ -204,19 +205,19 @@ public abstract class Function
 
    /**
     * Indicates if a character is binary operator
-    * 
+    *
     * @param car
     *           Tested character
     * @return {@code true} if character is binary operator
     */
    private static boolean isBinaryOperator(final char car)
    {
-      return (car == '+') || (car == '-') || (car == '*') || (car == '/');
+      return (car == '+') || (car == '-') || (car == '*') || (car == '/') || (car == '^');
    }
 
    /**
     * Give the "parameter" of the string
-    * 
+    *
     * @param string
     *           String to parse
     * @return Extracted "parameter"
@@ -262,7 +263,7 @@ public abstract class Function
 
    /**
     * Indicates if several functions are equals each others
-    * 
+    *
     * @param function
     *           Function reference
     * @param functions
@@ -294,7 +295,7 @@ public abstract class Function
 
    /**
     * Create an addition of several functions
-    * 
+    *
     * @param functions
     *           Functions list
     * @return Created function
@@ -328,12 +329,13 @@ public abstract class Function
             return new Addition(new Addition(functions[0], functions[1]), new Addition(functions[2], functions[3]));
       }
 
-      return new Addition(Function.createAddition(Arrays.copyOfRange(functions, 0, length / 2)), Function.createAddition(Arrays.copyOfRange(functions, length / 2, length)));
+      return new Addition(Function.createAddition(Arrays.copyOfRange(functions, 0, length / 2)),
+            Function.createAddition(Arrays.copyOfRange(functions, length / 2, length)));
    }
 
    /**
     * Create an multiplication of several functions
-    * 
+    *
     * @param functions
     *           Functions list
     * @return Created function
@@ -367,14 +369,135 @@ public abstract class Function
             return new Multiplication(new Multiplication(functions[0], functions[1]), new Multiplication(functions[2], functions[3]));
       }
 
-      return new Multiplication(Function.createMultiplication(Arrays.copyOfRange(functions, 0, length / 2)), Function.createMultiplication(Arrays.copyOfRange(functions, length / 2, length)));
+      return new Multiplication(Function.createMultiplication(Arrays.copyOfRange(functions, 0, length / 2)),
+            Function.createMultiplication(Arrays.copyOfRange(functions, length / 2, length)));
+   }
+
+   /**
+    * Create a multiplication of same function a given number of time (like a power with integer >=0)
+    *
+    * @param function
+    *           Function to "repeat"
+    * @param time
+    *           Number of time
+    * @return Result function
+    */
+   public static Function createMultiplication(final Function function, final int time)
+   {
+      if((function == null) || (time < 0))
+      {
+         return Constant.ZERO;
+      }
+
+      switch(time)
+      {
+         case 0:
+            return Constant.ONE;
+         case 1:
+            return function;
+         case 2:
+            return new Multiplication(function, function);
+         case 3:
+            return new Multiplication(function, new Multiplication(function, function));
+         case 4:
+            return new Multiplication(new Multiplication(function, function), new Multiplication(function, function));
+         default:
+            final int midle = time >> 1;
+            return new Multiplication(Function.createMultiplication(function, midle), Function.createMultiplication(function, time - midle));
+      }
+   }
+
+   /**
+    * Create function power to an other one
+    *
+    * @param function
+    *           Function to power
+    * @param power
+    *           Power argument
+    * @return Created function
+    */
+   public static Function createPower(final Function function, final Function power)
+   {
+      if(power instanceof Constant)
+      {
+         final Constant constant = (Constant) power;
+
+         if(constant.isUndefined() == true)
+         {
+            return Constant.UNDEFINED;
+         }
+
+         if(constant.isNul() == true)
+         {
+            return Constant.ONE;
+         }
+
+         if(constant.isOne() == true)
+         {
+            return function;
+         }
+
+         if(function instanceof Constant)
+         {
+            final Constant constant2 = (Constant) function;
+
+            if(constant2.isUndefined() == true)
+            {
+               return Constant.UNDEFINED;
+            }
+
+            if(constant2.isNul() == true)
+            {
+               return Constant.ZERO;
+            }
+
+            if(constant2.isOne() == true)
+            {
+               return Constant.ONE;
+            }
+
+            return new Constant(Math.pow(constant2.obtainRealValueNumber(), constant.obtainRealValueNumber()));
+         }
+
+         if(constant.isPositive() == true)
+         {
+            final double value = constant.obtainRealValueNumber();
+            final double integer = Math.floor(value);
+
+            if((integer < 100) && (UtilMath.equals(value, integer) == true))
+            {
+               return Function.createMultiplication(function, (int) integer);
+            }
+         }
+      }
+
+      if(function instanceof Constant)
+      {
+         final Constant constant = (Constant) function;
+
+         if(constant.isUndefined() == true)
+         {
+            return Constant.UNDEFINED;
+         }
+
+         if(constant.isNul() == true)
+         {
+            return Constant.ZERO;
+         }
+
+         if(constant.isOne() == true)
+         {
+            return Constant.ONE;
+         }
+      }
+
+      return new Exponential(new Multiplication(power, new Logarithm(function)));
    }
 
    /**
     * Parse string to function.<br>
     * This function is case sensitive<br>
-    * Reserved word/symbol :
-    * <table border>
+    * Reserved word/symbol : <table border>
     * <tr>
     * <th>Symbol</th>
     * <th>Explanations</th>
@@ -419,7 +542,7 @@ public abstract class Function
     * </table>
     * Real number are treat as constants. The decimal separator is the dot (.) symbol ex: 3.21 <br>
     * Other symbols/words are treats as variable
-    * 
+    *
     * @param function
     *           String to parse
     * @return Function parsed
@@ -468,7 +591,7 @@ public abstract class Function
       }
 
       // Try to consider as binary operator
-      final BinaryOperator binairy = BinaryOperator.parseBinaryOperator(function);
+      final Function binairy = BinaryOperator.parseBinaryOperator(function);
       if(binairy != null)
       {
          return binairy;
@@ -487,7 +610,7 @@ public abstract class Function
     * Modify the constants reference <br>
     * This reference says what variable name can be replace by constant, example : PI replace by
     * 3.1415926535897932384626433832795
-    * 
+    *
     * @param references
     *           New reference
     */
@@ -511,7 +634,7 @@ public abstract class Function
 
    /**
     * Internal comparison
-    * 
+    *
     * @param function
     *           Function sure be the instance of the function
     * @return Comparison
@@ -521,7 +644,7 @@ public abstract class Function
    /**
     * Indicates if function is equals, the equality test is more simple than {@link #functionIsEquals(Function)} its use
     * internally for {@link Function#simplifyMaximum()}
-    * 
+    *
     * @param function
     *           Function to compare with
     * @return {@code true} if equals
@@ -537,7 +660,7 @@ public abstract class Function
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param function
     *           Function to compare
     * @return Comparison
@@ -595,7 +718,7 @@ public abstract class Function
 
    /**
     * Derive the function
-    * 
+    *
     * @param variable
     *           Variable for derive
     * @return Derived
@@ -607,7 +730,7 @@ public abstract class Function
 
    /**
     * Derive with several variable
-    * 
+    *
     * @param list
     *           Variable list
     * @return Derive
@@ -621,7 +744,7 @@ public abstract class Function
 
    /**
     * Derive the function
-    * 
+    *
     * @param variable
     *           Variable for derive
     * @return Derived
@@ -630,7 +753,7 @@ public abstract class Function
 
    /**
     * Derive with several variable
-    * 
+    *
     * @param list
     *           Variable list
     * @return Derive
@@ -648,7 +771,7 @@ public abstract class Function
 
    /**
     * Indicates if an object is equals to the function
-    * 
+    *
     * @param object
     *           Tested object
     * @return {@code true} if equals
@@ -679,7 +802,7 @@ public abstract class Function
 
    /**
     * Indicates if a function is equals to this function
-    * 
+    *
     * @param function
     *           Function tested
     * @return {@code true} if there sure equals. {@code false} dosen't mean not equals, but not sure about equality
@@ -688,7 +811,7 @@ public abstract class Function
 
    /**
     * Copy the function
-    * 
+    *
     * @return Copy
     */
    public abstract Function getCopy();
@@ -696,7 +819,7 @@ public abstract class Function
    /**
     * Indicates if function can see as real number, that is to say that the value of {@link #obtainRealValueNumber()} as as
     * meaning
-    * 
+    *
     * @return {@code true} if the function can see as real number
     */
    public abstract boolean isRealValueNumber();
@@ -704,7 +827,7 @@ public abstract class Function
    /**
     * Obtain the simplifier of the function.<br>
     * Override this function to provide a simplifier that is not the default one
-    * 
+    *
     * @return Simplifier link to the function
     */
    public FunctionSimplifier obtainFunctionSimplifier()
@@ -719,14 +842,14 @@ public abstract class Function
 
    /**
     * Real value of function, if the function can be represents by a real number. Else {@link Double#NaN} is return
-    * 
+    *
     * @return Variable value or {@link Double#NaN} if not define
     */
    public abstract double obtainRealValueNumber();
 
    /**
     * Real string representation
-    * 
+    *
     * @return Real string representation
     */
    public String realString()
@@ -736,7 +859,7 @@ public abstract class Function
 
    /**
     * Replace variable by constant
-    * 
+    *
     * @param variable
     *           Variable to replace
     * @param constant
@@ -750,7 +873,7 @@ public abstract class Function
 
    /**
     * Replace variable by function
-    * 
+    *
     * @param variable
     *           Variable to replace
     * @param function
@@ -764,7 +887,7 @@ public abstract class Function
 
    /**
     * Replace variable by constant
-    * 
+    *
     * @param variable
     *           Variable to replace
     * @param constant
@@ -778,7 +901,7 @@ public abstract class Function
 
    /**
     * Replace variable by function
-    * 
+    *
     * @param variable
     *           Variable to replace
     * @param function
@@ -789,7 +912,7 @@ public abstract class Function
 
    /**
     * Simplify the function
-    * 
+    *
     * @return Simplified function
     */
    public final Function simplify()
@@ -806,7 +929,7 @@ public abstract class Function
 
    /**
     * Simplify at maximum the function
-    * 
+    *
     * @return The most simple version of the function
     */
    public final Function simplifyMaximum()
@@ -844,7 +967,7 @@ public abstract class Function
 
    /**
     * Simplify at maximum the function on printing each steps
-    * 
+    *
     * @param printStream
     *           Where print the steps
     * @return The most simple version of the function
@@ -890,7 +1013,7 @@ public abstract class Function
 
    /**
     * String that represents the function
-    * 
+    *
     * @return String representation
     * @see java.lang.Object#toString()
     */
@@ -899,7 +1022,7 @@ public abstract class Function
 
    /**
     * Total derive
-    * 
+    *
     * @return Total derive
     */
    public final Function totalDerive()
@@ -909,7 +1032,7 @@ public abstract class Function
 
    /**
     * Variable list contains in this function
-    * 
+    *
     * @return Variable list contains in this function
     */
    public abstract VariableList variableList();

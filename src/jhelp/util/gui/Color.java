@@ -5,14 +5,14 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
 
 /**
  * Represents a color
- * 
+ *
  * @author JHelp
  */
 public class Color
@@ -21,11 +21,29 @@ public class Color
    /** Precision for decide if two colors are similar */
    static int precision = 0;
 
+   /**
+    * Compute more bright/dark color
+    *
+    * @param color
+    *           Color to bright/dark
+    * @param factor
+    *           Bright factor (<1 : more dark, >1 more bright)
+    * @return More bright/dark color
+    */
    public static Color brigthness(final Color color, final double factor)
    {
       return new Color(Color.brigthness(color.color, factor));
    }
 
+   /**
+    * Compute more bright/dark color
+    *
+    * @param color
+    *           Color to bright/dark
+    * @param factor
+    *           Bright factor (<1 : more dark, >1 more bright)
+    * @return More bright/dark color
+    */
    public static int brigthness(final int color, final double factor)
    {
       final int alpha = color & 0xFF000000;
@@ -40,7 +58,7 @@ public class Color
 
    /**
     * Indicates if 2 colors are similar
-    * 
+    *
     * @param red
     *           Fist color red
     * @param green
@@ -61,7 +79,7 @@ public class Color
 
    /**
     * Indicates if 2 colors are similar
-    * 
+    *
     * @param red1
     *           First color red
     * @param green1
@@ -100,7 +118,7 @@ public class Color
 
    /**
     * Create a new instance of Color
-    * 
+    *
     * @param color
     *           The color
     */
@@ -115,7 +133,7 @@ public class Color
 
    /**
     * Create a new instance of Color
-    * 
+    *
     * @param alpha
     *           Alpha
     * @param red
@@ -135,6 +153,13 @@ public class Color
       this.color = (alpha << 24) | (red << 16) | (green << 8) | blue;
    }
 
+   /**
+    * Compute more bright/dark color
+    *
+    * @param factor
+    *           Bright factor (<1 : more dark, >1 more bright)
+    * @return More bright/dark color
+    */
    public Color brigthness(final double factor)
    {
       return Color.brigthness(this, factor);
@@ -145,7 +170,7 @@ public class Color
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param color
     *           Color to compare with
     * @return Comparison result
@@ -180,7 +205,7 @@ public class Color
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param object
     *           Object to test
     * @return {@code true} in equality
@@ -204,7 +229,7 @@ public class Color
 
    /**
     * Indicates if a color is similar to this color
-    * 
+    *
     * @param color
     *           Color to compare
     * @param precision

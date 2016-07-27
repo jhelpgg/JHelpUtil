@@ -19,7 +19,7 @@ import jhelp.util.list.Pair;
  * --></code> <br>
  * You will obtain <br>
  * <code>Hello<br>world<br>!<br>This is a phrase</code>
- * 
+ *
  * @author JHelp
  */
 public class StringExtractor
@@ -52,7 +52,7 @@ public class StringExtractor
     * Create a new instance of StringExtractor with default separators (see {@link UtilText#DEFAULT_SEPARATORS}), string
     * delimiters (see {@link UtilText#DEFAULT_STRING_LIMITERS}) and escape characters (see
     * {@link UtilText#DEFAULT_ESCAPE_CHARACTERS}). And no return of separators
-    * 
+    *
     * @param string
     *           String to parse
     */
@@ -65,7 +65,7 @@ public class StringExtractor
     * Create a new instance of StringExtractor with default separators (see {@link UtilText#DEFAULT_SEPARATORS}), string
     * delimiters (see {@link UtilText#DEFAULT_STRING_LIMITERS}) and escape characters (see
     * {@link UtilText#DEFAULT_ESCAPE_CHARACTERS})
-    * 
+    *
     * @param string
     *           String to parse
     * @param returnSeparators
@@ -78,7 +78,7 @@ public class StringExtractor
 
    /**
     * Create a new instance of StringExtractor with no return separators
-    * 
+    *
     * @param string
     *           String to parse
     * @param separators
@@ -95,7 +95,7 @@ public class StringExtractor
 
    /**
     * Create a new instance of StringExtractor
-    * 
+    *
     * @param string
     *           String to parse
     * @param separators
@@ -126,7 +126,7 @@ public class StringExtractor
 
    /**
     * Add a open close pairs, to consider like "normal" character something between an open and a close character
-    * 
+    *
     * @param open
     *           Open character
     * @param close
@@ -152,7 +152,7 @@ public class StringExtractor
 
    /**
     * Indicates if empty strings may be return
-    * 
+    *
     * @return Indicates if empty strings may be return
     */
    public boolean isCanReturnEmptyString()
@@ -163,7 +163,7 @@ public class StringExtractor
    /**
     * Indicates if have to stop parsing when meet "string" to treat them separately {@code true} OR treat them as a part of
     * something : {@code false}
-    * 
+    *
     * @return {@code true} if have to stop parsing when meet "string" to treat them separately
     */
    public boolean isStopAtString()
@@ -175,7 +175,7 @@ public class StringExtractor
     * Next extracted string.<br>
     * It can be a separator if you ask for return them.<br>
     * It returns {@code null} if no more string to extract
-    * 
+    *
     * @return Next part or {@code null} if no more to extract
     */
    public String next()
@@ -221,7 +221,11 @@ public class StringExtractor
 
          if(openClose == null)
          {
-            if(insideString == true)
+            if(Utilities.contains(character, this.escapeCharacters) == true)
+            {
+               this.index++;
+            }
+            else if(insideString == true)
             {
                if(currentStringLimiter == character)
                {
@@ -234,10 +238,6 @@ public class StringExtractor
                      break;
                   }
                }
-            }
-            else if(Utilities.contains(character, this.escapeCharacters) == true)
-            {
-               this.index++;
             }
             else if(Utilities.contains(character, this.stringLimiters) == true)
             {
@@ -300,7 +300,7 @@ public class StringExtractor
 
    /**
     * Change the possibility to return empty string
-    * 
+    *
     * @param canReturnEmptyString
     *           Use {@code true} to allow empty strings, {@code false} to forbid them
     */
@@ -312,7 +312,7 @@ public class StringExtractor
    /**
     * Change the way to treat "string" : stop parsing when meet "string" to treat them separately {@code true} OR treat them as
     * a part of something : {@code false}
-    * 
+    *
     * @param stopAtString
     *           New way to treat "string"
     */

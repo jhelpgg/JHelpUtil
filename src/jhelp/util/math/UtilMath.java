@@ -1,6 +1,7 @@
 package jhelp.util.math;
 
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -9,7 +10,7 @@ import jhelp.util.list.ArrayInt;
 /**
  * Utilities for math.<br>
  * It complete the {@link Math} class
- * 
+ *
  * @author JHelp
  */
 public final class UtilMath
@@ -20,12 +21,13 @@ public final class UtilMath
    public static final BigInteger BIG_TWO             = UtilMath.createBigInteger(2);
    /** One centimeter in pica */
    public static double           CENTIMETER_IN_PICA  = 6.0 / 2.54;
-   /** One centimeter in ppoint */
+   /** One centimeter in point */
    public static double           CENTIMETER_IN_POINT = 72.0 / 2.54;
-   /** Epsilon */
+   /** Epsilon precision for doubles */
    public static final double     EPSILON             = UtilMath.max(Double.MIN_NORMAL, Math.abs(Math.E - Math.exp(1)), Math.abs(Math.PI - Math.acos(-1)));
+   /** Epsilon precision for floats */
    public static final float      EPSILON_FLOAT       = UtilMath.max(Float.MIN_NORMAL, Math.abs((float) Math.E - (float) Math.exp(1)),
-                                                            Math.abs((float) Math.PI - (float) Math.acos(-1)));
+         Math.abs((float) Math.PI - (float) Math.acos(-1)));
    /** One grade in degree */
    public static double           GRADE_IN_DEGREE     = 0.9;
    /** One grade in radian */
@@ -53,7 +55,7 @@ public final class UtilMath
 
    /**
     * Compute the Bernouilli value
-    * 
+    *
     * @param n
     *           Number of elements
     * @param m
@@ -69,7 +71,7 @@ public final class UtilMath
 
    /**
     * Convert big integer to big decimal
-    * 
+    *
     * @param integer
     *           Big integer to convert
     * @return Converted big decimal
@@ -81,31 +83,31 @@ public final class UtilMath
 
    /**
     * Compute the combination of N elements in M
-    * 
+    *
     * <pre>
     *               m!
     * C(n, m) = -------------
     *            n! * (m-n)!
     * </pre>
-    * 
+    *
     * The issue of ! is that becomes big fast, and if we apply the formula like that, we will quickly goes over int range and
     * result will become very random<br>
     * To solve this issue and have more big value we rewrite the formula (Here we consider <b>m&gt;n</b>, <b>n&gt;1</b> and
     * <b>m-n&gt;1</b>, other cases are easy to treat first)
-    * 
+    *
     * <pre>
     *            m(m-1)..(n+1)n(n-1)...2            m(m-1)...(n+1)
     * C(n, m) = ------------------------------- = ------------------
     *            n(n-1)...1 * (m-n)(m-n-1)...2     (m-n)(m-n-1)...2
     * </pre>
-    * 
+    *
     * Write like that less chance to over load int, but we can do better. <br>
     * For example in <b>(m-n)(m-n-1)...2</b> their 2, we are sure their a value in <b>m(m-1)...(n+1)</b> can be divide by
     * <b>2</b>, so if we divide by <b>2</b> this value before do multiplication we less the chance to overload int.<br>
     * This implementation is based on this idea, we first try simplify at maximum <b>m(m-1)...(n+1)</b> and
     * <b>(m-n)(m-n-1)...2</b> before doing multiplications to reduce the chance of out range int<br>
     * See inside code and inside comments to have more detail of algorithm
-    * 
+    *
     * @param n
     *           Number of elements
     * @param m
@@ -130,51 +132,51 @@ public final class UtilMath
 
       /**
        * Remember we want reduce
-       * 
+       *
        * <pre>
        *             m(m-1)...(n+1)
        * C(n, m) =  ------------------
        *            (m-n)(m-n-1)...2
        * </pre>
-       * 
+       *
        * We note:
-       * 
+       *
        * <pre>
        *   min = Math.min(n, m-n)
        *   max = Math.max(n, m-n)
        * </pre>
-       * 
+       *
        * Consider the 2 possibles situation :<br>
        * <br>
        * FIRST CASE : n==min AND m-n==max, so :
-       * 
+       *
        * <pre>
        *             m(m-1)...(min+1)
        * C(n, m) =  ------------------
        *             max(max-1)...2
        * </pre>
-       * 
+       *
        * But by nature min <= max so :
-       * 
+       *
        * <pre>
        *             m(m-1)...(max+1)max(max-1)...(min+1)    m(m-1)...(max+1)
        * C(n, m) =  -------------------------------------- =------------------
        *             max(max-1)...(min+1)min(min-1)...2       min(min-1)...2
        * </pre>
-       * 
+       *
        * <br>
        * SECOND CASE : n==max AND m-n==min, so
-       * 
+       *
        * <pre>
        *             m(m-1)...(max+1)
        * C(n, m) =  ------------------
        *             min(min-1)...2
        * </pre>
-       * 
+       *
        * <br>
        * CONCLUSION : <br>
        * We can already reduce the formula to :
-       * 
+       *
        * <pre>
        *             m(m-1)...(max+1)
        * C(n, m) =  ------------------
@@ -245,8 +247,8 @@ public final class UtilMath
       // For every p inside {2, 3, ..., min} we are sure to find at least one element in {(max+1), ..., (max+min)} that it can
       // divide
       // q divide p if q=rp (r in N)
-      // max = ap+b (a,b in N, a>=0, b<p) => max + (p-b) in {(max+1), ..., (max+min)} AND max + (p-b) = ap+b+p-b = (a+1)p so
-      // divide p
+      // max = ap+b (a,b in N, a ≥ 0, 0 ≤ b < p) => max + (p-b) in {(max+1), ..., (max+min)} AND max + (p-b) = ap+b+p-b = (a+1)p
+      // so max + (p-b) divide p, so it exists at least one element in {(max+1), ..., (max+min)} that can be divide by p
 
       for(int i = 0; i < size; i++)
       {
@@ -258,7 +260,7 @@ public final class UtilMath
 
    /**
     * Convert centimeter to inch
-    * 
+    *
     * @param centimeter
     *           Centimeter to convert
     * @return Converted inch
@@ -270,7 +272,7 @@ public final class UtilMath
 
    /**
     * Convert centimeter to millimeter
-    * 
+    *
     * @param centimeter
     *           Centimeter to convert
     * @return Converted millimeter
@@ -282,7 +284,7 @@ public final class UtilMath
 
    /**
     * Convert centimeter to pica
-    * 
+    *
     * @param centimeter
     *           Centimeter to convert
     * @return Converted pica
@@ -294,7 +296,7 @@ public final class UtilMath
 
    /**
     * Convert centimeter to point
-    * 
+    *
     * @param centimeter
     *           Centimeter to convert
     * @return Converted point
@@ -306,7 +308,7 @@ public final class UtilMath
 
    /**
     * Compute intersection area between two rectangles
-    * 
+    *
     * @param rectangle1
     *           First rectangle
     * @param rectangle2
@@ -348,7 +350,7 @@ public final class UtilMath
 
    /**
     * Create big integer from an integer
-    * 
+    *
     * @param value
     *           Integer base
     * @return Big integer created
@@ -360,7 +362,7 @@ public final class UtilMath
 
    /**
     * Create big integer from an integer
-    * 
+    *
     * @param value
     *           Integer base
     * @return Big integer created
@@ -372,7 +374,7 @@ public final class UtilMath
 
    /**
     * Convert degree to grade
-    * 
+    *
     * @param degree
     *           Degree to convert
     * @return Converted grade
@@ -384,7 +386,7 @@ public final class UtilMath
 
    /**
     * Convert degree to radian
-    * 
+    *
     * @param degree
     *           Degree to convert
     * @return Converted radian
@@ -396,7 +398,7 @@ public final class UtilMath
 
    /**
     * Indicates if 2 double are equal
-    * 
+    *
     * @param real1
     *           First double
     * @param real2
@@ -409,8 +411,22 @@ public final class UtilMath
    }
 
    /**
+    * Indicates if 2 floats are equals at epsilon precision
+    *
+    * @param real1
+    *           First float
+    * @param real2
+    *           Second float
+    * @return {@code true} if equals
+    */
+   public static boolean equals(final float real1, final float real2)
+   {
+      return Math.abs(real1 - real2) <= UtilMath.EPSILON_FLOAT;
+   }
+
+   /**
     * Compute the factorial of an integer
-    * 
+    *
     * @param integer
     *           Integer to have is factorial
     * @return integer!
@@ -443,7 +459,7 @@ public final class UtilMath
 
    /**
     * Convert grade to degree
-    * 
+    *
     * @param grade
     *           Grade to convert
     * @return Converted degree
@@ -455,7 +471,7 @@ public final class UtilMath
 
    /**
     * Convert grade to radian
-    * 
+    *
     * @param grade
     *           Grade to convert
     * @return Converted radian
@@ -468,7 +484,7 @@ public final class UtilMath
    /**
     * Compute the Greater Common Divisor of two integers.<br>
     * If both integers are 0, 0 is return
-    * 
+    *
     * @param integer1
     *           First integer
     * @param integer2
@@ -499,7 +515,7 @@ public final class UtilMath
    /**
     * Compute the Greater Common Divisor of two integers.<br>
     * If both integers are 0, 0 is return
-    * 
+    *
     * @param integer1
     *           First integer
     * @param integer2
@@ -529,7 +545,7 @@ public final class UtilMath
 
    /**
     * Convert inch to centimeter
-    * 
+    *
     * @param inch
     *           Inch to convert
     * @return Converted centimeter
@@ -541,7 +557,7 @@ public final class UtilMath
 
    /**
     * Convert inch to millimeter
-    * 
+    *
     * @param inch
     *           Inch to convert
     * @return Converted millimeter
@@ -553,7 +569,7 @@ public final class UtilMath
 
    /**
     * Convert inch to pica
-    * 
+    *
     * @param inch
     *           Inch to convert
     * @return Converted pica
@@ -565,7 +581,7 @@ public final class UtilMath
 
    /**
     * Convert inch to point
-    * 
+    *
     * @param inch
     *           Inch to convert
     * @return Converted point
@@ -581,7 +597,7 @@ public final class UtilMath
     * f(0)=0<br>
     * f(1)=1<br>
     * f is strictly increase
-    * 
+    *
     * @param t
     *           Value to interpolate in [0, 1]
     * @return Interpolated result in [0, 1]
@@ -597,7 +613,7 @@ public final class UtilMath
     * f(0)=0<br>
     * f(1)=1<br>
     * f is strictly increase
-    * 
+    *
     * @param t
     *           Value to interpolate in [0, 1]
     * @return Interpolated result in [0, 1]
@@ -613,7 +629,7 @@ public final class UtilMath
     * f(0)=0<br>
     * f(1)=1<br>
     * f is strictly increase
-    * 
+    *
     * @param t
     *           Value to interpolate in [0, 1]
     * @return Interpolated result in [0, 1]
@@ -624,8 +640,48 @@ public final class UtilMath
    }
 
    /**
+    * Indicates if given polygon is convex
+    *
+    * @param points
+    *           Polygon points
+    * @return {@code true} if given polygon is convex
+    * @throws IllegalArgumentException
+    *            If polygon have less than 3 points
+    * @throws NullPointerException
+    *            If given polygon is null or one of its point is null
+    */
+   public static boolean isConvex(final Point2D... points)
+   {
+      final int length = points.length;
+
+      if(length < 3)
+      {
+         throw new IllegalArgumentException("A polygon need at least 3 points");
+      }
+
+      double vectorialZ = 0;
+      double vz;
+
+      for(int i = 0; i < length; i++)
+      {
+         vz = UtilMath.vectorialZ(points[i], points[(i + 1) % length], points[(i + 2) % length]);
+
+         if(UtilMath.isNul(vectorialZ) == true)
+         {
+            vectorialZ = vz;
+         }
+         else if((UtilMath.isNul(vz) == false) && (UtilMath.sign(vz) != UtilMath.sign(vectorialZ)))
+         {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+   /**
     * Indicates if a double is zero
-    * 
+    *
     * @param real
     *           Double to test
     * @return {@code true} if zero
@@ -635,6 +691,13 @@ public final class UtilMath
       return Math.abs(real) <= UtilMath.EPSILON;
    }
 
+   /**
+    * Indicates if given float is null
+    *
+    * @param real
+    *           Float to test
+    * @return {@code true} if given float is null
+    */
    public static boolean isNul(final float real)
    {
       return Math.abs(real) <= UtilMath.EPSILON_FLOAT;
@@ -645,7 +708,7 @@ public final class UtilMath
     * If the integer is between given bounds, the integer is returned.<br>
     * If the integer is lower the minimum of the given bounds, the minimum is returned.<br>
     * If the integer is upper the maximum of the given bounds, the maximum is returned.
-    * 
+    *
     * @param integer
     *           Integer to limit
     * @param bound1
@@ -666,7 +729,7 @@ public final class UtilMath
     * If the integer is between given bounds, the integer is returned.<br>
     * If the integer is lower the minimum of the given bounds, the minimum is returned.<br>
     * If the integer is upper the maximum of the given bounds, the maximum is returned.
-    * 
+    *
     * @param integer
     *           Integer to limit
     * @param bound1
@@ -684,7 +747,7 @@ public final class UtilMath
 
    /**
     * Return the given integer, if the integer is in [0, 255]. If integer<0, we return 0, if integer>255, we return 255
-    * 
+    *
     * @param integer
     *           Integer to limit in [0, 255]
     * @return Limited integer
@@ -696,7 +759,7 @@ public final class UtilMath
 
    /**
     * Compute logarithm base 2 of a number
-    * 
+    *
     * @param real
     *           Number to have is logarithm base 2
     * @return Logarithm base 2 of the number
@@ -708,7 +771,7 @@ public final class UtilMath
 
    /**
     * Compute logarithm base 2 of a number
-    * 
+    *
     * @param integer
     *           Number to have is logarithm base 2
     * @return Logarithm base 2 of the number
@@ -720,7 +783,7 @@ public final class UtilMath
 
    /**
     * Compute logarithm base 2 of a number
-    * 
+    *
     * @param integer
     *           Number to have is logarithm base 2
     * @return Logarithm base 2 of the number
@@ -733,7 +796,7 @@ public final class UtilMath
    /**
     * Compute the Lower Common Multiple of two integers.<br>
     * If both integers are 0, 0 is return
-    * 
+    *
     * @param integer1
     *           First integer
     * @param integer2
@@ -755,7 +818,7 @@ public final class UtilMath
    /**
     * Compute the Lower Common Multiple of two integers.<br>
     * If both integers are 0, 0 is return
-    * 
+    *
     * @param integer1
     *           First integer
     * @param integer2
@@ -776,7 +839,7 @@ public final class UtilMath
 
    /**
     * Maximum of several double
-    * 
+    *
     * @param doubles
     *           Doubles to have the maximum
     * @return Maximum of doubles
@@ -795,6 +858,13 @@ public final class UtilMath
       return max;
    }
 
+   /**
+    * Obtain the maximum of several floats
+    *
+    * @param floats
+    *           Floats to have the maximum
+    * @return The maximum
+    */
    public static float max(final float... floats)
    {
       float max = floats[0];
@@ -811,7 +881,7 @@ public final class UtilMath
 
    /**
     * Maximum of several integers
-    * 
+    *
     * @param integers
     *           Integer to have the maximum
     * @return Maximum of integers
@@ -832,7 +902,7 @@ public final class UtilMath
 
    /**
     * Convert millimeter to centimeter
-    * 
+    *
     * @param millimeter
     *           Millimeter to convert
     * @return Converted centimeter
@@ -844,7 +914,7 @@ public final class UtilMath
 
    /**
     * Convert millimeter to inch
-    * 
+    *
     * @param millimeter
     *           Millimeter to convert
     * @return Converted inch
@@ -856,7 +926,7 @@ public final class UtilMath
 
    /**
     * Convert millimeter to pica
-    * 
+    *
     * @param millimeter
     *           Millimeter to convert
     * @return Converted pica
@@ -868,7 +938,7 @@ public final class UtilMath
 
    /**
     * Convert millimeter to point
-    * 
+    *
     * @param millimeter
     *           Millimeter to convert
     * @return Converted point
@@ -880,7 +950,7 @@ public final class UtilMath
 
    /**
     * Minimum of several double
-    * 
+    *
     * @param doubles
     *           Doubles to have the minimum
     * @return Minimum of doubles
@@ -901,7 +971,7 @@ public final class UtilMath
 
    /**
     * Minimum of several integers
-    * 
+    *
     * @param integers
     *           Integer to have the minimum
     * @return Minimum of integers
@@ -922,7 +992,7 @@ public final class UtilMath
 
    /**
     * Compute the modulo of a real
-    * 
+    *
     * @param real
     *           Real to modulate
     * @param modulo
@@ -934,6 +1004,15 @@ public final class UtilMath
       return UtilMath.moduloInterval(real, 0, modulo);
    }
 
+   /**
+    * Compute the modulo of a real
+    *
+    * @param real
+    *           Real to modulate
+    * @param modulo
+    *           Modulo to use
+    * @return Result
+    */
    public static float modulo(final float real, final float modulo)
    {
       return UtilMath.moduloInterval(real, 0, modulo);
@@ -942,7 +1021,7 @@ public final class UtilMath
    /**
     * Mathematical modulo.<br>
     * For computer -1 modulo 2 is -1, but in Mathematic -1[2]=1 (-1[2] : -1 modulo 2)
-    * 
+    *
     * @param integer
     *           Integer to modulate
     * @param modulo
@@ -964,7 +1043,7 @@ public final class UtilMath
    /**
     * Mathematical modulo.<br>
     * For computer -1 modulo 2 is -1, but in Mathematic -1[2]=1 (-1[2] : -1 modulo 2)
-    * 
+    *
     * @param integer
     *           Integer to modulate
     * @param modulo
@@ -985,7 +1064,7 @@ public final class UtilMath
 
    /**
     * Modulate a real inside an interval
-    * 
+    *
     * @param real
     *           Real to modulate
     * @param min
@@ -1020,6 +1099,17 @@ public final class UtilMath
       return (space * (real - Math.floor(real))) + min;
    }
 
+   /**
+    * Modulate a real inside an interval
+    *
+    * @param real
+    *           Real to modulate
+    * @param min
+    *           Minimum of interval
+    * @param max
+    *           Maximum of interval
+    * @return Modulated value
+    */
    public static float moduloInterval(float real, float min, float max)
    {
       if(min > max)
@@ -1048,7 +1138,7 @@ public final class UtilMath
 
    /**
     * Compute the cubic interpolation
-    * 
+    *
     * @param cp
     *           Start value
     * @param p1
@@ -1069,7 +1159,7 @@ public final class UtilMath
 
    /**
     * Compute several cubic interpolation
-    * 
+    *
     * @param cp
     *           Start value
     * @param p1
@@ -1111,7 +1201,7 @@ public final class UtilMath
 
    /**
     * Convert pica to centimeter
-    * 
+    *
     * @param pica
     *           Pica to convert
     * @return Converted centimeter
@@ -1123,7 +1213,7 @@ public final class UtilMath
 
    /**
     * Convert pica to inch
-    * 
+    *
     * @param pica
     *           Pica to convert
     * @return Converted inch
@@ -1135,7 +1225,7 @@ public final class UtilMath
 
    /**
     * Convert pica to millimeter
-    * 
+    *
     * @param pica
     *           Pica to convert
     * @return Converted millimeter
@@ -1147,7 +1237,7 @@ public final class UtilMath
 
    /**
     * Convert pica to point
-    * 
+    *
     * @param pica
     *           Pica to convert
     * @return Converted point
@@ -1159,7 +1249,7 @@ public final class UtilMath
 
    /**
     * Convert point to centimeter
-    * 
+    *
     * @param point
     *           Point to convert
     * @return Converted centimeter
@@ -1171,7 +1261,7 @@ public final class UtilMath
 
    /**
     * Convert point to inch
-    * 
+    *
     * @param point
     *           Point to convert
     * @return Converted inch
@@ -1183,7 +1273,7 @@ public final class UtilMath
 
    /**
     * Convert point to millimeter
-    * 
+    *
     * @param point
     *           Point to convert
     * @return Converted millimeter
@@ -1195,7 +1285,7 @@ public final class UtilMath
 
    /**
     * Convert point to point
-    * 
+    *
     * @param point
     *           Point to convert
     * @return Converted point
@@ -1208,7 +1298,7 @@ public final class UtilMath
    /**
     * Power of integer, more fast than {@link Math#pow(double, double)} for some case.<br>
     * integer<sup>pow</sup>
-    * 
+    *
     * @param integer
     *           Integer to power of
     * @param pow
@@ -1254,7 +1344,7 @@ public final class UtilMath
 
    /**
     * Compute the quadric interpolation
-    * 
+    *
     * @param cp
     *           Start value
     * @param p1
@@ -1273,7 +1363,7 @@ public final class UtilMath
 
    /**
     * Compute several quadric interpolation
-    * 
+    *
     * @param cp
     *           Start value
     * @param p1
@@ -1313,7 +1403,7 @@ public final class UtilMath
 
    /**
     * Convert radian to degree
-    * 
+    *
     * @param radian
     *           Radian to convert
     * @return Converted degree
@@ -1325,7 +1415,7 @@ public final class UtilMath
 
    /**
     * Convert radian to grade
-    * 
+    *
     * @param radian
     *           Radian to convert
     * @return Converted grade
@@ -1356,7 +1446,7 @@ public final class UtilMath
     * <td><b><center>1</center></b></td>
     * </tr>
     * </table>
-    * 
+    *
     * @param real
     *           Double to have its sign
     * @return Double sign (-1, 0 or 1)
@@ -1376,6 +1466,32 @@ public final class UtilMath
       return 1;
    }
 
+   /**
+    * Sign of a float.<br>
+    * The answer is like follow table:
+    * <table border=1>
+    * <tr>
+    * <td><b><center>Float is</center></b></td>
+    * <td><b><center>Then return</center></b></td>
+    * </tr>
+    * <tr>
+    * <td><b><center>&lt; 0</center></b></td>
+    * <td><b><center>-1</center></b></td>
+    * </tr>
+    * <tr>
+    * <td><b><center>= 0</center></b></td>
+    * <td><b><center>0</center></b></td>
+    * </tr>
+    * <tr>
+    * <td><b><center>&gt; 0</center></b></td>
+    * <td><b><center>1</center></b></td>
+    * </tr>
+    * </table>
+    *
+    * @param real
+    *           Float to have its sign
+    * @return Float sign (-1, 0 or 1)
+    */
    public static int sign(final float real)
    {
       if(UtilMath.isNul(real) == true)
@@ -1408,7 +1524,7 @@ public final class UtilMath
     * <td>If integer is >0</td>
     * </tr>
     * </table>
-    * 
+    *
     * @param integer
     *           Integer to have sign
     * @return Integer sign
@@ -1449,7 +1565,7 @@ public final class UtilMath
     * <td><b><center>1</center></b></td>
     * </tr>
     * </table>
-    * 
+    *
     * @param integer
     *           Integer to have its sign
     * @return Integer sign (-1, 0 or 1)
@@ -1469,7 +1585,7 @@ public final class UtilMath
 
    /**
     * Square of a number
-    * 
+    *
     * @param real
     *           Number to square
     * @return Square result
@@ -1481,7 +1597,7 @@ public final class UtilMath
 
    /**
     * Square of a number
-    * 
+    *
     * @param integer
     *           Number to square
     * @return Square result
@@ -1489,6 +1605,26 @@ public final class UtilMath
    public static int square(final int integer)
    {
       return integer * integer;
+   }
+
+   /**
+    * Compute the Z part of vectorial product of 2 vectors with a common point
+    *
+    * @param point1
+    *           Start of first vector
+    * @param point2
+    *           End of first vector/Start of second vector
+    * @param point3
+    *           End of second vector
+    * @return Z part of vectorial product
+    */
+   public static double vectorialZ(final Point2D point1, final Point2D point2, final Point2D point3)
+   {
+      final double vx1 = point2.getX() - point1.getX();
+      final double vy1 = point2.getY() - point1.getY();
+      final double vx2 = point3.getX() - point2.getX();
+      final double vy2 = point3.getY() - point2.getY();
+      return (vx1 * vy2) - (vy1 * vx2);
    }
 
    /**

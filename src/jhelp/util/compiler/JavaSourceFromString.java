@@ -15,7 +15,7 @@ import java.net.URI;
 import javax.tools.SimpleJavaFileObject;
 
 /**
- * Form Sun Javadoc of {@link javax.tools#JavaCompiler} : <br>
+ * From Sun Javadoc of {@link javax.tools#JavaCompiler} : <br>
  * A file object used to represent source coming from a string. <br>
  * <br>
  * Last modification : 24 nov. 2009<br>

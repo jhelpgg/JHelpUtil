@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 
 import jhelp.util.debug.Debug;
+import jhelp.util.debug.DebugLevel;
 import jhelp.util.gui.JHelpImage;
 import jhelp.util.gui.UtilGUI;
 import jhelp.util.gui.dynamic.AnimationPosition;
@@ -16,6 +17,7 @@ import jhelp.util.gui.dynamic.Position;
 import jhelp.util.gui.dynamic.SinusInterpolation;
 import jhelp.util.gui.dynamic.font.AnimationFontGif;
 import jhelp.util.gui.dynamic.font.FontGif;
+import jhelp.util.math.random.JHelpRandom;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 
 public class SampleDynamicAnimation
@@ -33,7 +35,8 @@ public class SampleDynamicAnimation
          UtilGUI.initializeGUI();
          final JHelpImage flag = JHelpImage.loadImageThumb(SampleDynamicAnimation.class.getResourceAsStream("001-Fog01.png"), 512, 256);
          final JHelpImage flag2 = JHelpImage.loadImageThumb(SampleDynamicAnimation.class.getResourceAsStream("floor068.jpg"), 512, 256);
-         final ImageTransition imageTransition = new ImageTransition(JHelpDynamicImage.FPS * SampleDynamicAnimation.TIME_CHANGE_IMAGE, flag, flag2, Integer.MAX_VALUE, true);
+         final ImageTransition imageTransition = new ImageTransition(JHelpDynamicImage.FPS * SampleDynamicAnimation.TIME_CHANGE_IMAGE, flag, flag2,
+               Integer.MAX_VALUE, true);
          final FlagAnimation flagAnimation = new FlagAnimation(0, 128, imageTransition.getInterpolated(), 2, 10, JHelpDynamicImage.FPS / 2f);
          final AnimationPosition animationPosition = new AnimationPosition(flagAnimation, Integer.MAX_VALUE, SinusInterpolation.SINUS_INTERPOLATION);
          animationPosition.addFrame(0, new Position(0, 128));
@@ -53,10 +56,16 @@ public class SampleDynamicAnimation
          dynamicImage.playAnimation(flagAnimation);
          dynamicImage.playAnimation(animationPosition);
 
-         final FontGif fontGif = new FontGif("snow1");
-         final AnimationFontGif animationFontGif = new AnimationFontGif(0, 98, "ABCDFEGHIJKLMNOPQRSTUVWXYZ ?\nabcdfeghijklmnopqrstuvwxyz !\n1234567890", fontGif);
+         final FontGif fontGif = new FontGif(JHelpRandom.random(FontGif.FONT_GIF_NAMES));
+         final AnimationFontGif animationFontGif = new AnimationFontGif(0, 98, "ABCDFEGHIJKLMNOPQRSTUVWXYZ ?\nabcdfeghijklmnopqrstuvwxyz !\n1234567890",
+               fontGif);
          dynamicImage.playAnimation(animationFontGif);
          dynamicImage.playAnimation(imageTransition);
+
+         for(final String name : FontGif.FONT_GIF_NAMES)
+         {
+            Debug.println(DebugLevel.INFORMATION, name);
+         }
       }
       catch(final Exception exception)
       {

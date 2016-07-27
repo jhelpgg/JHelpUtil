@@ -1,0 +1,17 @@
+<Texts>
+	<Text key="white">White</Text>
+	<Text key="black">Black</Text>
+	<Text key="blue">Blue</Text>
+	<Text key="green">Green</Text>
+	<Text key="red">Red</Text>
+	<Text key="yellow">Yellow</Text>
+	<Text key="cyan">Cyan</Text>
+	<Text key="pink">Pink</Text>
+	<Text key="magenta">Magenta</Text>
+	<Text key="brown">Brown</Text>
+	<Text key="orange">Orange</Text>
+	<Text key="grey">Grey</Text>
+
+	<Text key="dark">Dark</Text>
+	<Text key="light">Light</Text>
+</Texts>
