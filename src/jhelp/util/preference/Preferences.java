@@ -1,3 +1,13 @@
+/**
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ *
+ * @author JHelp
+ */
 package jhelp.util.preference;
 
 import java.io.File;
@@ -14,14 +24,14 @@ import jhelp.util.list.Pair;
  * A preference have a name, type and value.<br>
  * Actual preferences type are describe in {@link PreferenceType}<br>
  * The preferences file may not exists on first use, it will be created automatically when save is need
- * 
+ *
  * @author JHelp
  */
 public class Preferences
 {
    /**
     * Parse a serialized value to the real value depends on {@link PreferenceType}
-    * 
+    *
     * @param serializedValue
     *           Serialized value
     * @param preferenceType
@@ -63,7 +73,7 @@ public class Preferences
 
    /**
     * Serialize a value depends on {@link PreferenceType}
-    * 
+    *
     * @param value
     *           Value to serialize
     * @param preferenceType
@@ -104,7 +114,7 @@ public class Preferences
 
    /**
     * Create a new instance of Preferences
-    * 
+    *
     * @param preferencesFile
     *           File where read/write preferences may not actually exists
     */
@@ -145,7 +155,7 @@ public class Preferences
 
    /**
     * Get a byte[] from preferences
-    * 
+    *
     * @param name
     *           Preference name
     * @return Array in preference or {@code null} if not exists
@@ -174,7 +184,7 @@ public class Preferences
 
    /**
     * Get file from preferences
-    * 
+    *
     * @param name
     *           preference name
     * @return File in preferences or {@code null} if not exists
@@ -203,7 +213,7 @@ public class Preferences
 
    /**
     * Obtain the type of a preference
-    * 
+    *
     * @param name
     *           Preference name
     * @return Preference type or {@code null} if preference dosen't exists
@@ -222,7 +232,7 @@ public class Preferences
 
    /**
     * Get a boolean value from preferences
-    * 
+    *
     * @param name
     *           Preference name
     * @param defaultValue
@@ -255,7 +265,7 @@ public class Preferences
 
    /**
     * Get a int value from preferences
-    * 
+    *
     * @param name
     *           Preference name
     * @param defaultValue
@@ -288,7 +298,7 @@ public class Preferences
 
    /**
     * Get a locale value from preferences
-    * 
+    *
     * @param name
     *           Preference name
     * @param defaultValue
@@ -321,7 +331,7 @@ public class Preferences
 
    /**
     * Get a String value from preferences
-    * 
+    *
     * @param name
     *           Preference name
     * @param defaultValue
@@ -353,8 +363,22 @@ public class Preferences
    }
 
    /**
+    * Remove a preference
+    *
+    * @param name
+    *           Preference name to remove
+    */
+   public void removePreference(final String name)
+   {
+      if(this.preferences.remove(name) != null)
+      {
+         this.savePreferences();
+      }
+   }
+
+   /**
     * Define/change a boolean value
-    * 
+    *
     * @param name
     *           Preference name
     * @param value
@@ -392,7 +416,7 @@ public class Preferences
 
    /**
     * Define/change a byte[] value
-    * 
+    *
     * @param name
     *           Preference name
     * @param value
@@ -435,7 +459,7 @@ public class Preferences
 
    /**
     * Define/change a File value
-    * 
+    *
     * @param name
     *           Preference name
     * @param value
@@ -478,7 +502,7 @@ public class Preferences
 
    /**
     * Define/change a int value
-    * 
+    *
     * @param name
     *           Preference name
     * @param value
@@ -516,7 +540,7 @@ public class Preferences
 
    /**
     * Define/change a locale value
-    * 
+    *
     * @param name
     *           Preference name
     * @param value
@@ -559,7 +583,7 @@ public class Preferences
 
    /**
     * Define/change a String value
-    * 
+    *
     * @param name
     *           Preference name
     * @param value

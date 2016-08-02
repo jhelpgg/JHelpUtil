@@ -1,3 +1,13 @@
+/**
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ *
+ * @author JHelp
+ */
 package jhelp.util.io;
 
 import java.awt.image.BufferedImage;
@@ -919,6 +929,13 @@ public final class UtilIO
       return UtilIO.homeDirectory;
    }
 
+   /**
+    * Try to get the local INET address
+    *
+    * @param onlyIPv4
+    *           If only IP v4 are accepted
+    * @return Found local INET address or <code>null</code> if not found
+    */
    public static final InetAddress obtainLocalInetAddress(final boolean onlyIPv4)
    {
       try
@@ -1303,6 +1320,16 @@ public final class UtilIO
       return (inputStream.read() << 24) | (inputStream.read() << 16) | (inputStream.read() << 8) | inputStream.read();
    }
 
+   /**
+    * Read a array of integer from stream (Wrote with {@link #writeIntegerArray(int[], OutputStream)}
+    *
+    * @param inputStream
+    *           Stream to read. May be <code>null</code> if {@link #writeIntegerArray(int[], OutputStream)} was write
+    *           <code>null</code>
+    * @return Read array
+    * @throws IOException
+    *            On stream read issue
+    */
    public static int[] readIntegerArray(final InputStream inputStream) throws IOException
    {
       final int length = UtilIO.readInteger(inputStream);
@@ -2011,6 +2038,16 @@ public final class UtilIO
       outputStream.write(integer & 0xFF);
    }
 
+   /**
+    * Write an array of integer in stream (Can be read later with {@link #readIntegerArray(InputStream)}
+    *
+    * @param array
+    *           Array to write (Can be <code>null</code>)
+    * @param outputStream
+    *           Stream where write
+    * @throws IOException
+    *            On writing issue
+    */
    public static void writeIntegerArray(final int[] array, final OutputStream outputStream) throws IOException
    {
       if(array == null)

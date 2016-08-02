@@ -5,7 +5,7 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -18,14 +18,14 @@ import jhelp.util.list.Pair;
 
 /**
  * Utilities for image manipulation
- * 
+ *
  * @author JHelp
  */
 public class UtilImage
 {
    /**
     * Triangle way
-    * 
+    *
     * @author JHelp
     */
    public enum WayTriangle
@@ -42,7 +42,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -74,7 +74,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -107,7 +107,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -140,7 +140,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -172,7 +172,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -205,7 +205,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -238,7 +238,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -270,7 +270,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -303,7 +303,7 @@ public class UtilImage
 
    /**
     * Create image with text
-    * 
+    *
     * @param text
     *           Text to draw
     * @param font
@@ -336,7 +336,7 @@ public class UtilImage
 
    /**
     * Draw a triangle for go down
-    * 
+    *
     * @param x
     *           X position
     * @param y
@@ -356,9 +356,9 @@ public class UtilImage
       }
 
       final int xx = x + (size >> 1);
-      image.drawLine(x, y, x + size, y, 0xFF000000);
-      image.drawLine(x, y, xx, y + size, 0xFF808080);
-      image.drawLine(x + size, y, xx, y + size, 0xFFFFFFFF);
+      image.drawThickLine(x, y, x + size, y, 2, 0xFF000000);
+      image.drawThickLine(x, y, xx, y + size, 2, 0xFF808080);
+      image.drawThickLine(x + size, y, xx, y + size, 2, 0xFFFFFFFF);
 
       if(drawMode == false)
       {
@@ -368,7 +368,7 @@ public class UtilImage
 
    /**
     * Draw a triangle for go left
-    * 
+    *
     * @param x
     *           X position
     * @param y
@@ -388,9 +388,9 @@ public class UtilImage
       }
 
       final int yy = y + (size >> 1);
-      image.drawLine(x, yy, x + size, y, 0xFF000000);
-      image.drawLine(x, yy, x + size, y + size, 0xFF808080);
-      image.drawLine(x + size, y, x + size, y + size, 0xFFFFFFFF);
+      image.drawThickLine(x, yy, x + size, y, 2, 0xFF000000);
+      image.drawThickLine(x, yy, x + size, y + size, 2, 0xFF808080);
+      image.drawThickLine(x + size, y, x + size, y + size, 2, 0xFFFFFFFF);
 
       if(drawMode == false)
       {
@@ -400,7 +400,7 @@ public class UtilImage
 
    /**
     * Draw a triangle for go right
-    * 
+    *
     * @param x
     *           X position
     * @param y
@@ -420,9 +420,9 @@ public class UtilImage
       }
 
       final int yy = y + (size >> 1);
-      image.drawLine(x + size, yy, x, y, 0xFF000000);
-      image.drawLine(x + size, yy, x, y + size, 0xFFFFFFFF);
-      image.drawLine(x, y, x, y + size, 0xFF808080);
+      image.drawThickLine(x + size, yy, x, y, 2, 0xFF000000);
+      image.drawThickLine(x + size, yy, x, y + size, 2, 0xFFFFFFFF);
+      image.drawThickLine(x, y, x, y + size, 2, 0xFF808080);
 
       if(drawMode == false)
       {
@@ -432,7 +432,7 @@ public class UtilImage
 
    /**
     * Draw a triangle for go in a given way
-    * 
+    *
     * @param x
     *           X position
     * @param y
@@ -470,7 +470,7 @@ public class UtilImage
 
    /**
     * Draw a triangle for go up
-    * 
+    *
     * @param x
     *           X position
     * @param y
@@ -490,9 +490,209 @@ public class UtilImage
       }
 
       final int xx = x + (size >> 1);
-      image.drawLine(x, y + size, x + size, y + size, 0xFF000000);
-      image.drawLine(x, y + size, xx, y, 0xFF808080);
-      image.drawLine(x + size, y + size, xx, y, 0xFFFFFFFF);
+      image.drawThickLine(x, y + size, x + size, y + size, 2, 0xFF000000);
+      image.drawThickLine(x, y + size, xx, y, 2, 0xFF808080);
+      image.drawThickLine(x + size, y + size, xx, y, 2, 0xFFFFFFFF);
+
+      if(drawMode == false)
+      {
+         image.endDrawMode();
+      }
+   }
+
+   /**
+    * Fill a triangle on image that show the down
+    *
+    * @param x
+    *           Upper left corner X
+    * @param y
+    *           Upper left corner Y
+    * @param size
+    *           Triangle size
+    * @param image
+    *           Image where draw
+    * @param color
+    *           Color use for fill
+    */
+   public static void fillDownTriangle(final int x, final int y, final int size, final JHelpImage image, final int color)
+   {
+      final boolean drawMode = image.isDrawMode();
+
+      if(drawMode == false)
+      {
+         image.startDrawMode();
+      }
+
+      final int xx = x + (size >> 1);
+      final int[] xs =
+      {
+            x, x + size, xx
+      };
+      final int[] ys =
+      {
+            y, y, y + size
+      };
+      image.fillPolygon(xs, ys, color);
+
+      if(drawMode == false)
+      {
+         image.endDrawMode();
+      }
+   }
+
+   /**
+    * Fill a triangle on image that show the left
+    *
+    * @param x
+    *           Upper left corner X
+    * @param y
+    *           Upper left corner Y
+    * @param size
+    *           Triangle size
+    * @param image
+    *           Image where draw
+    * @param color
+    *           Color use for fill
+    */
+   public static void fillLeftTriangle(final int x, final int y, final int size, final JHelpImage image, final int color)
+   {
+      final boolean drawMode = image.isDrawMode();
+
+      if(drawMode == false)
+      {
+         image.startDrawMode();
+      }
+
+      final int yy = y + (size >> 1);
+      final int[] xs =
+      {
+            x, x + size, x + size
+      };
+      final int[] ys =
+      {
+            yy, y, y + size
+      };
+      image.fillPolygon(xs, ys, color);
+
+      if(drawMode == false)
+      {
+         image.endDrawMode();
+      }
+   }
+
+   /**
+    * Fill a triangle on image that show the right
+    *
+    * @param x
+    *           Upper left corner X
+    * @param y
+    *           Upper left corner Y
+    * @param size
+    *           Triangle size
+    * @param image
+    *           Image where draw
+    * @param color
+    *           Color use for fill
+    */
+   public static void fillRightTriangle(final int x, final int y, final int size, final JHelpImage image, final int color)
+   {
+      final boolean drawMode = image.isDrawMode();
+
+      if(drawMode == false)
+      {
+         image.startDrawMode();
+      }
+
+      final int yy = y + (size >> 1);
+      final int[] xs =
+      {
+            x, x + size, x
+      };
+      final int[] ys =
+      {
+            y, yy, y + size
+      };
+      image.fillPolygon(xs, ys, color);
+
+      if(drawMode == false)
+      {
+         image.endDrawMode();
+      }
+   }
+
+   /**
+    * Fill a triangle on image
+    *
+    * @param x
+    *           Upper left corner X
+    * @param y
+    *           Upper left corner Y
+    * @param size
+    *           Triangle size
+    * @param image
+    *           Image where draw
+    * @param wayTriangle
+    *           Way of triangle
+    * @param color
+    *           Color use for fill
+    */
+   public static void fillTriangle(final int x, final int y, final int size, final JHelpImage image, final WayTriangle wayTriangle, final int color)
+   {
+      if(wayTriangle == null)
+      {
+         throw new NullPointerException("wayTriangle musn't be null");
+      }
+
+      switch(wayTriangle)
+      {
+         case DOWN:
+            UtilImage.fillDownTriangle(x, y, size, image, color);
+         break;
+         case LEFT:
+            UtilImage.fillLeftTriangle(x, y, size, image, color);
+         break;
+         case RIGHT:
+            UtilImage.fillRightTriangle(x, y, size, image, color);
+         break;
+         case UP:
+            UtilImage.fillUpTriangle(x, y, size, image, color);
+         break;
+      }
+   }
+
+   /**
+    * Fill a triangle on image that show the up
+    *
+    * @param x
+    *           Upper left corner X
+    * @param y
+    *           Upper left corner Y
+    * @param size
+    *           Triangle size
+    * @param image
+    *           Image where draw
+    * @param color
+    *           Color use for fill
+    */
+   public static void fillUpTriangle(final int x, final int y, final int size, final JHelpImage image, final int color)
+   {
+      final boolean drawMode = image.isDrawMode();
+
+      if(drawMode == false)
+      {
+         image.startDrawMode();
+      }
+
+      final int xx = x + (size >> 1);
+      final int[] xs =
+      {
+            x, x + size, xx
+      };
+      final int[] ys =
+      {
+            y + size, y + size, y
+      };
+      image.fillPolygon(xs, ys, color);
 
       if(drawMode == false)
       {
@@ -502,7 +702,7 @@ public class UtilImage
 
    /**
     * Invert a color
-    * 
+    *
     * @param color
     *           Color to invert
     * @return Inverted color

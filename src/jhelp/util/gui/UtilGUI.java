@@ -36,8 +36,6 @@ import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 
 import jhelp.util.Utilities;
-import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
 import jhelp.util.gui.resolution.Resolution;
 import jhelp.util.gui.resolution.ResolutionUnit;
 import jhelp.util.math.UtilMath;
@@ -166,7 +164,6 @@ public final class UtilGUI
    {
       final Dimension dimension = window.getSize();
       final Rectangle screen = UtilGUI.computeScreenRectangle(window);
-      Debug.println(DebugLevel.DEBUG, dimension, " | ", screen);
       window.setLocation(screen.x + ((screen.width - dimension.width) / 2), //
             screen.y + ((screen.height - dimension.height) / 2));
    }
@@ -844,7 +841,6 @@ public final class UtilGUI
          return UtilGUI.EMPTY_IMAGE;
       }
 
-      Debug.println(DebugLevel.VERBOSE, "Screen shot");
       return UtilGUI.ROBOT.createScreenCapture(new Rectangle(xMin, yMin, width, height));
    }
 

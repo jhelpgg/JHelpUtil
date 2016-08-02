@@ -257,10 +257,16 @@ public class JHelpClassLoader
     *           Class complete name
     * @param byteCode
     *           Class byte code
+    * @throws IllegalArgumentException
+    *            If class already loaded/resolved
     */
    public void addClass(final String name, final byte[] byteCode)
    {
-      this.unloadClass(name);
+      if(this.loadedClass.containsKey(name) == true)
+      {
+         throw new IllegalArgumentException(name + " already loaded and it its impossible to unload");
+      }
+
       this.manualDefined.put(name, byteCode);
    }
 
@@ -425,13 +431,14 @@ public class JHelpClassLoader
    }
 
    /**
-    * Un load a class
+    * Indicates if a class is already loaded/resolved (So can't be changed)
     *
     * @param name
     *           Class complete name
+    * @return {@code true} if loaded/resolved
     */
-   public void unloadClass(final String name)
+   public boolean isLoaded(final String name)
    {
-      this.loadedClass.remove(name);
+      return this.loadedClass.containsKey(name);
    }
 }

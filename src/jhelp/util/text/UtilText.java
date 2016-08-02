@@ -1,3 +1,13 @@
+/**
+ * <h1>License :</h1> <br>
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * cause.<br>
+ * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
+ * modify this code. The code is free for usage and modification, you can't change that fact.<br>
+ * <br>
+ *
+ * @author JHelp
+ */
 package jhelp.util.text;
 
 import java.awt.Dimension;
@@ -9,9 +19,13 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jhelp.util.Utilities;
+import jhelp.util.debug.Debug;
 import jhelp.util.gui.JHelpFont;
+import jhelp.util.io.UtilIO;
 import jhelp.util.list.Pair;
 import jhelp.util.reflection.Reflector;
 
@@ -22,18 +36,23 @@ import jhelp.util.reflection.Reflector;
  */
 public final class UtilText
 {
+   /** Pattern for class reference */
+   private static final Pattern IMAGE_TAG_CLASS_REFERENCE    = Pattern.compile("(<\\s*img\\s+src=\\\")class:([a-zA-Z0-9.]+)([^\"]*)");
+   /** Pattern for external reference */
+   private static final Pattern IMAGE_TAG_EXTERNAL_REFERENCE = Pattern.compile("(<\\s*img\\s+src=\\\")external:([^\"]*)");
    /** Default escape characters : \ (see {@link StringExtractor}) */
-   public static final String  DEFAULT_ESCAPE_CHARACTERS = "\\";
+   public static final String   DEFAULT_ESCAPE_CHARACTERS    = "\\";
    /**
     * Default escape separators : [space], [Line return \n], [tabulation \t], [carriage return \r] and [\f] (see
     * {@link StringExtractor})
     */
-   public static final String  DEFAULT_SEPARATORS        = " \n\t\r\f";
+   public static final String   DEFAULT_SEPARATORS           = " \n\t\r\f";
+
    /** Default string limiters : " and ' (see {@link StringExtractor}) */
-   public static final String  DEFAULT_STRING_LIMITERS   = "\"'";
+   public static final String   DEFAULT_STRING_LIMITERS      = "\"'";
 
    /** UTF-8 char set */
-   public static final Charset UTF8                      = Charset.forName("UTF-8");
+   public static final Charset  UTF8                         = Charset.forName("UTF-8");
 
    /**
     * Append an object to string buffer
@@ -1696,6 +1715,107 @@ public final class UtilText
       }
 
       return new String(array);
+   }
+
+   /**
+    * Resolve image reference for class and external protocols.<br>
+    * Class protocol aim to get resources embed near a class, the idea is to give the class and relative path of image from the
+    * class. Syntax :
+    * <table border=1>
+    * <tr>
+    * <td><code>class:&lt;classCompleteName&gt;/&lt;relativePath&gt;</code></td>
+    * </tr>
+    * </table>
+    * .<br>
+    * External link give possibility to get image relatively of directory where running jar is. So you can deploy application
+    * and resource without care what is the absolute path. Syntax :
+    * <table border=1>
+    * <tr>
+    * <td><code>external:&lt;relativePathFromDirectoryJar&gt;</code></td>
+    * </tr>
+    * </table>
+    * <br>
+    * Other protocols with absolute path (file:..., jar:..., ...) or url (http:..., https:..., ...) are not modified and copy as
+    * they are
+    *
+    * @param html
+    *           HTML text to resolve
+    * @return Resolved text
+    */
+   @SuppressWarnings("rawtypes")
+   public static String resolveImagesLinkInHTML(String html)
+   {
+      int length = html.length();
+      final StringBuilder stringBuilder = new StringBuilder(length + (length >> 3));
+
+      Matcher matcher = UtilText.IMAGE_TAG_CLASS_REFERENCE.matcher(html);
+      int start = 0;
+      int end = length;
+      String className;
+      String path;
+      Class claz;
+
+      while(matcher.find() == true)
+      {
+         end = matcher.start();
+
+         if(start < end)
+         {
+            stringBuilder.append(html.substring(start, end));
+         }
+
+         stringBuilder.append(matcher.group(1));
+         className = matcher.group(2);
+         path = matcher.group(3);
+
+         try
+         {
+            claz = Class.forName(className);
+            stringBuilder.append(claz.getResource(path.substring(1)));
+         }
+         catch(final Exception exception)
+         {
+            Debug.printException(exception, "Failed to resolve resource class=", className, " path=", path);
+            stringBuilder.append("file:");
+            stringBuilder.append(path);
+         }
+
+         start = matcher.end();
+      }
+
+      if(start < length)
+      {
+         stringBuilder.append(html.substring(start));
+      }
+
+      html = stringBuilder.toString();
+      stringBuilder.delete(0, stringBuilder.length());
+      length = html.length();
+      start = 0;
+      end = length;
+      matcher = UtilText.IMAGE_TAG_EXTERNAL_REFERENCE.matcher(html);
+
+      while(matcher.find() == true)
+      {
+         end = matcher.start();
+
+         if(start < end)
+         {
+            stringBuilder.append(html.substring(start, end));
+         }
+
+         stringBuilder.append(matcher.group(1));
+         stringBuilder.append("file:");
+         stringBuilder.append(UtilIO.obtainExternalFile(matcher.group(2)).getAbsolutePath());
+         start = matcher.end();
+      }
+
+      if(start < length)
+      {
+         stringBuilder.append(html.substring(start));
+      }
+
+      return stringBuilder.toString();
    }
 
    /**

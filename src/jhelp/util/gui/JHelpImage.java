@@ -1225,6 +1225,21 @@ public class JHelpImage
       this.fillRectangleScale(0, 0, imageWidth, imageHeight, pixels, width, height);
    }
 
+   /**
+    * Create Path for a thick line
+    *
+    * @param x1
+    *           Line start X
+    * @param y1
+    *           Line start Y
+    * @param x2
+    *           Line end X
+    * @param y2
+    *           Line end Y
+    * @param thickness
+    *           Line thickness
+    * @return Created path
+    */
    private Path2D createThickLine(final int x1, final int y1, final int x2, final int y2, final int thickness)
    {
       final Path2D path = new Path2D.Double();
@@ -1248,10 +1263,8 @@ public class JHelpImage
       path.lineTo(x2 + (thick * Math.cos(angle)), y2 + (thick * Math.sin(angle)));
       angle = theta - UtilMath.PI_2;
       path.quadTo(x2 + vx, y2 + vy, x2 + (thick * Math.cos(angle)), y2 + (thick * Math.sin(angle)));
-      // path.lineTo(x2 + (thick * Math.cos(angle)), y2 + (thick * Math.sin(angle)));
       path.lineTo(x1 + (thick * Math.cos(angle)), y1 + (thick * Math.sin(angle)));
       path.quadTo(x1 - vx, y1 - vy, x, y);
-      // path.lineTo(x, y);
       return path;
    }
 
@@ -5986,6 +5999,13 @@ public class JHelpImage
       this.fillRectangle(x, y, width, height, image, doAlphaMix);
    }
 
+   /**
+    * Fill the image with a color on respect the alpha.<br>
+    * That is to say the given color alpha is no use, but original image alpha for given a pixel
+    *
+    * @param color
+    *           Color for fill
+    */
    public void fillRespectAlpha(final int color)
    {
       if(this.drawMode == false)
@@ -6001,6 +6021,12 @@ public class JHelpImage
       }
    }
 
+   /**
+    * Fill image with texture on take count original alpha, but replace other colors part
+    *
+    * @param texture
+    *           Texture to fill
+    */
    public void fillRespectAlpha(final JHelpImage texture)
    {
       if(this.drawMode == false)
@@ -6027,6 +6053,12 @@ public class JHelpImage
       }
    }
 
+   /**
+    * Fill image with pain on respect original alpha, but replace other color parts
+    *
+    * @param paint
+    *           Paint to fill with
+    */
    public void fillRespectAlpha(final JHelpPaint paint)
    {
       if(this.drawMode == false)
@@ -6597,11 +6629,49 @@ public class JHelpImage
       return this.fillString(x, y, string, font, color, JHelpTextAlign.LEFT, doAlphaMix);
    }
 
+   /**
+    * Fill a string<br>
+    * MUST be in draw mode
+    *
+    * @param x
+    *           X top-left
+    * @param y
+    *           Y top-left
+    * @param string
+    *           String to draw
+    * @param font
+    *           Font to use
+    * @param color
+    *           Color for fill
+    * @param textAlign
+    *           Text alignment if several lines (\n)
+    * @return Bounds where string just draw
+    */
    public Rectangle fillString(final int x, final int y, final String string, final JHelpFont font, final int color, final JHelpTextAlign textAlign)
    {
       return this.fillString(x, y, string, font, color, textAlign, true);
    }
 
+   /**
+    * Fill a string<br>
+    * MUST be in draw mode
+    *
+    * @param x
+    *           X top-left
+    * @param y
+    *           Y top-left
+    * @param string
+    *           String to draw
+    * @param font
+    *           Font to use
+    * @param color
+    *           Color for fill
+    * @param textAlign
+    *           Text alignment if several lines (\n)
+    * @param doAlphaMix
+    *           Indicates if we do the mixing {@code true}, or we just override {@code false}
+    * @return Bounds where string just draw
+    */
    public Rectangle fillString(final int x, final int y, final String string, final JHelpFont font, final int color, final JHelpTextAlign textAlign,
          final boolean doAlphaMix)
    {
@@ -6676,12 +6746,56 @@ public class JHelpImage
       return this.fillString(x, y, string, font, texture, color, JHelpTextAlign.LEFT, doAlphaMix);
    }
 
+   /**
+    * Fill a string<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
+    *
+    * @param x
+    *           X top-left
+    * @param y
+    *           Y top-left
+    * @param string
+    *           String to fill
+    * @param font
+    *           Font to use
+    * @param texture
+    *           Texture to use
+    * @param color
+    *           Color if underline
+    * @param textAlign
+    *           Text alignment if several lines (\n)
+    * @return Bounds where string just draw
+    */
    public Rectangle fillString(final int x, final int y, final String string, final JHelpFont font, final JHelpImage texture, final int color,
          final JHelpTextAlign textAlign)
    {
       return this.fillString(x, y, string, font, texture, color, textAlign, true);
    }
 
+   /**
+    * Fill a string<br>
+    * Note : if the texture is not in draw mode, all of it's visible sprite will be consider like a part of he texture<br>
+    * MUST be in draw mode
+    *
+    * @param x
+    *           X top-left
+    * @param y
+    *           Y top-left
+    * @param string
+    *           String to fill
+    * @param font
+    *           Font to use
+    * @param texture
+    *           Texture to use
+    * @param color
+    *           Color if underline
+    * @param textAlign
+    *           Text alignment if several lines (\n)
+    * @param doAlphaMix
+    *           Indicates if we do the mixing {@code true}, or we just override {@code false}
+    * @return Bounds where string just draw
+    */
    public Rectangle fillString(final int x, final int y, final String string, final JHelpFont font, final JHelpImage texture, final int color,
          final JHelpTextAlign textAlign, final boolean doAlphaMix)
    {
@@ -6751,6 +6865,7 @@ public class JHelpImage
     *           Color for underline
     * @param doAlphaMix
     *           Indicates if we do the mixing {@code true}, or we just override {@code false}
+    * @return Bounds where string just draw
     */
    public Rectangle fillString(final int x, final int y, final String string, final JHelpFont font, final JHelpPaint paint, final int color,
          final boolean doAlphaMix)
@@ -6758,12 +6873,54 @@ public class JHelpImage
       return this.fillString(x, y, string, font, paint, color, JHelpTextAlign.LEFT, doAlphaMix);
    }
 
+   /**
+    * Fill a string<br>
+    * MUST be on draw mode
+    *
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    * @param string
+    *           String to fill
+    * @param font
+    *           Font to use
+    * @param paint
+    *           Paint to use
+    * @param color
+    *           Color for underline
+    * @param textAlign
+    *           Text alignment if several lines (\n)
+    * @return Bounds where string just draw
+    */
    public Rectangle fillString(final int x, final int y, final String string, final JHelpFont font, final JHelpPaint paint, final int color,
          final JHelpTextAlign textAlign)
    {
       return this.fillString(x, y, string, font, paint, color, textAlign, true);
    }
 
+   /**
+    * Fill a string<br>
+    * MUST be on draw mode
+    *
+    * @param x
+    *           X
+    * @param y
+    *           Y
+    * @param string
+    *           String to fill
+    * @param font
+    *           Font to use
+    * @param paint
+    *           Paint to use
+    * @param color
+    *           Color for underline
+    * @param textAlign
+    *           Text alignment if several lines (\n)
+    * @param doAlphaMix
+    *           Indicates if we do the mixing {@code true}, or we just override {@code false}
+    * @return Bounds where string just draw
+    */
    public Rectangle fillString(final int x, final int y, final String string, final JHelpFont font, final JHelpPaint paint, final int color,
          final JHelpTextAlign textAlign, final boolean doAlphaMix)
    {

@@ -5,11 +5,12 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.debug;
 
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,7 +20,7 @@ import jhelp.util.reflection.Reflector;
 /**
  * Class for debugging and thread safe.<br>
  * We avoid dummy printings
- * 
+ *
  * @author JHelp
  */
 public final class Debug
@@ -31,13 +32,15 @@ public final class Debug
 
    /**
     * Print an integer
-    * 
+    *
+    * @param stream
+    *           Stream where write
     * @param integer
     *           Integer to print
     * @param characterNumber
     *           Number of character must show
     */
-   private static void printInteger(int integer, final int characterNumber)
+   private static void printInteger(final PrintStream stream, int integer, final int characterNumber)
    {
       int ten = 1;
 
@@ -48,7 +51,7 @@ public final class Debug
 
       while(ten > 0)
       {
-         System.out.print(integer / ten);
+         stream.print(integer / ten);
 
          integer %= ten;
          ten /= 10;
@@ -57,7 +60,9 @@ public final class Debug
 
    /**
     * Print a message
-    * 
+    *
+    * @param stream
+    *           Stream where write
     * @param debugLevel
     *           Debug level
     * @param stackTraceElement
@@ -65,7 +70,7 @@ public final class Debug
     * @param message
     *           Message to print
     */
-   private static void printMessage(final DebugLevel debugLevel, final StackTraceElement stackTraceElement, final Object... message)
+   private static void printMessage(final PrintStream stream, final DebugLevel debugLevel, final StackTraceElement stackTraceElement, final Object... message)
    {
       // Level test
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
@@ -76,61 +81,63 @@ public final class Debug
       // Print time
       final GregorianCalendar gregorianCalendar = new GregorianCalendar();
 
-      Debug.printInteger(gregorianCalendar.get(Calendar.DAY_OF_MONTH), 2);
-      System.out.print('/');
-      Debug.printInteger(gregorianCalendar.get(Calendar.MONTH) + 1, 2);
-      System.out.print('/');
-      Debug.printInteger(gregorianCalendar.get(Calendar.YEAR), 4);
-      System.out.print(" : ");
-      Debug.printInteger(gregorianCalendar.get(Calendar.HOUR_OF_DAY), 2);
-      System.out.print('h');
-      Debug.printInteger(gregorianCalendar.get(Calendar.MINUTE), 2);
-      System.out.print('m');
-      Debug.printInteger(gregorianCalendar.get(Calendar.SECOND), 2);
-      System.out.print('s');
-      Debug.printInteger(gregorianCalendar.get(Calendar.MILLISECOND), 3);
-      System.out.print("ms : ");
+      Debug.printInteger(stream, gregorianCalendar.get(Calendar.DAY_OF_MONTH), 2);
+      stream.print('/');
+      Debug.printInteger(stream, gregorianCalendar.get(Calendar.MONTH) + 1, 2);
+      stream.print('/');
+      Debug.printInteger(stream, gregorianCalendar.get(Calendar.YEAR), 4);
+      stream.print(" : ");
+      Debug.printInteger(stream, gregorianCalendar.get(Calendar.HOUR_OF_DAY), 2);
+      stream.print('h');
+      Debug.printInteger(stream, gregorianCalendar.get(Calendar.MINUTE), 2);
+      stream.print('m');
+      Debug.printInteger(stream, gregorianCalendar.get(Calendar.SECOND), 2);
+      stream.print('s');
+      Debug.printInteger(stream, gregorianCalendar.get(Calendar.MILLISECOND), 3);
+      stream.print("ms : ");
 
       // Print level
-      System.out.print(debugLevel.getHeader());
+      stream.print(debugLevel.getHeader());
 
       // Print code location
-      System.out.print(stackTraceElement.getClassName());
-      System.out.print('.');
-      System.out.print(stackTraceElement.getMethodName());
-      System.out.print(" at ");
-      System.out.print(stackTraceElement.getLineNumber());
-      System.out.print(" (");
-      System.out.print(stackTraceElement.getFileName());
-      System.out.print(":");
-      System.out.print(stackTraceElement.getLineNumber());
-      System.out.print(") : ");
+      stream.print(stackTraceElement.getClassName());
+      stream.print('.');
+      stream.print(stackTraceElement.getMethodName());
+      stream.print(" at ");
+      stream.print(stackTraceElement.getLineNumber());
+      stream.print(" (");
+      stream.print(stackTraceElement.getFileName());
+      stream.print(":");
+      stream.print(stackTraceElement.getLineNumber());
+      stream.print(") : ");
 
       // Print message
       for(final Object element : message)
       {
-         Debug.printObject(element);
+         Debug.printObject(stream, element);
       }
 
-      System.out.println();
+      stream.println();
    }
 
    /**
     * Print an object
-    * 
+    *
+    * @param stream
+    *           Stream where write
     * @param object
     *           Object to print
     */
-   private static void printObject(final Object object)
+   private static void printObject(final PrintStream stream, final Object object)
    {
       if((object == null) || (object.getClass().isArray() == false))
       {
-         System.out.print(object);
+         stream.print(object);
 
          return;
       }
 
-      System.out.print('[');
+      stream.print('[');
 
       if(object.getClass().getComponentType().isPrimitive() == true)
       {
@@ -143,13 +150,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -160,13 +167,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -177,13 +184,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -194,13 +201,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -211,13 +218,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -228,13 +235,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -245,13 +252,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -262,13 +269,13 @@ public final class Debug
 
             if(length > 0)
             {
-               System.out.print(array[0]);
+               stream.print(array[0]);
 
                for(int i = 1; i < length; i++)
                {
-                  System.out.print(", ");
+                  stream.print(", ");
 
-                  System.out.print(array[i]);
+                  stream.print(array[i]);
                }
             }
          }
@@ -280,23 +287,25 @@ public final class Debug
 
          if(length > 0)
          {
-            Debug.printObject(array[0]);
+            Debug.printObject(stream, array[0]);
 
             for(int i = 1; i < length; i++)
             {
-               System.out.print(", ");
+               stream.print(", ");
 
-               Debug.printObject(array[i]);
+               Debug.printObject(stream, array[i]);
             }
          }
       }
 
-      System.out.print(']');
+      stream.print(']');
    }
 
    /**
     * Print a trace
-    * 
+    *
+    * @param stream
+    *           Stream where write
     * @param debugLevel
     *           Debug level
     * @param throwable
@@ -304,7 +313,7 @@ public final class Debug
     * @param start
     *           Offset to start reading the trace
     */
-   private static void printTrace(final DebugLevel debugLevel, Throwable throwable, int start)
+   private static void printTrace(final PrintStream stream, final DebugLevel debugLevel, Throwable throwable, int start)
    {
       // Level test
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
@@ -319,9 +328,9 @@ public final class Debug
 
       while(throwable != null)
       {
-         System.out.println(throwable.getMessage());
-         System.out.println(throwable.getLocalizedMessage());
-         System.out.println(throwable.toString());
+         stream.println(throwable.getMessage());
+         stream.println(throwable.getLocalizedMessage());
+         stream.println(throwable.toString());
 
          stackTraceElements = throwable.getStackTrace();
          length = stackTraceElements.length;
@@ -330,24 +339,24 @@ public final class Debug
          {
             stackTraceElement = stackTraceElements[index];
 
-            System.out.print('\t');
-            System.out.print(stackTraceElement.getClassName());
-            System.out.print('.');
-            System.out.print(stackTraceElement.getMethodName());
-            System.out.print(" at ");
-            System.out.print(stackTraceElement.getLineNumber());
-            System.out.print(" (");
-            System.out.print(stackTraceElement.getFileName());
-            System.out.print(":");
-            System.out.print(stackTraceElement.getLineNumber());
-            System.out.println(")");
+            stream.print('\t');
+            stream.print(stackTraceElement.getClassName());
+            stream.print('.');
+            stream.print(stackTraceElement.getMethodName());
+            stream.print(" at ");
+            stream.print(stackTraceElement.getLineNumber());
+            stream.print(" (");
+            stream.print(stackTraceElement.getFileName());
+            stream.print(":");
+            stream.print(stackTraceElement.getLineNumber());
+            stream.println(")");
          }
 
          throwable = throwable.getCause();
 
          if(throwable != null)
          {
-            System.out.println("Caused by : ");
+            stream.println("Caused by : ");
          }
 
          start = 0;
@@ -356,7 +365,7 @@ public final class Debug
 
    /**
     * Actual debug level
-    * 
+    *
     * @return Actual debug level
     */
    public static DebugLevel getDebugLevel()
@@ -367,7 +376,7 @@ public final class Debug
    /**
     * Print information to know which part of code, called a method.<br>
     * Short version of {@link #printTrace(DebugLevel, Object...)}
-    * 
+    *
     * @param debugLevel
     *           Debug level
     */
@@ -387,7 +396,7 @@ public final class Debug
          final StackTraceElement[] traces = throwable.getStackTrace();
          final StackTraceElement stackTraceElement = traces[2];
 
-         Debug.printMessage(debugLevel, traces[1], "Called from ", stackTraceElement.getClassName(), '.', stackTraceElement.getMethodName(), " at ",
+         Debug.printMessage(System.out, debugLevel, traces[1], "Called from ", stackTraceElement.getClassName(), '.', stackTraceElement.getMethodName(), " at ",
                stackTraceElement.getLineNumber());
       }
       finally
@@ -398,7 +407,7 @@ public final class Debug
 
    /**
     * Print an error with its trace
-    * 
+    *
     * @param error
     *           Error to print
     * @param message
@@ -418,14 +427,14 @@ public final class Debug
       {
          if((message != null) && (message.length > 0))
          {
-            Debug.printMessage(DebugLevel.ERROR, (new Throwable()).getStackTrace()[1], message);
+            Debug.printMessage(System.err, DebugLevel.ERROR, (new Throwable()).getStackTrace()[1], message);
          }
 
-         System.out.println("<-- ERROR");
+         System.err.println("<-- ERROR");
 
-         Debug.printTrace(DebugLevel.ERROR, error, 0);
+         Debug.printTrace(System.err, DebugLevel.ERROR, error, 0);
 
-         System.out.println("ERROR -->");
+         System.err.println("ERROR -->");
       }
       finally
       {
@@ -435,7 +444,7 @@ public final class Debug
 
    /**
     * Print an exception with its trace
-    * 
+    *
     * @param exception
     *           Exception to print
     * @param message
@@ -455,14 +464,14 @@ public final class Debug
       {
          if((message != null) && (message.length > 0))
          {
-            Debug.printMessage(DebugLevel.WARNING, (new Throwable()).getStackTrace()[1], message);
+            Debug.printMessage(System.err, DebugLevel.WARNING, (new Throwable()).getStackTrace()[1], message);
          }
 
-         System.out.println("<-- EXCEPTION");
+         System.err.println("<-- EXCEPTION");
 
-         Debug.printTrace(DebugLevel.WARNING, exception, 0);
+         Debug.printTrace(System.err, DebugLevel.WARNING, exception, 0);
 
-         System.out.println("EXCEPTION -->");
+         System.err.println("EXCEPTION -->");
       }
       finally
       {
@@ -472,7 +481,7 @@ public final class Debug
 
    /**
     * Print some information
-    * 
+    *
     * @param debugLevel
     *           Debug level
     * @param message
@@ -490,7 +499,7 @@ public final class Debug
 
       try
       {
-         Debug.printMessage(debugLevel, (new Throwable()).getStackTrace()[1], message);
+         Debug.printMessage(System.out, debugLevel, (new Throwable()).getStackTrace()[1], message);
       }
       finally
       {
@@ -500,7 +509,7 @@ public final class Debug
 
    /**
     * Print a mark
-    * 
+    *
     * @param debugLevel
     *           Debug level
     * @param mark
@@ -530,9 +539,9 @@ public final class Debug
 
          final StackTraceElement stackTraceElement = (new Throwable()).getStackTrace()[1];
 
-         Debug.printMessage(debugLevel, stackTraceElement, header);
-         Debug.printMessage(debugLevel, stackTraceElement, "***   ", mark, "   ***");
-         Debug.printMessage(debugLevel, stackTraceElement, header);
+         Debug.printMessage(System.out, debugLevel, stackTraceElement, header);
+         Debug.printMessage(System.out, debugLevel, stackTraceElement, "***   ", mark, "   ***");
+         Debug.printMessage(System.out, debugLevel, stackTraceElement, header);
       }
       finally
       {
@@ -542,7 +551,7 @@ public final class Debug
 
    /**
     * Print a to do message
-    * 
+    *
     * @param message
     *           Message to print
     */
@@ -564,7 +573,7 @@ public final class Debug
          System.arraycopy(message, 0, todoMessage, 1, message.length);
          todoMessage[todoMessage.length - 1] = " --- TODO";
 
-         Debug.printMessage(DebugLevel.VERBOSE, (new Throwable()).getStackTrace()[1], todoMessage);
+         Debug.printMessage(System.out, DebugLevel.VERBOSE, (new Throwable()).getStackTrace()[1], todoMessage);
       }
       finally
       {
@@ -574,7 +583,7 @@ public final class Debug
 
    /**
     * Print an informative trace (To know the execution stack)
-    * 
+    *
     * @param debugLevel
     *           Debug level
     * @param message
@@ -596,12 +605,12 @@ public final class Debug
 
          if((message != null) && (message.length > 0))
          {
-            Debug.printMessage(debugLevel, throwable.getStackTrace()[1], message);
+            Debug.printMessage(System.out, debugLevel, throwable.getStackTrace()[1], message);
          }
 
          System.out.println("<-- TRACE");
 
-         Debug.printTrace(debugLevel, throwable, 1);
+         Debug.printTrace(System.out, debugLevel, throwable, 1);
 
          System.out.println("TRACE -->");
       }
@@ -613,7 +622,7 @@ public final class Debug
 
    /**
     * Change debug level
-    * 
+    *
     * @param debugLevel
     *           New debug level
     */
