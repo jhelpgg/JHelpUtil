@@ -18,6 +18,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,10 +65,59 @@ public final class UtilText
     * @param object
     *           Object to append
     */
+   @SuppressWarnings(
+   {
+         "rawtypes", "unchecked"
+   })
    private static void appendObject(final StringBuffer stringBuffer, final Object object)
    {
       if((object == null) || (object.getClass().isArray() == false))
       {
+         if(object != null)
+         {
+            if(object instanceof Iterable)
+            {
+               stringBuffer.append('{');
+               boolean first = true;
+
+               for(final Object obj : (Iterable) object)
+               {
+                  if(first == false)
+                  {
+                     stringBuffer.append("; ");
+                  }
+
+                  UtilText.appendObject(stringBuffer, obj);
+                  first = false;
+               }
+
+               stringBuffer.append('}');
+               return;
+            }
+
+            if(object instanceof Map)
+            {
+               stringBuffer.append('{');
+               boolean first = true;
+
+               for(final Entry entry : (Set<Entry>) ((Map) object).entrySet())
+               {
+                  if(first == false)
+                  {
+                     stringBuffer.append(" | ");
+                  }
+
+                  UtilText.appendObject(stringBuffer, entry.getKey());
+                  stringBuffer.append("=");
+                  UtilText.appendObject(stringBuffer, entry.getValue());
+                  first = false;
+               }
+
+               stringBuffer.append('}');
+               return;
+            }
+         }
+
          stringBuffer.append(object);
 
          return;

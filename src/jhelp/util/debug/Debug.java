@@ -13,6 +13,9 @@ package jhelp.util.debug;
 import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import jhelp.util.reflection.Reflector;
@@ -128,10 +131,59 @@ public final class Debug
     * @param object
     *           Object to print
     */
+   @SuppressWarnings(
+   {
+         "rawtypes", "unchecked"
+   })
    private static void printObject(final PrintStream stream, final Object object)
    {
       if((object == null) || (object.getClass().isArray() == false))
       {
+         if(object != null)
+         {
+            if(object instanceof Iterable)
+            {
+               stream.print('{');
+               boolean first = true;
+
+               for(final Object obj : (Iterable) object)
+               {
+                  if(first == false)
+                  {
+                     stream.print("; ");
+                  }
+
+                  Debug.printObject(stream, obj);
+                  first = false;
+               }
+
+               stream.print('}');
+               return;
+            }
+
+            if(object instanceof Map)
+            {
+               stream.print('{');
+               boolean first = true;
+
+               for(final Entry entry : (Set<Entry>) ((Map) object).entrySet())
+               {
+                  if(first == false)
+                  {
+                     stream.print(" | ");
+                  }
+
+                  Debug.printObject(stream, entry.getKey());
+                  stream.print("=");
+                  Debug.printObject(stream, entry.getValue());
+                  first = false;
+               }
+
+               stream.print('}');
+               return;
+            }
+         }
+
          stream.print(object);
 
          return;
