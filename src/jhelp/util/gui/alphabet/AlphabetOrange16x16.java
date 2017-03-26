@@ -89,10 +89,10 @@ public class AlphabetOrange16x16
     * {@inheritDoc}
     * 
     * @return Space between characters inside big image
-    * @see AlphabetUnique#spaceBetwwenCharacters()
+    * @see AlphabetUnique#spaceBetweenCharacters()
     */
    @Override
-   protected int spaceBetwwenCharacters()
+   protected int spaceBetweenCharacters()
    {
       return 0;
    }

@@ -595,17 +595,17 @@ public class FullColor
       final double max = UtilMath.max(r, g, b);
       final double chroma = max - min;
 
-      if(UtilMath.isNul(chroma) == true)
+      if(UtilMath.isNul(chroma))
       {
          return 0;
       }
 
-      if(UtilMath.equals(max, r) == true)
+      if(UtilMath.equals(max, r))
       {
          return 60.0 * UtilMath.modulo((g - b) / chroma, 6.0);
       }
 
-      if(UtilMath.equals(max, g) == true)
+      if(UtilMath.equals(max, g))
       {
          return 60.0 * (((b - r) / chroma) + 2.0);
       }
@@ -677,15 +677,15 @@ public class FullColor
       final double max = UtilMath.max(r, g, b);
       this.chroma = max - min;
 
-      if(UtilMath.isNul(this.chroma) == true)
+      if(UtilMath.isNul(this.chroma))
       {
          this.hue = 0;
       }
-      else if(UtilMath.equals(max, r) == true)
+      else if(UtilMath.equals(max, r))
       {
          this.hue = 60.0 * UtilMath.modulo((g - b) / this.chroma, 6.0);
       }
-      else if(UtilMath.equals(max, g) == true)
+      else if(UtilMath.equals(max, g))
       {
          this.hue = 60.0 * (((b - r) / this.chroma) + 2.0);
       }
@@ -698,7 +698,7 @@ public class FullColor
       this.lightness = (max + min) / 2.0;
       this.luma = (0.3 * r) + (0.59 * g) + (0.11 * b);
 
-      if(UtilMath.isNul(this.chroma) == true)
+      if(UtilMath.isNul(this.chroma))
       {
          this.saturationHSV = 0;
          this.saturationHSL = 0;

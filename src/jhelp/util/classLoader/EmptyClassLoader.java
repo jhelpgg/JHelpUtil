@@ -98,7 +98,7 @@ public class EmptyClassLoader
     */
    private void addImport(final String base, final HashSet<String> set, final String name)
    {
-      if(name.startsWith(base + "$") == false)
+      if(!name.startsWith(base + "$"))
       {
          set.add(name.replace('$', '.'));
       }
@@ -122,23 +122,24 @@ public class EmptyClassLoader
     * @throws ClassNotFoundException
     *            If class not found
     */
+   @SuppressWarnings("ConstantConditions")
    private void appendContent(final boolean internal, final String decal, final String name, final StringBuilder stringBuilder, final Class<?> classInJar,
-         final String simpleName) throws ClassNotFoundException
+                              final String simpleName) throws ClassNotFoundException
    {
       // write header
       stringBuilder.append(decal);
       int or = 0;
-      if(classInJar.isEnum() == true)
+      if(classInJar.isEnum())
       {
          or = Modifier.ABSTRACT;
       }
       stringBuilder.append(Modifier.toString(classInJar.getModifiers() & (~(Modifier.FINAL | or))));
       final boolean stat = Modifier.isStatic(classInJar.getModifiers());
-      if(Modifier.isInterface(classInJar.getModifiers()) == true)
+      if(Modifier.isInterface(classInJar.getModifiers()))
       {
          stringBuilder.append(' ');
       }
-      else if(classInJar.isEnum() == true)
+      else if(classInJar.isEnum())
       {
          stringBuilder.append(" enum ");
       }
@@ -149,7 +150,7 @@ public class EmptyClassLoader
       stringBuilder.append(simpleName);
 
       Class<?> temp = classInJar.getSuperclass();
-      if((temp != null) && (classInJar.isEnum() == false))
+      if((temp != null) && (!classInJar.isEnum()))
       {
          stringBuilder.append(" extends ");
          stringBuilder.append(temp.getName().replace('$', '.'));
@@ -160,7 +161,7 @@ public class EmptyClassLoader
       if((in != null) && (in.length > 0))
       {
          first = true;
-         if(classInJar.isInterface() == true)
+         if(classInJar.isInterface())
          {
             stringBuilder.append(" extends ");
          }
@@ -170,7 +171,7 @@ public class EmptyClassLoader
          }
          for(final Class<?> interf : in)
          {
-            if(first == false)
+            if(!first)
             {
                stringBuilder.append(", ");
             }
@@ -182,7 +183,7 @@ public class EmptyClassLoader
       stringBuilder.append(decal);
       stringBuilder.append("{");
 
-      if(classInJar.isEnum() == true)
+      if(classInJar.isEnum())
       {
          stringBuilder.append(decal);
          stringBuilder.append("\t");
@@ -190,9 +191,9 @@ public class EmptyClassLoader
          first = true;
          for(final Field field : classInJar.getDeclaredFields())
          {
-            if(field.isEnumConstant() == true)
+            if(field.isEnumConstant())
             {
-               if(first == false)
+               if(!first)
                {
                   stringBuilder.append(", ");
                }
@@ -213,7 +214,7 @@ public class EmptyClassLoader
          // Fields
          for(final Field field : classInJar.getDeclaredFields())
          {
-            if(Modifier.isPublic(field.getModifiers()) == true)
+            if(Modifier.isPublic(field.getModifiers()))
             {
                stringBuilder.append(decal);
                stringBuilder.append("\t");
@@ -227,44 +228,44 @@ public class EmptyClassLoader
 
                stringBuilder.append("=");
 
-               if(temp.isPrimitive() == true)
+               if(temp.isPrimitive())
                {
                   nameTemp = temp.getName();
 
-                  if(nameTemp.equals("boolean") == true)
+                  if(nameTemp.equals("boolean"))
                   {
                      stringBuilder.append("true");
                   }
-                  else if(nameTemp.equals("char") == true)
+                  else if(nameTemp.equals("char"))
                   {
                      stringBuilder.append("' '");
                   }
-                  else if(nameTemp.equals("byte") == true)
+                  else if(nameTemp.equals("byte"))
                   {
                      stringBuilder.append("(byte)0");
                   }
-                  else if(nameTemp.equals("short") == true)
+                  else if(nameTemp.equals("short"))
                   {
                      stringBuilder.append("(short)0");
                   }
-                  else if(nameTemp.equals("int") == true)
+                  else if(nameTemp.equals("int"))
                   {
                      stringBuilder.append("0");
                   }
-                  else if(nameTemp.equals("long") == true)
+                  else if(nameTemp.equals("long"))
                   {
                      stringBuilder.append("0l");
                   }
-                  else if(nameTemp.equals("float") == true)
+                  else if(nameTemp.equals("float"))
                   {
                      stringBuilder.append("0f");
                   }
-                  else if(nameTemp.equals("double") == true)
+                  else if(nameTemp.equals("double"))
                   {
                      stringBuilder.append("0.0");
                   }
                }
-               else if(temp.equals(String.class) == true)
+               else if(temp.equals(String.class))
                {
                   stringBuilder.append("\"\"");
                }
@@ -280,7 +281,7 @@ public class EmptyClassLoader
          // Constructors
          for(final Constructor<?> constructor : classInJar.getDeclaredConstructors())
          {
-            if(Modifier.isPublic(constructor.getModifiers()) == true)
+            if(Modifier.isPublic(constructor.getModifiers()))
             {
                stringBuilder.append(decal);
                stringBuilder.append("\t");
@@ -293,7 +294,7 @@ public class EmptyClassLoader
                count = 0;
                for(final Class<?> parameter : constructor.getParameterTypes())
                {
-                  if((count == 0) && (inter == true) && (stat == false))
+                  if((count == 0) && (inter) && (!stat))
                   {
                      inter = false;
                   }
@@ -374,48 +375,48 @@ public class EmptyClassLoader
                   {
                      temp = parameterTypes[arg];
 
-                     if(temp.isPrimitive() == true)
+                     if(temp.isPrimitive())
                      {
                         nameTemp = temp.getName();
 
-                        if(nameTemp.equals("boolean") == true)
+                        if(nameTemp.equals("boolean"))
                         {
                            stringBuilder.append("true");
                         }
-                        else if(nameTemp.equals("char") == true)
+                        else if(nameTemp.equals("char"))
                         {
                            stringBuilder.append("' '");
                         }
-                        else if(nameTemp.equals("byte") == true)
+                        else if(nameTemp.equals("byte"))
                         {
                            stringBuilder.append("(byte)0");
                         }
-                        else if(nameTemp.equals("short") == true)
+                        else if(nameTemp.equals("short"))
                         {
                            stringBuilder.append("(short)0");
                         }
-                        else if(nameTemp.equals("int") == true)
+                        else if(nameTemp.equals("int"))
                         {
                            stringBuilder.append("0");
                         }
-                        else if(nameTemp.equals("long") == true)
+                        else if(nameTemp.equals("long"))
                         {
                            stringBuilder.append("0l");
                         }
-                        else if(nameTemp.equals("float") == true)
+                        else if(nameTemp.equals("float"))
                         {
                            stringBuilder.append("0f");
                         }
-                        else if(nameTemp.equals("double") == true)
+                        else if(nameTemp.equals("double"))
                         {
                            stringBuilder.append("0.0");
                         }
                      }
-                     else if(temp.equals(String.class) == true)
+                     else if(temp.equals(String.class))
                      {
                         stringBuilder.append("\"\"");
                      }
-                     else if(temp.equals(File.class) == true)
+                     else if(temp.equals(File.class))
                      {
                         stringBuilder.append("new java.io.File(");
                         stringBuilder.append(EmptyClassLoader.createFile());
@@ -442,7 +443,7 @@ public class EmptyClassLoader
             }
          }
 
-         if((asEmpty == false) && (Modifier.isInterface(classInJar.getModifiers()) == false))
+         if((!asEmpty) && (!Modifier.isInterface(classInJar.getModifiers())))
          {
             stringBuilder.append(decal);
             stringBuilder.append("\tpublic ");
@@ -504,48 +505,48 @@ public class EmptyClassLoader
                {
                   temp = parameterTypes[arg];
 
-                  if(temp.isPrimitive() == true)
+                  if(temp.isPrimitive())
                   {
                      nameTemp = temp.getName();
 
-                     if(nameTemp.equals("boolean") == true)
+                     if(nameTemp.equals("boolean"))
                      {
                         stringBuilder.append("true");
                      }
-                     else if(nameTemp.equals("char") == true)
+                     else if(nameTemp.equals("char"))
                      {
                         stringBuilder.append("' '");
                      }
-                     else if(nameTemp.equals("byte") == true)
+                     else if(nameTemp.equals("byte"))
                      {
                         stringBuilder.append("(byte)0");
                      }
-                     else if(nameTemp.equals("short") == true)
+                     else if(nameTemp.equals("short"))
                      {
                         stringBuilder.append("(short)0");
                      }
-                     else if(nameTemp.equals("int") == true)
+                     else if(nameTemp.equals("int"))
                      {
                         stringBuilder.append("0");
                      }
-                     else if(nameTemp.equals("long") == true)
+                     else if(nameTemp.equals("long"))
                      {
                         stringBuilder.append("0l");
                      }
-                     else if(nameTemp.equals("float") == true)
+                     else if(nameTemp.equals("float"))
                      {
                         stringBuilder.append("0f");
                      }
-                     else if(nameTemp.equals("double") == true)
+                     else if(nameTemp.equals("double"))
                      {
                         stringBuilder.append("0.0");
                      }
                   }
-                  else if(temp.equals(String.class) == true)
+                  else if(temp.equals(String.class))
                   {
                      stringBuilder.append("\"\"");
                   }
-                  else if(temp.equals(File.class) == true)
+                  else if(temp.equals(File.class))
                   {
                      stringBuilder.append("new java.io.File(");
                      stringBuilder.append(EmptyClassLoader.createFile());
@@ -580,7 +581,7 @@ public class EmptyClassLoader
          // Methods
          for(final Method method : classInJar.getDeclaredMethods())
          {
-            if(Modifier.isPublic(method.getModifiers()) == true)
+            if(Modifier.isPublic(method.getModifiers()))
             {
                end = new StringBuilder();
                end.append(method.getName());
@@ -602,7 +603,7 @@ public class EmptyClassLoader
                   count++;
                }
 
-               if(already.contains(end.toString()) == true)
+               if(already.contains(end.toString()))
                {
                   continue;
                }
@@ -631,47 +632,47 @@ public class EmptyClassLoader
 
                stringBuilder.append(end.toString());
 
-               if(Modifier.isAbstract(modifier) == true)
+               if(Modifier.isAbstract(modifier))
                {
                   stringBuilder.append(");");
                }
                else
                {
                   stringBuilder.append("){");
-                  if((ret != null) && (ret.equals(Void.TYPE) == false) && (ret.equals(Void.class) == false))
+                  if((ret != null) && (!ret.equals(Void.TYPE)) && (!ret.equals(Void.class)))
                   {
-                     if(ret.isPrimitive() == true)
+                     if(ret.isPrimitive())
                      {
                         nameTemp = ret.getName();
-                        if(nameTemp.equals("boolean") == true)
+                        if(nameTemp.equals("boolean"))
                         {
                            stringBuilder.append("return true;");
                         }
-                        else if(nameTemp.equals("char") == true)
+                        else if(nameTemp.equals("char"))
                         {
                            stringBuilder.append("return ' ';");
                         }
-                        else if(nameTemp.equals("byte") == true)
+                        else if(nameTemp.equals("byte"))
                         {
                            stringBuilder.append("return (byte)0;");
                         }
-                        else if(nameTemp.equals("short") == true)
+                        else if(nameTemp.equals("short"))
                         {
                            stringBuilder.append("return (short)0;");
                         }
-                        else if(nameTemp.equals("int") == true)
+                        else if(nameTemp.equals("int"))
                         {
                            stringBuilder.append("return 0;");
                         }
-                        else if(nameTemp.equals("long") == true)
+                        else if(nameTemp.equals("long"))
                         {
                            stringBuilder.append("return 0l;");
                         }
-                        else if(nameTemp.equals("float") == true)
+                        else if(nameTemp.equals("float"))
                         {
                            stringBuilder.append("return 0f;");
                         }
-                        else if(nameTemp.equals("double") == true)
+                        else if(nameTemp.equals("double"))
                         {
                            stringBuilder.append("return 0.0;");
                         }
@@ -791,10 +792,11 @@ public class EmptyClassLoader
          // Write imports
          for(final String imp : imports)
          {
-            if((this.onCreation.contains(imp) == false) && (this.classes.containsKey(imp) == false))
+            if((!this.onCreation.contains(imp)) && (!this.classes.containsKey(imp)))
             {
-               if((imp.startsWith("java.") == false) && (imp.startsWith("javax.") == false) && (imp.startsWith("com.sun.") == false)
-                     && (imp.startsWith("sun.") == false) && (imp.startsWith("sunw.") == false))
+               if((!imp.startsWith("java.")) && (!imp.startsWith("javax.")) && (!imp.startsWith(
+                       "com.sun."))
+                     && (!imp.startsWith("sun.")) && (!imp.startsWith("sunw.")))
                {
                   this.compileClass(imp, needCompile);
                }
@@ -848,12 +850,12 @@ public class EmptyClassLoader
 
       for(final Constructor<?> constructor : classInJar.getDeclaredConstructors())
       {
-         if(Modifier.isPublic(constructor.getModifiers()) == true)
+         if(Modifier.isPublic(constructor.getModifiers()))
          {
             for(final Class<?> parameter : constructor.getParameterTypes())
             {
                temp = this.getRootType(parameter);
-               if((temp != null) && (temp.isPrimitive() == false))
+               if((temp != null) && (!temp.isPrimitive()))
                {
                   this.addImport(base, imports, temp.getName());
                }
@@ -862,10 +864,10 @@ public class EmptyClassLoader
       }
       for(final Field field : classInJar.getDeclaredFields())
       {
-         if(Modifier.isPublic(field.getModifiers()) == true)
+         if(Modifier.isPublic(field.getModifiers()))
          {
             temp = this.getRootType(field.getType());
-            if((temp != null) && (temp.isPrimitive() == false))
+            if((temp != null) && (!temp.isPrimitive()))
             {
                this.addImport(base, imports, temp.getName());
             }
@@ -873,10 +875,10 @@ public class EmptyClassLoader
       }
       for(final Method method : classInJar.getDeclaredMethods())
       {
-         if(Modifier.isPublic(method.getModifiers()) == true)
+         if(Modifier.isPublic(method.getModifiers()))
          {
             temp = this.getRootType(method.getReturnType());
-            if((temp != null) && (temp.isPrimitive() == false))
+            if((temp != null) && (!temp.isPrimitive()))
             {
                this.addImport(base, imports, temp.getName());
             }
@@ -884,7 +886,7 @@ public class EmptyClassLoader
             for(final Class<?> parameter : method.getParameterTypes())
             {
                temp = this.getRootType(parameter);
-               if((temp != null) && (temp.isPrimitive() == false))
+               if((temp != null) && (!temp.isPrimitive()))
                {
                   this.addImport(base, imports, temp.getName());
                }
@@ -933,7 +935,7 @@ public class EmptyClassLoader
       int level = 0;
 
       Class<?> clazz = claz;
-      while(clazz.isArray() == true)
+      while(clazz.isArray())
       {
          clazz = clazz.getComponentType();
          level++;
@@ -957,12 +959,12 @@ public class EmptyClassLoader
       }
 
       Class<?> clazz = claz;
-      while(clazz.isArray() == true)
+      while(clazz.isArray())
       {
          clazz = clazz.getComponentType();
       }
 
-      if((clazz.equals(Void.TYPE) == true) || (clazz.equals(Void.class) == true))
+      if((clazz.equals(Void.TYPE)) || (clazz.equals(Void.class)))
       {
          return null;
       }
@@ -987,7 +989,7 @@ public class EmptyClassLoader
       }
 
       final File file = new File(this.directory, name.replace('.', File.separatorChar) + ".class");
-      if(file.exists() == false)
+      if(!file.exists())
       {
          return null;
       }
@@ -1018,7 +1020,7 @@ public class EmptyClassLoader
          final Class<?> clazz = this.defineClass(name, temp, 0, temp.length);
          temp = null;
 
-         if(resolve == true)
+         if(resolve)
          {
             this.resolveClass(clazz);
          }
@@ -1054,8 +1056,8 @@ public class EmptyClassLoader
          return claz;
       }
 
-      if((name.startsWith("java.") == true) || (name.startsWith("javax.") == true) || (name.startsWith("com.sun.") == true)
-            || (name.startsWith("sun.") == true) || (name.startsWith("sunw.") == true))
+      if((name.startsWith("java.")) || (name.startsWith("javax.")) || (name.startsWith("com.sun."))
+            || (name.startsWith("sun.")) || (name.startsWith("sunw.")))
       {
          try
          {
@@ -1067,7 +1069,7 @@ public class EmptyClassLoader
                return claz;
             }
          }
-         catch(final Exception exception)
+         catch(final Exception ignored)
          {
          }
       }
@@ -1085,7 +1087,7 @@ public class EmptyClassLoader
 
       try
       {
-         this.directory = Compiler.compil(needCompile.toArray(new NameCode[needCompile.size()]));
+         this.directory = Compiler.compile(needCompile.toArray(new NameCode[needCompile.size()]));
       }
       catch(final Exception exception)
       {

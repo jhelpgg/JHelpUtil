@@ -25,12 +25,12 @@
  *         ArrayList<String> list = new ArrayList<String>();
  *    }
  *    --></code>
- * And all convertion are done. You can alos do it for XML markup;)
+ * And all conversion are done. You can also do it for XML markup;)
  * Its also possible to include dynamically some code files on using the syntax :
  *    <code lang="java:src/mypackage/path/MyClass.java" />
- * Before the :, describes the launguage, after the : the relaive (or absolute) path to the file to show and colorize
+ * Before the :, describes the language, after the : the relative (or absolute) path to the file to show and colorize
  * Example can find in ../test.html
- * If the code is not syntaxly correct, unexpected result may happen
+ * If the code is not syntactically correct, unexpected result may happen
  */
 
 // **********************************************************************

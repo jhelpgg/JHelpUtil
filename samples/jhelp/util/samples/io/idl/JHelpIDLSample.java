@@ -5,14 +5,20 @@ import jhelp.util.debug.DebugLevel;
 import jhelp.util.io.idl.JHelpIDL;
 import jhelp.util.text.UtilText;
 
+/**
+ * JHelp IDL sample
+ *
+ * @author JHelp <br>
+ */
 public class JHelpIDLSample
       implements TestInterface
 {
 
    /**
-    * TODO Explains what does the method main in jhelp.util.samples.io.idl [JHelpUtil]
-    * 
+    * Launch JHelp IDL sample
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
@@ -51,6 +57,17 @@ public class JHelpIDLSample
       }
    }
 
+   /**
+    * Give the next element <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param actual
+    *           Element to have its next
+    * @return Next element
+    * @see jhelp.util.samples.io.idl.TestInterface#next(jhelp.util.samples.io.idl.TestEnum)
+    */
    @Override
    public TestEnum next(final TestEnum actual)
    {
@@ -67,12 +84,38 @@ public class JHelpIDLSample
       return actual;
    }
 
+   /**
+    * Create a binarizable <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param integer
+    *           Integer
+    * @return Created binarizable
+    * @see jhelp.util.samples.io.idl.TestInterface#obtainTestBinarizable(int)
+    */
    @Override
    public TestBinarizable obtainTestBinarizable(final int integer)
    {
       return new TestBinarizable(integer * integer);
    }
 
+   /**
+    * Create String to print <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param integer
+    *           Integer
+    * @param string
+    *           String
+    * @param array
+    *           Data
+    * @return String to print
+    * @see jhelp.util.samples.io.idl.TestInterface#test(int, java.lang.String, byte[])
+    */
    @Override
    public String test(final int integer, final String string, final byte[] array)
    {

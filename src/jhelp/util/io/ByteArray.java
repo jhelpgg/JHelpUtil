@@ -64,12 +64,12 @@ public class ByteArray
        * <b>Parent documentation:</b><br>
        * {@inheritDoc}
        * 
-       * @param readlimit
+       * @param readLimit
        *           Maximum limit
        * @see java.io.InputStream#mark(int)
        */
       @Override
-      public synchronized void mark(final int readlimit)
+      public synchronized void mark(final int readLimit)
       {
          ByteArray.this.mark();
       }
@@ -516,6 +516,7 @@ public class ByteArray
       @SuppressWarnings("unchecked")
       final B binarizable = (B) Reflector.newInstance(clas);
 
+      assert binarizable != null;
       binarizable.parseBinary(this);
 
       return binarizable;
@@ -561,12 +562,7 @@ public class ByteArray
     */
    public boolean readBoolean()
    {
-      if(this.read() == 1)
-      {
-         return true;
-      }
-
-      return false;
+      return this.read() == 1;
    }
 
    /**
@@ -1101,9 +1097,9 @@ public class ByteArray
 
       final int length = array.length;
 
-      for(int i = 0; i < length; i++)
+      for (BigDecimal bigDecimal : array)
       {
-         this.writeBigDecimal(array[i]);
+         this.writeBigDecimal(bigDecimal);
       }
    }
 
@@ -1150,9 +1146,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (B b : array)
       {
-         this.writeBinarizable(array[i]);
+         this.writeBinarizable(b);
       }
    }
 
@@ -1165,7 +1161,7 @@ public class ByteArray
     */
    public void writeBoolean(final boolean booleanValue)
    {
-      if(booleanValue == true)
+      if(booleanValue)
       {
          this.write(1);
       }
@@ -1210,15 +1206,15 @@ public class ByteArray
       int b = 0;
       int shift = 7;
 
-      for(int index = 0; index < length; index++)
+      for (boolean bool : bools)
       {
-         b |= ((bools[index] == true)
+         b |= ((bool)
                ? 1
                : 0) << shift;
 
          shift--;
 
-         if(shift < 0)
+         if (shift < 0)
          {
             this.write(b);
             b = 0;
@@ -1296,9 +1292,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (char character : array)
       {
-         this.writeChar(array[i]);
+         this.writeChar(character);
       }
    }
 
@@ -1332,9 +1328,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (double real : array)
       {
-         this.writeDouble(array[i]);
+         this.writeDouble(real);
       }
    }
 
@@ -1384,9 +1380,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (E e : array)
       {
-         this.writeEnum(array[i]);
+         this.writeEnum(e);
       }
    }
 
@@ -1420,9 +1416,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (float real : array)
       {
-         this.writeFloat(array[i]);
+         this.writeFloat(real);
       }
    }
 
@@ -1459,9 +1455,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (int integer : array)
       {
-         this.writeInteger(array[i]);
+         this.writeInteger(integer);
       }
    }
 
@@ -1516,9 +1512,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (long integer : array)
       {
-         this.writeLong(array[i]);
+         this.writeLong(integer);
       }
    }
 
@@ -1555,9 +1551,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (short integer : array)
       {
-         this.writeShort(array[i]);
+         this.writeShort(integer);
       }
    }
 
@@ -1612,9 +1608,9 @@ public class ByteArray
       final int length = array.length;
       this.writeInteger(length);
 
-      for(int i = 0; i < length; i++)
+      for (String string : array)
       {
-         this.writeString(array[i]);
+         this.writeString(string);
       }
    }
 }

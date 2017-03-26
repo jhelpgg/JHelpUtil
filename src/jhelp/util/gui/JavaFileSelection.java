@@ -16,6 +16,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,10 +49,7 @@ public class JavaFileSelection
    {
       this.listFile = new ArrayList<File>();
 
-      for(final File file : files)
-      {
-         this.listFile.add(file);
-      }
+      Collections.addAll(this.listFile, files);
    }
 
    /**
@@ -80,7 +78,7 @@ public class JavaFileSelection
    @Override
    public Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException, IOException
    {
-      if(flavor.isFlavorJavaFileListType() == true)
+      if(flavor.isFlavorJavaFileListType())
       {
          return this.listFile;
       }

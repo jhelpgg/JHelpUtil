@@ -1,23 +1,48 @@
 package jhelp.util.thread;
 
+import org.junit.Test;
+
 import jhelp.util.Utilities;
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 
-import org.junit.Test;
-
+/**
+ * Mutex tests
+ *
+ * @author JHelp <br>
+ */
 public class MutexTest
 {
-   public class TestThrhread
+   /**
+    * Thread for do a job
+    *
+    * @author JHelp <br>
+    */
+   public class TestThread
          implements Runnable
    {
+      /** Thread ID */
       private final int number;
 
-      public TestThrhread(final int number)
+      /**
+       * Create a new instance of TestThread
+       *
+       * @param number
+       *           Thread ID
+       */
+      public TestThread(final int number)
       {
          this.number = number;
       }
 
+      /**
+       * Do the thread job <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @see java.lang.Runnable#run()
+       */
       @Override
       public void run()
       {
@@ -31,8 +56,12 @@ public class MutexTest
       }
    }
 
+   /** Synchronization mutex */
    public Mutex mutex;
 
+   /**
+    * Launch the test
+    */
    @Test
    public void test()
    {
@@ -40,7 +69,7 @@ public class MutexTest
 
       for(int i = 0; i < 5; i++)
       {
-         (new Thread(new TestThrhread(i))).start();
+         (new Thread(new TestThread(i))).start();
       }
 
       Utilities.sleep(16386);

@@ -3,32 +3,79 @@ package jhelp.util.list;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Test of Bag 2D
+ *
+ * @author JHelp <br>
+ */
 public class Bag2DTest
 {
+   /**
+    * Object put in bag
+    *
+    * @author JHelp <br>
+    */
    public class Sized
          implements SizedObject
    {
+      /** Object height */
       private final int height;
+      /** Object width */
       private final int width;
 
+      /**
+       * Create a new instance of Sized
+       *
+       * @param width
+       *           Object width
+       * @param height
+       *           Object height
+       */
       Sized(final int width, final int height)
       {
          this.width = width;
          this.height = height;
       }
 
+      /**
+       * Object height <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return Object height
+       * @see jhelp.util.list.SizedObject#getHeight()
+       */
       @Override
       public int getHeight()
       {
          return this.height;
       }
 
+      /**
+       * Object width <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return Object width
+       * @see jhelp.util.list.SizedObject#getWidth()
+       */
       @Override
       public int getWidth()
       {
          return this.width;
       }
 
+      /**
+       * String representation <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return String representation
+       * @see java.lang.Object#toString()
+       */
       @Override
       public String toString()
       {
@@ -36,6 +83,9 @@ public class Bag2DTest
       }
    }
 
+   /**
+    * First case test
+    */
    @Test
    public void test1()
    {
@@ -59,6 +109,9 @@ public class Bag2DTest
       }
    }
 
+   /**
+    * Second case test
+    */
    @Test
    public void test2()
    {
@@ -82,6 +135,9 @@ public class Bag2DTest
       }
    }
 
+   /**
+    * Third case test
+    */
    @Test
    public void test3()
    {
@@ -105,6 +161,9 @@ public class Bag2DTest
       }
    }
 
+   /**
+    * Fourth case test
+    */
    @Test
    public void test4()
    {
@@ -128,6 +187,9 @@ public class Bag2DTest
       }
    }
 
+   /**
+    * Fifth case test
+    */
    @Test
    public void test5()
    {
@@ -151,6 +213,9 @@ public class Bag2DTest
       }
    }
 
+   /**
+    * Sixth case test
+    */
    @Test
    public void test6()
    {
@@ -174,6 +239,9 @@ public class Bag2DTest
       }
    }
 
+   /**
+    * Seventh case test
+    */
    @Test
    public void test7()
    {

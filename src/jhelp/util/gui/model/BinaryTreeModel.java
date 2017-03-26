@@ -66,17 +66,17 @@ public class BinaryTreeModel<ELEMENT>
    {
       if(elementClass == null)
       {
-         throw new NullPointerException("elementClass musn't be null");
+         throw new NullPointerException("elementClass MUST NOT be null");
       }
 
       if(comparator == null)
       {
-         throw new NullPointerException("comparator musn't be null");
+         throw new NullPointerException("comparator MUST NOT be null");
       }
 
       if(binaryTreeModelElementRenderer == null)
       {
-         throw new NullPointerException("binaryTreeModelElementRenderer musn't be null");
+         throw new NullPointerException("binaryTreeModelElementRenderer MUST NOT be null");
       }
 
       this.comparator = comparator;
@@ -127,7 +127,7 @@ public class BinaryTreeModel<ELEMENT>
     */
    private void createImage()
    {
-      if(this.binaryTree.isEmpty() == true)
+      if(this.binaryTree.isEmpty())
       {
          this.imageTree = JHelpImage.DUMMY;
          return;
@@ -253,7 +253,7 @@ public class BinaryTreeModel<ELEMENT>
     */
    public void putElement(final ELEMENT element)
    {
-      if(this.binaryTree.putElement(element) == true)
+      if(this.binaryTree.putElement(element))
       {
          this.imageTree = null;
          this.fireModelChanged();
@@ -270,12 +270,12 @@ public class BinaryTreeModel<ELEMENT>
    {
       if(listener == null)
       {
-         throw new NullPointerException("listener musn't be null");
+         throw new NullPointerException("listener MUST NOT be null");
       }
 
       synchronized(this.listeners)
       {
-         if(this.listeners.contains(listener) == false)
+         if(!this.listeners.contains(listener))
          {
             this.listeners.add(listener);
          }
@@ -290,7 +290,7 @@ public class BinaryTreeModel<ELEMENT>
     */
    public void removeElement(final ELEMENT element)
    {
-      if(this.binaryTree.reomveElement(element) == true)
+      if(this.binaryTree.reomveElement(element))
       {
          this.imageTree = null;
          this.fireModelChanged();

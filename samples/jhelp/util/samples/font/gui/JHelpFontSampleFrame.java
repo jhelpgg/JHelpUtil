@@ -9,6 +9,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -21,9 +22,10 @@ import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 
 /**
  * Frame for font size and text alignment sample
- * 
+ *
  * @author JHelp
  */
+@SuppressWarnings("deprecation")
 public class JHelpFontSampleFrame
       extends JFrame
       implements ChangeListener
@@ -59,14 +61,15 @@ public class JHelpFontSampleFrame
 
       this.setLayout(new BorderLayout());
 
-      this.add(new JScrollPane(this.sampleLabelJHelpImage, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+      this.add(new JScrollPane(this.sampleLabelJHelpImage, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER),
+            BorderLayout.CENTER);
       this.add(this.spinnerSize, BorderLayout.SOUTH);
 
       this.updateFont();
 
       this.spinnerSize.addChangeListener(this);
 
-      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       this.pack();
    }
 
@@ -81,7 +84,8 @@ public class JHelpFontSampleFrame
 
       this.imageMain.clear(0xFFFFFFFF);
 
-      final Pair<List<JHelpTextLine>, Dimension> lines = this.font.computeTextLines(JHelpFontSampleFrame.STRING, JHelpTextAlign.LEFT, JHelpFontSampleFrame.WIDTH, JHelpFontSampleFrame.HEIGHT);
+      final Pair<List<JHelpTextLine>, Dimension> lines = this.font.computeTextLines(JHelpFontSampleFrame.STRING, JHelpTextAlign.LEFT,
+            JHelpFontSampleFrame.WIDTH, JHelpFontSampleFrame.HEIGHT);
 
       for(final JHelpTextLine line : lines.element1)
       {
@@ -96,7 +100,7 @@ public class JHelpFontSampleFrame
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param e
     *           Event description
     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)

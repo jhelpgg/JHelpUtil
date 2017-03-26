@@ -164,7 +164,7 @@ public class JHelpMask
       final Stack<Point> stack = new Stack<Point>();
       stack.push(point);
 
-      while(stack.isEmpty() == false)
+      while(!stack.isEmpty())
       {
          point = stack.pop();
          pix = point.x + (point.y * this.width);
@@ -174,22 +174,22 @@ public class JHelpMask
 
          this.data[index] |= val;
 
-         if((point.x > 0) && (this.getValue(point.x - 1, point.y) == false))
+         if((point.x > 0) && (!this.getValue(point.x - 1, point.y)))
          {
             stack.push(new Point(point.x - 1, point.y));
          }
 
-         if((point.y > 0) && (this.getValue(point.x, point.y - 1) == false))
+         if((point.y > 0) && (!this.getValue(point.x, point.y - 1)))
          {
             stack.push(new Point(point.x, point.y - 1));
          }
 
-         if((point.x < (this.width - 1)) && (this.getValue(point.x + 1, point.y) == false))
+         if((point.x < (this.width - 1)) && (!this.getValue(point.x + 1, point.y)))
          {
             stack.push(new Point(point.x + 1, point.y));
          }
 
-         if((point.y < (this.height - 1)) && (this.getValue(point.x, point.y + 1) == false))
+         if((point.y < (this.height - 1)) && (!this.getValue(point.x, point.y + 1)))
          {
             stack.push(new Point(point.x, point.y + 1));
          }
@@ -267,7 +267,7 @@ public class JHelpMask
 
       final int val = 1 << shift;
 
-      if(value == true)
+      if(value)
       {
          this.data[index] |= val;
       }

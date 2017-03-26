@@ -25,20 +25,20 @@ public abstract class UnaryOperator
     *           String to parse
     * @return Unary operator or {@code null}
     */
-   protected static UnaryOperator parserOperateurUnaire(final String string)
+   protected static UnaryOperator parseUnaryOperator(final String string)
    {
-      int indice = -1;
-      for(int i = 0; (i < UnaryOperator.OPERATORS.length) && (indice < 0); i++)
+      int index = -1;
+      for(int i = 0; (i < UnaryOperator.OPERATORS.length) && (index < 0); i++)
       {
          if(string.startsWith(UnaryOperator.OPERATORS[i]))
          {
-            indice = i;
+            index = i;
          }
       }
-      if(indice >= 0)
+      if(index >= 0)
       {
          int p = 0;
-         for(int i = UnaryOperator.OPERATORS[indice].length(); i < (string.length() - 1); i++)
+         for(int i = UnaryOperator.OPERATORS[index].length(); i < (string.length() - 1); i++)
          {
             switch(string.charAt(i))
             {
@@ -55,8 +55,8 @@ public abstract class UnaryOperator
                break;
             }
          }
-         final Function f = Function.parse(Function.getArgument(string.substring(UnaryOperator.OPERATORS[indice].length())));
-         switch(indice)
+         final Function f = Function.parse(Function.getArgument(string.substring(UnaryOperator.OPERATORS[index].length())));
+         switch(index)
          {
             case 0: // Unary minus
                return new MinusUnary(f);
@@ -163,7 +163,7 @@ public abstract class UnaryOperator
    @Override
    public String toString()
    {
-      final StringBuffer sb = new StringBuffer(12);
+      final StringBuilder sb = new StringBuilder(12);
       sb.append(this.operator);
       sb.append('(');
       sb.append(this.parameter.toString());

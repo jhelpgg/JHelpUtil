@@ -3,8 +3,16 @@ package jhelp.util.list;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Tests of HashInt
+ *
+ * @author JHelp <br>
+ */
 public class HashIntTest
 {
+   /**
+    * Do the test
+    */
    @Test
    public void test()
    {

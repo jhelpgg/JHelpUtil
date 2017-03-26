@@ -6,178 +6,181 @@ import java.util.Iterator;
 /**
  * An enumeration can be see like iterator and iterator can be see like enumeration <br>
  * <br>
- * Last modification : 23 janv. 2009<br>
  * Version 0.0.0<br>
- * 
+ *
+ * @param <T> Type of elements
  * @author JHelp
- * @param <T>
- *           Type of elements
  */
 public class EnumerationIterator<T>
-      implements Enumeration<T>, Iterator<T>, Iterable<T>
+        implements Enumeration<T>, Iterator<T>, Iterable<T>
 {
-   /** Index to run over iterator or enumeration */
-   private int            actualIndex;
+    /**
+     * Index to run over iterator or enumeration
+     */
+    private int actualIndex;
 
-   /** Base array */
-   private T[]            array;
+    /**
+     * Base array
+     */
+    private T[] array;
 
-   /** Base enumeration */
-   private Enumeration<T> enumeration;
+    /**
+     * Base enumeration
+     */
+    private Enumeration<T> enumeration;
 
-   /** Base iterator */
-   private Iterator<T>    iterator;
+    /**
+     * Base iterator
+     */
+    private Iterator<T> iterator;
 
-   /**
-    * Constructs EnumerationIterator<br>
-    * With an enumeration
-    * 
-    * @param enumeration
-    *           Base enumeration
-    */
-   public EnumerationIterator(final Enumeration<T> enumeration)
-   {
-      this.enumeration = enumeration;
-   }
+    /**
+     * Constructs EnumerationIterator<br>
+     * With an enumeration
+     *
+     * @param enumeration Base enumeration
+     */
+    public EnumerationIterator(final Enumeration<T> enumeration)
+    {
+        this.enumeration = enumeration;
+    }
 
-   /**
-    * Constructs EnumerationIterator<br>
-    * With iterator
-    * 
-    * @param iterator
-    *           Base iterator
-    */
-   public EnumerationIterator(final Iterator<T> iterator)
-   {
-      this.iterator = iterator;
-   }
+    /**
+     * Constructs EnumerationIterator<br>
+     * With iterator
+     *
+     * @param iterator Base iterator
+     */
+    public EnumerationIterator(final Iterator<T> iterator)
+    {
+        this.iterator = iterator;
+    }
 
-   /**
-    * Constructs EnumerationIterator<br>
-    * With array
-    * 
-    * @param array
-    *           Base array
-    */
-   @SafeVarargs
-   public EnumerationIterator(final T... array)
-   {
-      this.array = array;
-      this.actualIndex = 0;
-   }
+    /**
+     * Constructs EnumerationIterator<br>
+     * With array
+     *
+     * @param array Base array
+     */
+    @SafeVarargs
+    public EnumerationIterator(final T... array)
+    {
+        this.array = array;
+        this.actualIndex = 0;
+    }
 
-   /**
-    * Next element
-    * 
-    * @return Next element
-    */
-   public T getNextElement()
-   {
-      if(this.enumeration != null)
-      {
-         return this.enumeration.nextElement();
-      }
+    /**
+     * Indicates if there a next element
+     *
+     * @return {@code true} if there a next element
+     * @see java.util.Enumeration#hasMoreElements()
+     */
+    @Override
+    public boolean hasMoreElements()
+    {
+        return this.hasNextElement();
+    }
 
-      if(this.iterator != null)
-      {
-         return this.iterator.next();
-      }
+    /**
+     * Indicates if there a next element
+     *
+     * @return {@code true} if there a next element
+     */
+    public boolean hasNextElement()
+    {
+        if (this.enumeration != null)
+        {
+            return this.enumeration.hasMoreElements();
+        }
 
-      if((this.array != null) && (this.actualIndex < this.array.length))
-      {
-         return this.array[this.actualIndex++];
-      }
+        if (this.iterator != null)
+        {
+            return this.iterator.hasNext();
+        }
 
-      return null;
-   }
+        return (this.array != null) && (this.actualIndex < this.array.length);
+    }
 
-   /**
-    * Indicates if there a next element
-    * 
-    * @return {@code true} if there a next element
-    * @see java.util.Enumeration#hasMoreElements()
-    */
-   @Override
-   public boolean hasMoreElements()
-   {
-      return this.hasNextElement();
-   }
+    /**
+     * Next element
+     *
+     * @return Next element
+     * @see java.util.Enumeration#nextElement()
+     */
+    @Override
+    public T nextElement()
+    {
+        return this.getNextElement();
+    }
 
-   /**
-    * Indicates if there a next element
-    * 
-    * @return {@code true} if there a next element
-    * @see java.util.Iterator#hasNext()
-    */
-   @Override
-   public boolean hasNext()
-   {
-      return this.hasNextElement();
-   }
+    /**
+     * Indicates if there a next element
+     *
+     * @return {@code true} if there a next element
+     * @see java.util.Iterator#hasNext()
+     */
+    @Override
+    public boolean hasNext()
+    {
+        return this.hasNextElement();
+    }
 
-   /**
-    * Indicates if there a next element
-    * 
-    * @return {@code true} if there a next element
-    */
-   public boolean hasNextElement()
-   {
-      if(this.enumeration != null)
-      {
-         return this.enumeration.hasMoreElements();
-      }
+    /**
+     * Next element
+     *
+     * @return Next element
+     * @see java.util.Iterator#next()
+     */
+    @Override
+    public T next()
+    {
+        return this.getNextElement();
+    }
 
-      if(this.iterator != null)
-      {
-         return this.iterator.hasNext();
-      }
+    /**
+     * Next element
+     *
+     * @return Next element
+     */
+    public T getNextElement()
+    {
+        if (this.enumeration != null)
+        {
+            return this.enumeration.nextElement();
+        }
 
-      return (this.array != null) && (this.actualIndex < this.array.length);
-   }
+        if (this.iterator != null)
+        {
+            return this.iterator.next();
+        }
 
-   /**
-    * Iterator
-    * 
-    * @return Iterator
-    * @see java.lang.Iterable#iterator()
-    */
-   @Override
-   public Iterator<T> iterator()
-   {
-      return this;
-   }
+        if ((this.array != null) && (this.actualIndex < this.array.length))
+        {
+            return this.array[this.actualIndex++];
+        }
 
-   /**
-    * Next element
-    * 
-    * @return Next element
-    * @see java.util.Iterator#next()
-    */
-   @Override
-   public T next()
-   {
-      return this.getNextElement();
-   }
+        return null;
+    }
 
-   /**
-    * Next element
-    * 
-    * @return Next element
-    * @see java.util.Enumeration#nextElement()
-    */
-   @Override
-   public T nextElement()
-   {
-      return this.getNextElement();
-   }
+    /**
+     * Does nothing
+     *
+     * @see java.util.Iterator#remove()
+     */
+    @Override
+    public void remove()
+    {
+    }
 
-   /**
-    * Does nothing
-    * 
-    * @see java.util.Iterator#remove()
-    */
-   @Override
-   public void remove()
-   {
-   }
+    /**
+     * Iterator
+     *
+     * @return Iterator
+     * @see java.lang.Iterable#iterator()
+     */
+    @Override
+    public Iterator<T> iterator()
+    {
+        return this;
+    }
 }

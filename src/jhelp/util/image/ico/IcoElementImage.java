@@ -93,7 +93,7 @@ public class IcoElementImage
          case IMAGE_4_BITS:
             xor = new Image4Bit(this.width, this.height);
 
-            if(bitmapHeader.isCompressed() == true)
+            if(bitmapHeader.isCompressed())
             {
                ((Image4Bit) xor).parseBitmapStreamCompressed(inputStream);
             }
@@ -106,7 +106,7 @@ public class IcoElementImage
          case IMAGE_8_BITS:
             xor = new Image8Bit(this.width, this.height);
 
-            if(bitmapHeader.isCompressed() == true)
+            if(bitmapHeader.isCompressed())
             {
                ((Image8Bit) xor).parseBitmapStreamCompressed(inputStream);
             }

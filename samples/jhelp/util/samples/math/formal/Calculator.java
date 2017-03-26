@@ -30,11 +30,11 @@ public class Calculator
          String line = bufferedReader.readLine();
          Function function;
 
-         while((line != null) && ("exit".equalsIgnoreCase(line.trim()) == false))
+         while((line != null) && (!"exit".equalsIgnoreCase(line.trim())))
          {
             line = line.trim();
 
-            if(line.startsWith("@") == true)
+            if(line.startsWith("@"))
             {
                function = Function.parse(line.substring(1)).derive("x");
             }

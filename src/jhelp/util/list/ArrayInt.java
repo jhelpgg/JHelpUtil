@@ -106,7 +106,7 @@ public class ArrayInt
    {
       this.expand(1);
 
-      this.sorted = (this.size == 0) || ((this.sorted == true) && (this.array[this.size - 1] <= integer));
+      this.sorted = (this.size == 0) || ((this.sorted) && (this.array[this.size - 1] <= integer));
 
       this.array[this.size] = integer;
       this.size++;
@@ -205,7 +205,7 @@ public class ArrayInt
     */
    public int getIndex(final int integer)
    {
-      if(this.sorted == true)
+      if(this.sorted)
       {
          return this.getIndexSupposeSorted(integer);
       }
@@ -335,7 +335,7 @@ public class ArrayInt
          return;
       }
 
-      this.sorted = (this.sorted == true) && ((index == 0) || (integer >= this.array[index - 1])) && (integer <= this.array[index]);
+      this.sorted = (this.sorted) && ((index == 0) || (integer >= this.array[index - 1])) && (integer <= this.array[index]);
 
       System.arraycopy(this.array, index, this.array, index + 1, this.array.length - index - 1);
 
@@ -374,7 +374,7 @@ public class ArrayInt
     */
    public boolean isSortedSlow()
    {
-      if(this.sorted == true)
+      if(this.sorted)
       {
          return true;
       }
@@ -431,7 +431,7 @@ public class ArrayInt
 
       this.array[index] = integer;
 
-      this.sorted = (this.sorted == true) && ((index == 0) || (integer >= this.array[index - 1]))
+      this.sorted = (this.sorted) && ((index == 0) || (integer >= this.array[index - 1]))
             && ((index == (this.size - 1)) || (integer <= this.array[index + 1]));
    }
 
@@ -441,7 +441,7 @@ public class ArrayInt
     */
    public void sort()
    {
-      if(this.sorted == true)
+      if(this.sorted)
       {
          return;
       }

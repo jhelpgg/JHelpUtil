@@ -3,217 +3,210 @@ package jhelp.util.math.formal;
 /**
  * Logarithm Neperian <br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 public class Logarithm
-      extends UnaryOperator
+        extends UnaryOperator
 {
-   /**
-    * Logarithm function simplifier
-    * 
-    * @author JHelp
-    */
-   class LogarithmSimplifier
-         implements FunctionSimplifier
-   {
-      /**
-       * Simplification : ln(C1) -> C2
-       * 
-       * @param constant
-       *           Constant argument : C1
-       * @return Constant result : C2
-       */
-      private Function simplify(final Constant constant)
-      {
-         if((constant.isUndefined() == true) || (constant.isNul() == true) || (constant.isNegative() == true))
-         {
-            return Constant.UNDEFINED;
-         }
+    /**
+     * Logarithm simplifier
+     */
+    private LogarithmSimplifier logarithmSimplifier;
 
-         return new Constant(Math.log(constant.obtainRealValueNumber()));
-      }
+    /**
+     * Constructs the logarithm
+     *
+     * @param parameter Parameter
+     */
+    public Logarithm(final Function parameter)
+    {
+        super("ln", parameter);
+    }
 
-      /**
-       * Simplification : ln(exp(X)) -> X
-       * 
-       * @param exponential
-       *           Exponential argument : exp(X)
-       * @return Result : X
-       */
-      private Function simplify(final Exponential exponential)
-      {
-         return exponential.parameter.simplify();
-      }
+    /**
+     * Indicates if a function is equals to this logarithm function <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param function Tested function
+     * @return {@code true} if equals
+     * @see jhelp.util.math.formal.Function#functionIsEqualsMoreSimple(jhelp.util.math.formal.Function)
+     */
+    @Override
+    protected boolean functionIsEqualsMoreSimple(final Function function)
+    {
+        if (function == null)
+        {
+            return false;
+        }
 
-      /**
-       * Simplification : ln(X) -> ln(X)
-       * 
-       * @param function
-       *           Function argument : X
-       * @return Result : ln(X)
-       */
-      private Function simplify(final Function function)
-      {
-         return new Logarithm(function.simplify());
-      }
+        if (function instanceof Logarithm)
+        {
+            return this.parameter.functionIsEqualsMoreSimple(((Logarithm) function).parameter);
+        }
 
-      /**
-       * Simplify the logarithm function <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       * 
-       * @return More "simple" function
-       * @see jhelp.util.math.formal.FunctionSimplifier#simplify()
-       */
-      @Override
-      public Function simplify()
-      {
-         final Function function = Logarithm.this.parameter.simplify();
+        return false;
+    }
 
-         if((function instanceof Constant) == true)
-         {
-            return this.simplify((Constant) function);
-         }
+    /**
+     * Indicates if a function is equals to this function
+     *
+     * @param function Function tested
+     * @return {@code true} if there sure equals. {@code false} doesn't mean not equals, but not sure about equality
+     * @see jhelp.util.math.formal.Function#functionIsEquals(jhelp.util.math.formal.Function)
+     */
+    @Override
+    public boolean functionIsEquals(final Function function)
+    {
+        if (function == null)
+        {
+            return false;
+        }
 
-         if((function instanceof Exponential) == true)
-         {
-            return this.simplify((Exponential) function);
-         }
+        if (function instanceof Logarithm)
+        {
+            final Logarithm logarithm = (Logarithm) function;
+            return this.parameter.functionIsEquals(logarithm.parameter);
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-         return this.simplify(function);
-      }
-   }
+    /**
+     * Derive the function
+     *
+     * @param variable Variable for derive
+     * @return Derived
+     * @see jhelp.util.math.formal.Function#derive(jhelp.util.math.formal.Variable)
+     */
+    @Override
+    public Function derive(final Variable variable)
+    {
+        final Function d = this.parameter.derive(variable);
+        return new Division(d, this.parameter);
+    }
 
-   /** Logarithm simplifier */
-   private LogarithmSimplifier logarithmSimplifier;
+    /**
+     * Copy the function
+     *
+     * @return Copy
+     * @see jhelp.util.math.formal.Function#getCopy()
+     */
+    @Override
+    public Function getCopy()
+    {
+        return new Logarithm(this.parameter.getCopy());
+    }
 
-   /**
-    * Constructs the logarithm
-    * 
-    * @param parameter
-    *           Parameter
-    */
-   public Logarithm(final Function parameter)
-   {
-      super("ln", parameter);
-   }
+    /**
+     * Replace variable by function
+     *
+     * @param variable Variable to replace
+     * @param function Function for replace
+     * @return Result function
+     * @see jhelp.util.math.formal.Function#replace(jhelp.util.math.formal.Variable, jhelp.util.math.formal.Function)
+     */
+    @Override
+    public Function replace(final Variable variable, final Function function)
+    {
+        return new Logarithm(this.parameter.replace(variable, function));
+    }
 
-   /**
-    * Indicates if a function is equals to this logarithm function <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param function
-    *           Tested function
-    * @return {@code true} if equals
-    * @see jhelp.util.math.formal.Function#functionIsEqualsMoreSimple(jhelp.util.math.formal.Function)
-    */
-   @Override
-   protected boolean functionIsEqualsMoreSimple(final Function function)
-   {
-      if(function == null)
-      {
-         return false;
-      }
+    /**
+     * Obtain the logarithm simplifier <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Logarithm simplifier
+     * @see jhelp.util.math.formal.Function#obtainFunctionSimplifier()
+     */
+    @Override
+    public FunctionSimplifier obtainFunctionSimplifier()
+    {
+        if (this.logarithmSimplifier == null)
+        {
+            this.logarithmSimplifier = new LogarithmSimplifier();
+        }
 
-      if(function instanceof Logarithm)
-      {
-         return this.parameter.functionIsEqualsMoreSimple(((Logarithm) function).parameter);
-      }
+        return this.logarithmSimplifier;
+    }
 
-      return false;
-   }
+    /**
+     * Logarithm function simplifier
+     *
+     * @author JHelp
+     */
+    class LogarithmSimplifier
+            implements FunctionSimplifier
+    {
+        /**
+         * Simplify the logarithm function <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @return More "simple" function
+         * @see jhelp.util.math.formal.FunctionSimplifier#simplify()
+         */
+        @Override
+        public Function simplify()
+        {
+            final Function function = Logarithm.this.parameter.simplify();
 
-   /**
-    * Derive the function
-    * 
-    * @param variable
-    *           Variable for derive
-    * @return Derived
-    * @see jhelp.util.math.formal.Function#derive(jhelp.util.math.formal.Variable)
-    */
-   @Override
-   public Function derive(final Variable variable)
-   {
-      final Function d = this.parameter.derive(variable);
-      return new Division(d, this.parameter);
-   }
+            if ((function instanceof Constant))
+            {
+                return this.simplify((Constant) function);
+            }
 
-   /**
-    * Indicates if a function is equals to this function
-    * 
-    * @param function
-    *           Function tested
-    * @return {@code true} if there sure equals. {@code false} dosen't mean not equals, but not sure about equality
-    * @see jhelp.util.math.formal.Function#functionIsEquals(jhelp.util.math.formal.Function)
-    */
-   @Override
-   public boolean functionIsEquals(final Function function)
-   {
-      if(function == null)
-      {
-         return false;
-      }
+            if ((function instanceof Exponential))
+            {
+                return this.simplify((Exponential) function);
+            }
 
-      if(function instanceof Logarithm)
-      {
-         final Logarithm logarithm = (Logarithm) function;
-         return this.parameter.functionIsEquals(logarithm.parameter);
-      }
-      else
-      {
-         return false;
-      }
-   }
+            return this.simplify(function);
+        }
 
-   /**
-    * Copy the function
-    * 
-    * @return Copy
-    * @see jhelp.util.math.formal.Function#getCopy()
-    */
-   @Override
-   public Function getCopy()
-   {
-      return new Logarithm(this.parameter.getCopy());
-   }
+        /**
+         * Simplification : ln(C1) -> C2
+         *
+         * @param constant Constant argument : C1
+         * @return Constant result : C2
+         */
+        private Function simplify(final Constant constant)
+        {
+            if ((constant.isUndefined()) || (constant.isNul()) || (constant.isNegative()))
+            {
+                return Constant.UNDEFINED;
+            }
 
-   /**
-    * Obtain the logarithm simplifier <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @return Logarithm simplifier
-    * @see jhelp.util.math.formal.Function#obtainFunctionSimplifier()
-    */
-   @Override
-   public FunctionSimplifier obtainFunctionSimplifier()
-   {
-      if(this.logarithmSimplifier == null)
-      {
-         this.logarithmSimplifier = new LogarithmSimplifier();
-      }
+            return new Constant(Math.log(constant.obtainRealValueNumber()));
+        }
 
-      return this.logarithmSimplifier;
-   }
+        /**
+         * Simplification : ln(exp(X)) -> X
+         *
+         * @param exponential Exponential argument : exp(X)
+         * @return Result : X
+         */
+        private Function simplify(final Exponential exponential)
+        {
+            return exponential.parameter.simplify();
+        }
 
-   /**
-    * Replace variable by function
-    * 
-    * @param variable
-    *           Variable to replace
-    * @param function
-    *           Function for replace
-    * @return Result function
-    * @see jhelp.util.math.formal.Function#replace(jhelp.util.math.formal.Variable, jhelp.util.math.formal.Function)
-    */
-   @Override
-   public Function replace(final Variable variable, final Function function)
-   {
-      return new Logarithm(this.parameter.replace(variable, function));
-   }
+        /**
+         * Simplification : ln(X) -> ln(X)
+         *
+         * @param function Function argument : X
+         * @return Result : ln(X)
+         */
+        private Function simplify(final Function function)
+        {
+            return new Logarithm(function.simplify());
+        }
+    }
 }

@@ -30,7 +30,7 @@ public class DateBinarizable
     * 
     * @return Complete date string representation
     */
-   public String datePrecizeString()
+   public String datePreciseString()
    {
       final StringBuilder stringBuilder = new StringBuilder();
 

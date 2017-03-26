@@ -32,12 +32,12 @@ public class Complex
     */
    public static Complex add(final Complex complex1, final Complex complex2)
    {
-      if(complex1.isNul() == true)
+      if(complex1.isNul())
       {
          return complex2;
       }
 
-      if(complex2.isNul() == true)
+      if(complex2.isNul())
       {
          return complex1;
       }
@@ -56,7 +56,7 @@ public class Complex
     */
    public static Complex createComplexLengthAngle(final double length, double angle)
    {
-      if(UtilMath.isNul(length) == true)
+      if(UtilMath.isNul(length))
       {
          return Complex.ZERO;
       }
@@ -65,27 +65,27 @@ public class Complex
 
       final Complex result = new Complex(length * Math.cos(angle), length * Math.sin(angle), angle, length);
 
-      if(Complex.ZERO.equals(result) == true)
+      if(Complex.ZERO.equals(result))
       {
          return Complex.ZERO;
       }
 
-      if(Complex.ONE.equals(result) == true)
+      if(Complex.ONE.equals(result))
       {
          return Complex.ONE;
       }
 
-      if(Complex.MINUS_ONE.equals(result) == true)
+      if(Complex.MINUS_ONE.equals(result))
       {
          return Complex.MINUS_ONE;
       }
 
-      if(Complex.I.equals(result) == true)
+      if(Complex.I.equals(result))
       {
          return Complex.I;
       }
 
-      if(Complex.MINUS_I.equals(result) == true)
+      if(Complex.MINUS_I.equals(result))
       {
          return Complex.MINUS_I;
       }
@@ -106,34 +106,34 @@ public class Complex
    {
       final double length = Math.sqrt((real * real) + (imaginary * imaginary));
 
-      if(UtilMath.isNul(length) == true)
+      if(UtilMath.isNul(length))
       {
          return Complex.ZERO;
       }
 
       final Complex result = new Complex(real, imaginary, UtilMath.modulo(Math.atan2(imaginary / length, real / length), UtilMath.TWO_PI), length);
 
-      if(Complex.ZERO.equals(result) == true)
+      if(Complex.ZERO.equals(result))
       {
          return Complex.ZERO;
       }
 
-      if(Complex.ONE.equals(result) == true)
+      if(Complex.ONE.equals(result))
       {
          return Complex.ONE;
       }
 
-      if(Complex.MINUS_ONE.equals(result) == true)
+      if(Complex.MINUS_ONE.equals(result))
       {
          return Complex.MINUS_ONE;
       }
 
-      if(Complex.I.equals(result) == true)
+      if(Complex.I.equals(result))
       {
          return Complex.I;
       }
 
-      if(Complex.MINUS_I.equals(result) == true)
+      if(Complex.MINUS_I.equals(result))
       {
          return Complex.MINUS_I;
       }
@@ -152,37 +152,37 @@ public class Complex
     */
    public static Complex divide(final Complex complex1, final Complex complex2)
    {
-      if(complex2.isNul() == true)
+      if(complex2.isNul())
       {
          throw new IllegalArgumentException("Can't divide by zero");
       }
 
-      if(complex1.isNul() == true)
+      if(complex1.isNul())
       {
          return Complex.ZERO;
       }
 
-      if(Complex.ONE.equals(complex1) == true)
+      if(Complex.ONE.equals(complex1))
       {
          return complex2.invert();
       }
 
-      if(Complex.MINUS_ONE.equals(complex1) == true)
+      if(Complex.MINUS_ONE.equals(complex1))
       {
          return complex2.invert().opposite();
       }
 
-      if(Complex.ONE.equals(complex2) == true)
+      if(Complex.ONE.equals(complex2))
       {
          return complex1;
       }
 
-      if(Complex.MINUS_ONE.equals(complex2) == true)
+      if(Complex.MINUS_ONE.equals(complex2))
       {
          return complex1.opposite();
       }
 
-      if(complex1.equals(complex2) == true)
+      if(complex1.equals(complex2))
       {
          return Complex.ONE;
       }
@@ -201,27 +201,27 @@ public class Complex
     */
    public static Complex multiply(final Complex complex1, final Complex complex2)
    {
-      if((complex1.isNul() == true) || (complex2.isNul() == true))
+      if((complex1.isNul()) || (complex2.isNul()))
       {
          return Complex.ZERO;
       }
 
-      if(Complex.ONE.equals(complex1) == true)
+      if(Complex.ONE.equals(complex1))
       {
          return complex2;
       }
 
-      if(Complex.MINUS_ONE.equals(complex1) == true)
+      if(Complex.MINUS_ONE.equals(complex1))
       {
          return complex2.opposite();
       }
 
-      if(Complex.ONE.equals(complex2) == true)
+      if(Complex.ONE.equals(complex2))
       {
          return complex1;
       }
 
-      if(Complex.MINUS_ONE.equals(complex2) == true)
+      if(Complex.MINUS_ONE.equals(complex2))
       {
          return complex1.opposite();
       }
@@ -240,9 +240,9 @@ public class Complex
     */
    public static Complex subtract(final Complex complex1, final Complex complex2)
    {
-      if(complex1.isNul() == true)
+      if(complex1.isNul())
       {
-         if(complex2.isNul() == true)
+         if(complex2.isNul())
          {
             return Complex.ZERO;
          }
@@ -252,12 +252,12 @@ public class Complex
          }
       }
 
-      if(complex2.isNul() == true)
+      if(complex2.isNul())
       {
          return complex1;
       }
 
-      if(complex1.equals(complex2) == true)
+      if(complex1.equals(complex2))
       {
          return Complex.ZERO;
       }
@@ -313,12 +313,12 @@ public class Complex
     */
    public Complex complementary()
    {
-      if(this.isNul() == true)
+      if(this.isNul())
       {
          return Complex.ZERO;
       }
 
-      if(this.isReal() == true)
+      if(this.isReal())
       {
          return this;
       }
@@ -369,8 +369,8 @@ public class Complex
 
       final Complex other = (Complex) obj;
 
-      return ((UtilMath.equals(this.real, other.real) == true) && (UtilMath.equals(this.imaginary, other.imaginary) == true))
-            || ((UtilMath.equals(this.length, other.length) == true) && (UtilMath.equals(this.angle, other.angle) == true));
+      return ((UtilMath.equals(this.real, other.real)) && (UtilMath.equals(this.imaginary, other.imaginary)))
+            || ((UtilMath.equals(this.length, other.length)) && (UtilMath.equals(this.angle, other.angle)));
    }
 
    /**
@@ -435,7 +435,7 @@ public class Complex
     */
    public Complex invert()
    {
-      if(this.isNul() == true)
+      if(this.isNul())
       {
          throw new IllegalStateException("Can't invert a nul complex");
       }
@@ -492,7 +492,7 @@ public class Complex
     */
    public Complex opposite()
    {
-      if(this.isNul() == true)
+      if(this.isNul())
       {
          return Complex.ZERO;
       }

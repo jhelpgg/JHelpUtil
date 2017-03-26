@@ -3,13 +3,27 @@ package jhelp.util.io.link;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Reference path tests
+ *
+ * @author JHelp <br>
+ */
 public class ReferencePathTest
 {
+   /**
+    * String representation test
+    *
+    * @param string
+    *           Path to parse
+    */
    private void parseTest(final String string)
    {
       Assert.assertEquals(string, ReferencePath.parseReferencePath(string).toString());
    }
 
+   /**
+    * Parse tests
+    */
    @Test
    public void testParse()
    {
@@ -28,6 +42,9 @@ public class ReferencePathTest
       Assert.assertEquals("fruit", referencePath.getChild().getPathName());
    }
 
+   /**
+    * Simplify tests
+    */
    @Test
    public void testSimplify()
    {

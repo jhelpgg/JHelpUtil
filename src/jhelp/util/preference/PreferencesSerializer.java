@@ -68,7 +68,7 @@ class PreferencesSerializer
       FileOutputStream fileOutputStream = null;
       try
       {
-         if(UtilIO.createFile(this.preferencesFile) == false)
+         if(!UtilIO.createFile(this.preferencesFile))
          {
             throw new IOException("Can't create file " + this.preferencesFile.getAbsolutePath());
          }
@@ -108,7 +108,7 @@ class PreferencesSerializer
             {
                fileOutputStream.flush();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
 
@@ -116,7 +116,7 @@ class PreferencesSerializer
             {
                fileOutputStream.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -144,7 +144,7 @@ class PreferencesSerializer
       {
          this.serializing = false;
 
-         if(this.serializeAgain == true)
+         if(this.serializeAgain)
          {
             this.serializeAgain = false;
             this.serializing = true;
@@ -166,7 +166,7 @@ class PreferencesSerializer
       this.mutex.lock();
       try
       {
-         if(this.serializing == false)
+         if(!this.serializing)
          {
             this.serializing = true;
 

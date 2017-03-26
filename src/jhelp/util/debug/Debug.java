@@ -1,6 +1,7 @@
 /**
  * <h1>License :</h1> <br>
- * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any
+ * damage it may
  * cause.<br>
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
@@ -28,670 +29,655 @@ import jhelp.util.reflection.Reflector;
  */
 public final class Debug
 {
-   /** Actual debug level */
-   private static DebugLevel          debugLevel     = DebugLevel.VERBOSE;
-   /** For synchronize the printing (To be thread safe) */
-   private static final ReentrantLock REENTRANT_LOCK = new ReentrantLock(true);
+    /**
+     * For synchronize the printing (To be thread safe)
+     */
+    private static final ReentrantLock REENTRANT_LOCK = new ReentrantLock(true);
+    /**
+     * Actual debug level
+     */
+    private static       DebugLevel    debugLevel     = DebugLevel.VERBOSE;
 
-   /**
-    * Print an integer
-    *
-    * @param stream
-    *           Stream where write
-    * @param integer
-    *           Integer to print
-    * @param characterNumber
-    *           Number of character must show
-    */
-   private static void printInteger(final PrintStream stream, int integer, final int characterNumber)
-   {
-      int ten = 1;
+    /**
+     * To avoid instance
+     */
+    private Debug()
+    {
+    }
 
-      for(int i = 1; i < characterNumber; i++)
-      {
-         ten *= 10;
-      }
+    /**
+     * Print an integer
+     *
+     * @param stream          Stream where write
+     * @param integer         Integer to print
+     * @param characterNumber Number of character must show
+     */
+    private static void printInteger(final PrintStream stream, int integer, final int characterNumber)
+    {
+        int ten = 1;
 
-      while(ten > 0)
-      {
-         stream.print(integer / ten);
+        for (int i = 1; i < characterNumber; i++)
+        {
+            ten *= 10;
+        }
 
-         integer %= ten;
-         ten /= 10;
-      }
-   }
+        while (ten > 0)
+        {
+            stream.print(integer / ten);
 
-   /**
-    * Print a message
-    *
-    * @param stream
-    *           Stream where write
-    * @param debugLevel
-    *           Debug level
-    * @param stackTraceElement
-    *           Trace of the source
-    * @param message
-    *           Message to print
-    */
-   private static void printMessage(final PrintStream stream, final DebugLevel debugLevel, final StackTraceElement stackTraceElement, final Object... message)
-   {
-      // Level test
-      if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+            integer %= ten;
+            ten /= 10;
+        }
+    }
 
-      // Print time
-      final GregorianCalendar gregorianCalendar = new GregorianCalendar();
+    /**
+     * Print a message
+     *
+     * @param stream            Stream where write
+     * @param debugLevel        Debug level
+     * @param stackTraceElement Trace of the source
+     * @param message           Message to print
+     */
+    private static void printMessage(final PrintStream stream, final DebugLevel debugLevel,
+                                     final StackTraceElement stackTraceElement, final Object... message)
+    {
+        // Level test
+        if (debugLevel.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
 
-      Debug.printInteger(stream, gregorianCalendar.get(Calendar.DAY_OF_MONTH), 2);
-      stream.print('/');
-      Debug.printInteger(stream, gregorianCalendar.get(Calendar.MONTH) + 1, 2);
-      stream.print('/');
-      Debug.printInteger(stream, gregorianCalendar.get(Calendar.YEAR), 4);
-      stream.print(" : ");
-      Debug.printInteger(stream, gregorianCalendar.get(Calendar.HOUR_OF_DAY), 2);
-      stream.print('h');
-      Debug.printInteger(stream, gregorianCalendar.get(Calendar.MINUTE), 2);
-      stream.print('m');
-      Debug.printInteger(stream, gregorianCalendar.get(Calendar.SECOND), 2);
-      stream.print('s');
-      Debug.printInteger(stream, gregorianCalendar.get(Calendar.MILLISECOND), 3);
-      stream.print("ms : ");
+        // Print time
+        final GregorianCalendar gregorianCalendar = new GregorianCalendar();
 
-      // Print level
-      stream.print(debugLevel.getHeader());
+        Debug.printInteger(stream, gregorianCalendar.get(Calendar.DAY_OF_MONTH), 2);
+        stream.print('/');
+        Debug.printInteger(stream, gregorianCalendar.get(Calendar.MONTH) + 1, 2);
+        stream.print('/');
+        Debug.printInteger(stream, gregorianCalendar.get(Calendar.YEAR), 4);
+        stream.print(" : ");
+        Debug.printInteger(stream, gregorianCalendar.get(Calendar.HOUR_OF_DAY), 2);
+        stream.print('h');
+        Debug.printInteger(stream, gregorianCalendar.get(Calendar.MINUTE), 2);
+        stream.print('m');
+        Debug.printInteger(stream, gregorianCalendar.get(Calendar.SECOND), 2);
+        stream.print('s');
+        Debug.printInteger(stream, gregorianCalendar.get(Calendar.MILLISECOND), 3);
+        stream.print("ms : ");
 
-      // Print code location
-      stream.print(stackTraceElement.getClassName());
-      stream.print('.');
-      stream.print(stackTraceElement.getMethodName());
-      stream.print(" at ");
-      stream.print(stackTraceElement.getLineNumber());
-      stream.print(" (");
-      stream.print(stackTraceElement.getFileName());
-      stream.print(":");
-      stream.print(stackTraceElement.getLineNumber());
-      stream.print(") : ");
+        // Print level
+        stream.print(debugLevel.getHeader());
 
-      // Print message
-      for(final Object element : message)
-      {
-         Debug.printObject(stream, element);
-      }
+        // Print code location
+        stream.print(stackTraceElement.getClassName());
+        stream.print('.');
+        stream.print(stackTraceElement.getMethodName());
+        stream.print(" at ");
+        stream.print(stackTraceElement.getLineNumber());
+        stream.print(" (");
+        stream.print(stackTraceElement.getFileName());
+        stream.print(":");
+        stream.print(stackTraceElement.getLineNumber());
+        stream.print(") : ");
 
-      stream.println();
-   }
+        // Print message
+        for (final Object element : message)
+        {
+            Debug.printObject(stream, element);
+        }
 
-   /**
-    * Print an object
-    *
-    * @param stream
-    *           Stream where write
-    * @param object
-    *           Object to print
-    */
-   @SuppressWarnings(
-   {
-         "rawtypes", "unchecked"
-   })
-   private static void printObject(final PrintStream stream, final Object object)
-   {
-      if((object == null) || (object.getClass().isArray() == false))
-      {
-         if(object != null)
-         {
-            if(object instanceof Iterable)
+        stream.println();
+    }
+
+    /**
+     * Print an object
+     *
+     * @param stream Stream where write
+     * @param object Object to print
+     */
+    @SuppressWarnings(
             {
-               stream.print('{');
-               boolean first = true;
+                    "rawtypes", "unchecked"
+            })
+    private static void printObject(final PrintStream stream, final Object object)
+    {
+        if ((object == null) || (!object.getClass()
+                                        .isArray()))
+        {
+            if (object != null)
+            {
+                if (object instanceof Iterable)
+                {
+                    stream.print('{');
+                    boolean first = true;
 
-               for(final Object obj : (Iterable) object)
-               {
-                  if(first == false)
-                  {
-                     stream.print("; ");
-                  }
+                    for (final Object obj : (Iterable) object)
+                    {
+                        if (!first)
+                        {
+                            stream.print("; ");
+                        }
 
-                  Debug.printObject(stream, obj);
-                  first = false;
-               }
+                        Debug.printObject(stream, obj);
+                        first = false;
+                    }
 
-               stream.print('}');
-               return;
+                    stream.print('}');
+                    return;
+                }
+
+                if (object instanceof Map)
+                {
+                    stream.print('{');
+                    boolean first = true;
+
+                    for (final Entry entry : (Set<Entry>) ((Map) object).entrySet())
+                    {
+                        if (!first)
+                        {
+                            stream.print(" | ");
+                        }
+
+                        Debug.printObject(stream, entry.getKey());
+                        stream.print("=");
+                        Debug.printObject(stream, entry.getValue());
+                        first = false;
+                    }
+
+                    stream.print('}');
+                    return;
+                }
             }
 
-            if(object instanceof Map)
+            stream.print(object);
+
+            return;
+        }
+
+        stream.print('[');
+
+        if (object.getClass()
+                  .getComponentType()
+                  .isPrimitive())
+        {
+            final String name = object.getClass()
+                                      .getComponentType()
+                                      .getName();
+
+            if (Reflector.PRIMITIVE_BOOLEAN.equals(name))
             {
-               stream.print('{');
-               boolean first = true;
+                final boolean[] array  = (boolean[]) object;
+                final int       length = array.length;
 
-               for(final Entry entry : (Set<Entry>) ((Map) object).entrySet())
-               {
-                  if(first == false)
-                  {
-                     stream.print(" | ");
-                  }
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  Debug.printObject(stream, entry.getKey());
-                  stream.print("=");
-                  Debug.printObject(stream, entry.getValue());
-                  first = false;
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
 
-               stream.print('}');
-               return;
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-
-         stream.print(object);
-
-         return;
-      }
-
-      stream.print('[');
-
-      if(object.getClass().getComponentType().isPrimitive() == true)
-      {
-         final String name = object.getClass().getComponentType().getName();
-
-         if(Reflector.PRIMITIVE_BOOLEAN.equals(name) == true)
-         {
-            final boolean[] array = (boolean[]) object;
-            final int length = array.length;
-
-            if(length > 0)
+            else if (Reflector.PRIMITIVE_BYTE.equals(name))
             {
-               stream.print(array[0]);
+                final byte[] array  = (byte[]) object;
+                final int    length = array.length;
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  stream.print(array[i]);
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
+
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-         else if(Reflector.PRIMITIVE_BYTE.equals(name) == true)
-         {
-            final byte[] array = (byte[]) object;
-            final int length = array.length;
-
-            if(length > 0)
+            else if (Reflector.PRIMITIVE_CHAR.equals(name))
             {
-               stream.print(array[0]);
+                final char[] array  = (char[]) object;
+                final int    length = array.length;
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  stream.print(array[i]);
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
+
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-         else if(Reflector.PRIMITIVE_CHAR.equals(name) == true)
-         {
-            final char[] array = (char[]) object;
-            final int length = array.length;
-
-            if(length > 0)
+            else if (Reflector.PRIMITIVE_DOUBLE.equals(name))
             {
-               stream.print(array[0]);
+                final double[] array  = (double[]) object;
+                final int      length = array.length;
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  stream.print(array[i]);
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
+
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-         else if(Reflector.PRIMITIVE_DOUBLE.equals(name) == true)
-         {
-            final double[] array = (double[]) object;
-            final int length = array.length;
-
-            if(length > 0)
+            else if (Reflector.PRIMITIVE_FLOAT.equals(name))
             {
-               stream.print(array[0]);
+                final float[] array  = (float[]) object;
+                final int     length = array.length;
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  stream.print(array[i]);
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
+
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-         else if(Reflector.PRIMITIVE_FLOAT.equals(name) == true)
-         {
-            final float[] array = (float[]) object;
-            final int length = array.length;
-
-            if(length > 0)
+            else if (Reflector.PRIMITIVE_INT.equals(name))
             {
-               stream.print(array[0]);
+                final int[] array  = (int[]) object;
+                final int   length = array.length;
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  stream.print(array[i]);
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
+
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-         else if(Reflector.PRIMITIVE_INT.equals(name) == true)
-         {
-            final int[] array = (int[]) object;
-            final int length = array.length;
-
-            if(length > 0)
+            else if (Reflector.PRIMITIVE_LONG.equals(name))
             {
-               stream.print(array[0]);
+                final long[] array  = (long[]) object;
+                final int    length = array.length;
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  stream.print(array[i]);
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
+
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-         else if(Reflector.PRIMITIVE_LONG.equals(name) == true)
-         {
-            final long[] array = (long[]) object;
-            final int length = array.length;
-
-            if(length > 0)
+            else if (Reflector.PRIMITIVE_SHORT.equals(name))
             {
-               stream.print(array[0]);
+                final short[] array  = (short[]) object;
+                final int     length = array.length;
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                if (length > 0)
+                {
+                    stream.print(array[0]);
 
-                  stream.print(array[i]);
-               }
+                    for (int i = 1; i < length; i++)
+                    {
+                        stream.print(", ");
+
+                        stream.print(array[i]);
+                    }
+                }
             }
-         }
-         else if(Reflector.PRIMITIVE_SHORT.equals(name) == true)
-         {
-            final short[] array = (short[]) object;
-            final int length = array.length;
+        }
+        else
+        {
+            final Object[] array  = (Object[]) object;
+            final int      length = array.length;
 
-            if(length > 0)
+            if (length > 0)
             {
-               stream.print(array[0]);
+                Debug.printObject(stream, array[0]);
 
-               for(int i = 1; i < length; i++)
-               {
-                  stream.print(", ");
+                for (int i = 1; i < length; i++)
+                {
+                    stream.print(", ");
 
-                  stream.print(array[i]);
-               }
+                    Debug.printObject(stream, array[i]);
+                }
             }
-         }
-      }
-      else
-      {
-         final Object[] array = (Object[]) object;
-         final int length = array.length;
+        }
 
-         if(length > 0)
-         {
-            Debug.printObject(stream, array[0]);
+        stream.print(']');
+    }
 
-            for(int i = 1; i < length; i++)
+    /**
+     * Print a trace
+     *
+     * @param stream     Stream where write
+     * @param debugLevel Debug level
+     * @param throwable  Trace to print
+     * @param start      Offset to start reading the trace
+     */
+    private static void printTrace(final PrintStream stream, final DebugLevel debugLevel, Throwable throwable, int start)
+    {
+        // Level test
+        if (debugLevel.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
+
+        // Print trace
+        StackTraceElement[] stackTraceElements;
+        StackTraceElement   stackTraceElement;
+        int                 length;
+
+        while (throwable != null)
+        {
+            stream.println(throwable.getMessage());
+            stream.println(throwable.getLocalizedMessage());
+            stream.println(throwable.toString());
+
+            stackTraceElements = throwable.getStackTrace();
+            length = stackTraceElements.length;
+
+            for (int index = start; index < length; index++)
             {
-               stream.print(", ");
+                stackTraceElement = stackTraceElements[index];
 
-               Debug.printObject(stream, array[i]);
+                stream.print('\t');
+                stream.print(stackTraceElement.getClassName());
+                stream.print('.');
+                stream.print(stackTraceElement.getMethodName());
+                stream.print(" at ");
+                stream.print(stackTraceElement.getLineNumber());
+                stream.print(" (");
+                stream.print(stackTraceElement.getFileName());
+                stream.print(":");
+                stream.print(stackTraceElement.getLineNumber());
+                stream.println(")");
             }
-         }
-      }
 
-      stream.print(']');
-   }
+            throwable = throwable.getCause();
 
-   /**
-    * Print a trace
-    *
-    * @param stream
-    *           Stream where write
-    * @param debugLevel
-    *           Debug level
-    * @param throwable
-    *           Trace to print
-    * @param start
-    *           Offset to start reading the trace
-    */
-   private static void printTrace(final PrintStream stream, final DebugLevel debugLevel, Throwable throwable, int start)
-   {
-      // Level test
-      if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+            if (throwable != null)
+            {
+                stream.println("Caused by : ");
+            }
 
-      // Print trace
-      StackTraceElement[] stackTraceElements;
-      StackTraceElement stackTraceElement;
-      int length;
+            start = 0;
+        }
+    }
 
-      while(throwable != null)
-      {
-         stream.println(throwable.getMessage());
-         stream.println(throwable.getLocalizedMessage());
-         stream.println(throwable.toString());
+    /**
+     * Actual debug level
+     *
+     * @return Actual debug level
+     */
+    public static DebugLevel getDebugLevel()
+    {
+        return Debug.debugLevel;
+    }
 
-         stackTraceElements = throwable.getStackTrace();
-         length = stackTraceElements.length;
+    /**
+     * Change debug level
+     *
+     * @param debugLevel New debug level
+     */
+    public static void setDebugLevel(final DebugLevel debugLevel)
+    {
+        if (debugLevel == null)
+        {
+            throw new NullPointerException("debugLevel MUST NOT be null");
+        }
 
-         for(int index = start; index < length; index++)
-         {
-            stackTraceElement = stackTraceElements[index];
+        Debug.debugLevel = debugLevel;
+    }
 
-            stream.print('\t');
-            stream.print(stackTraceElement.getClassName());
-            stream.print('.');
-            stream.print(stackTraceElement.getMethodName());
-            stream.print(" at ");
-            stream.print(stackTraceElement.getLineNumber());
-            stream.print(" (");
-            stream.print(stackTraceElement.getFileName());
-            stream.print(":");
-            stream.print(stackTraceElement.getLineNumber());
-            stream.println(")");
-         }
+    /**
+     * Print information to know which part of code, called a method.<br>
+     * Short version of {@link #printTrace(DebugLevel, Object...)}
+     *
+     * @param debugLevel Debug level
+     */
+    public static void printCalledFrom(final DebugLevel debugLevel)
+    {
+        // Level test
+        if (debugLevel.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
 
-         throwable = throwable.getCause();
+        Debug.REENTRANT_LOCK.lock();
 
-         if(throwable != null)
-         {
-            stream.println("Caused by : ");
-         }
+        try
+        {
+            final Throwable           throwable         = new Throwable();
+            final StackTraceElement[] traces            = throwable.getStackTrace();
+            final StackTraceElement   stackTraceElement = traces[2];
 
-         start = 0;
-      }
-   }
+            Debug.printMessage(System.out, debugLevel, traces[1], "Called from ", stackTraceElement.getClassName(), '.',
+                               stackTraceElement.getMethodName(), " at ",
+                               stackTraceElement.getLineNumber());
+        }
+        finally
+        {
+            Debug.REENTRANT_LOCK.unlock();
+        }
+    }
 
-   /**
-    * Actual debug level
-    *
-    * @return Actual debug level
-    */
-   public static DebugLevel getDebugLevel()
-   {
-      return Debug.debugLevel;
-   }
+    /**
+     * Print an error with its trace
+     *
+     * @param error   Error to print
+     * @param message Message information
+     */
+    public static void printError(final Error error, final Object... message)
+    {
+        // Level test
+        if (DebugLevel.ERROR.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
 
-   /**
-    * Print information to know which part of code, called a method.<br>
-    * Short version of {@link #printTrace(DebugLevel, Object...)}
-    *
-    * @param debugLevel
-    *           Debug level
-    */
-   public static void printCalledFrom(final DebugLevel debugLevel)
-   {
-      // Level test
-      if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+        Debug.REENTRANT_LOCK.lock();
 
-      Debug.REENTRANT_LOCK.lock();
+        try
+        {
+            if ((message != null) && (message.length > 0))
+            {
+                Debug.printMessage(System.err, DebugLevel.ERROR, (new Throwable()).getStackTrace()[1], message);
+            }
 
-      try
-      {
-         final Throwable throwable = new Throwable();
-         final StackTraceElement[] traces = throwable.getStackTrace();
-         final StackTraceElement stackTraceElement = traces[2];
+            System.err.println("<-- ERROR");
 
-         Debug.printMessage(System.out, debugLevel, traces[1], "Called from ", stackTraceElement.getClassName(), '.', stackTraceElement.getMethodName(), " at ",
-               stackTraceElement.getLineNumber());
-      }
-      finally
-      {
-         Debug.REENTRANT_LOCK.unlock();
-      }
-   }
+            Debug.printTrace(System.err, DebugLevel.ERROR, error, 0);
 
-   /**
-    * Print an error with its trace
-    *
-    * @param error
-    *           Error to print
-    * @param message
-    *           Message information
-    */
-   public static void printError(final Error error, final Object... message)
-   {
-      // Level test
-      if(DebugLevel.ERROR.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+            System.err.println("ERROR -->");
+        }
+        finally
+        {
+            Debug.REENTRANT_LOCK.unlock();
+        }
+    }
 
-      Debug.REENTRANT_LOCK.lock();
+    /**
+     * Print an exception with its trace
+     *
+     * @param exception Exception to print
+     * @param message   Message information
+     */
+    public static void printException(final Exception exception, final Object... message)
+    {
+        // Level test
+        if (DebugLevel.WARNING.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
 
-      try
-      {
-         if((message != null) && (message.length > 0))
-         {
-            Debug.printMessage(System.err, DebugLevel.ERROR, (new Throwable()).getStackTrace()[1], message);
-         }
+        Debug.REENTRANT_LOCK.lock();
 
-         System.err.println("<-- ERROR");
+        try
+        {
+            if ((message != null) && (message.length > 0))
+            {
+                Debug.printMessage(System.err, DebugLevel.WARNING, (new Throwable()).getStackTrace()[1], message);
+            }
 
-         Debug.printTrace(System.err, DebugLevel.ERROR, error, 0);
+            System.err.println("<-- EXCEPTION");
 
-         System.err.println("ERROR -->");
-      }
-      finally
-      {
-         Debug.REENTRANT_LOCK.unlock();
-      }
-   }
+            Debug.printTrace(System.err, DebugLevel.WARNING, exception, 0);
 
-   /**
-    * Print an exception with its trace
-    *
-    * @param exception
-    *           Exception to print
-    * @param message
-    *           Message information
-    */
-   public static void printException(final Exception exception, final Object... message)
-   {
-      // Level test
-      if(DebugLevel.WARNING.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+            System.err.println("EXCEPTION -->");
+        }
+        finally
+        {
+            Debug.REENTRANT_LOCK.unlock();
+        }
+    }
 
-      Debug.REENTRANT_LOCK.lock();
+    /**
+     * Print some information
+     *
+     * @param debugLevel Debug level
+     * @param message    Message to print
+     */
+    public static void println(final DebugLevel debugLevel, final Object... message)
+    {
+        // Level test
+        if (debugLevel.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
 
-      try
-      {
-         if((message != null) && (message.length > 0))
-         {
-            Debug.printMessage(System.err, DebugLevel.WARNING, (new Throwable()).getStackTrace()[1], message);
-         }
+        Debug.REENTRANT_LOCK.lock();
 
-         System.err.println("<-- EXCEPTION");
+        try
+        {
+            Debug.printMessage(System.out, debugLevel, (new Throwable()).getStackTrace()[1], message);
+        }
+        finally
+        {
+            Debug.REENTRANT_LOCK.unlock();
+        }
+    }
 
-         Debug.printTrace(System.err, DebugLevel.WARNING, exception, 0);
+    /**
+     * Print a mark
+     *
+     * @param debugLevel Debug level
+     * @param mark       Mark to print
+     */
+    public static void printMark(final DebugLevel debugLevel, final String mark)
+    {
+        // Level test
+        if (debugLevel.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
 
-         System.err.println("EXCEPTION -->");
-      }
-      finally
-      {
-         Debug.REENTRANT_LOCK.unlock();
-      }
-   }
+        Debug.REENTRANT_LOCK.lock();
 
-   /**
-    * Print some information
-    *
-    * @param debugLevel
-    *           Debug level
-    * @param message
-    *           Message to print
-    */
-   public static void println(final DebugLevel debugLevel, final Object... message)
-   {
-      // Level test
-      if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+        try
+        {
+            final int    length  = mark.length() + 12;
+            final char[] headers = new char[length];
 
-      Debug.REENTRANT_LOCK.lock();
+            for (int i = 0; i < length; i++)
+            {
+                headers[i] = '*';
+            }
 
-      try
-      {
-         Debug.printMessage(System.out, debugLevel, (new Throwable()).getStackTrace()[1], message);
-      }
-      finally
-      {
-         Debug.REENTRANT_LOCK.unlock();
-      }
-   }
+            final String header = new String(headers);
 
-   /**
-    * Print a mark
-    *
-    * @param debugLevel
-    *           Debug level
-    * @param mark
-    *           Mark to print
-    */
-   public static void printMark(final DebugLevel debugLevel, final String mark)
-   {
-      // Level test
-      if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+            final StackTraceElement stackTraceElement = (new Throwable()).getStackTrace()[1];
 
-      Debug.REENTRANT_LOCK.lock();
+            Debug.printMessage(System.out, debugLevel, stackTraceElement, header);
+            Debug.printMessage(System.out, debugLevel, stackTraceElement, "***   ", mark, "   ***");
+            Debug.printMessage(System.out, debugLevel, stackTraceElement, header);
+        }
+        finally
+        {
+            Debug.REENTRANT_LOCK.unlock();
+        }
+    }
 
-      try
-      {
-         final int length = mark.length() + 12;
-         final char[] headers = new char[length];
+    /**
+     * Print a to do message
+     *
+     * @param message Message to print
+     */
+    public static void printTodo(final Object... message)
+    {
+        // Level test
+        if ((DebugLevel.VERBOSE.getLevel() > Debug.debugLevel.getLevel()) || (message == null))
+        {
+            return;
+        }
 
-         for(int i = 0; i < length; i++)
-         {
-            headers[i] = '*';
-         }
+        Debug.REENTRANT_LOCK.lock();
 
-         final String header = new String(headers);
+        try
+        {
+            final Object[] todoMessage = new Object[message.length + 2];
 
-         final StackTraceElement stackTraceElement = (new Throwable()).getStackTrace()[1];
+            todoMessage[0] = "TODO --- ";
+            System.arraycopy(message, 0, todoMessage, 1, message.length);
+            todoMessage[todoMessage.length - 1] = " --- TODO";
 
-         Debug.printMessage(System.out, debugLevel, stackTraceElement, header);
-         Debug.printMessage(System.out, debugLevel, stackTraceElement, "***   ", mark, "   ***");
-         Debug.printMessage(System.out, debugLevel, stackTraceElement, header);
-      }
-      finally
-      {
-         Debug.REENTRANT_LOCK.unlock();
-      }
-   }
+            Debug.printMessage(System.out, DebugLevel.VERBOSE, (new Throwable()).getStackTrace()[1], todoMessage);
+        }
+        finally
+        {
+            Debug.REENTRANT_LOCK.unlock();
+        }
+    }
 
-   /**
-    * Print a to do message
-    *
-    * @param message
-    *           Message to print
-    */
-   public static void printTodo(final Object... message)
-   {
-      // Level test
-      if((DebugLevel.VERBOSE.getLevel() > Debug.debugLevel.getLevel()) || (message == null))
-      {
-         return;
-      }
+    /**
+     * Print an informative trace (To know the execution stack)
+     *
+     * @param debugLevel Debug level
+     * @param message    Message to print
+     */
+    public static void printTrace(final DebugLevel debugLevel, final Object... message)
+    {
+        // Level test
+        if (debugLevel.getLevel() > Debug.debugLevel.getLevel())
+        {
+            return;
+        }
 
-      Debug.REENTRANT_LOCK.lock();
+        Debug.REENTRANT_LOCK.lock();
 
-      try
-      {
-         final Object[] todoMessage = new Object[message.length + 2];
+        try
+        {
+            final Throwable throwable = new Throwable();
 
-         todoMessage[0] = "TODO --- ";
-         System.arraycopy(message, 0, todoMessage, 1, message.length);
-         todoMessage[todoMessage.length - 1] = " --- TODO";
+            if ((message != null) && (message.length > 0))
+            {
+                Debug.printMessage(System.out, debugLevel, throwable.getStackTrace()[1], message);
+            }
 
-         Debug.printMessage(System.out, DebugLevel.VERBOSE, (new Throwable()).getStackTrace()[1], todoMessage);
-      }
-      finally
-      {
-         Debug.REENTRANT_LOCK.unlock();
-      }
-   }
+            System.out.println("<-- TRACE");
 
-   /**
-    * Print an informative trace (To know the execution stack)
-    *
-    * @param debugLevel
-    *           Debug level
-    * @param message
-    *           Message to print
-    */
-   public static void printTrace(final DebugLevel debugLevel, final Object... message)
-   {
-      // Level test
-      if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
-      {
-         return;
-      }
+            Debug.printTrace(System.out, debugLevel, throwable, 1);
 
-      Debug.REENTRANT_LOCK.lock();
-
-      try
-      {
-         final Throwable throwable = new Throwable();
-
-         if((message != null) && (message.length > 0))
-         {
-            Debug.printMessage(System.out, debugLevel, throwable.getStackTrace()[1], message);
-         }
-
-         System.out.println("<-- TRACE");
-
-         Debug.printTrace(System.out, debugLevel, throwable, 1);
-
-         System.out.println("TRACE -->");
-      }
-      finally
-      {
-         Debug.REENTRANT_LOCK.unlock();
-      }
-   }
-
-   /**
-    * Change debug level
-    *
-    * @param debugLevel
-    *           New debug level
-    */
-   public static void setDebugLevel(final DebugLevel debugLevel)
-   {
-      if(debugLevel == null)
-      {
-         throw new NullPointerException("debugLevel musn't be null");
-      }
-
-      Debug.debugLevel = debugLevel;
-   }
-
-   /**
-    * To avoid instance
-    */
-   private Debug()
-   {
-   }
+            System.out.println("TRACE -->");
+        }
+        finally
+        {
+            Debug.REENTRANT_LOCK.unlock();
+        }
+    }
 }

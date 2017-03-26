@@ -102,7 +102,7 @@ public abstract class Alphabet
       int xx = x;
       int yy = y;
 
-      if(center == true)
+      if(center)
       {
          xx -= width >> 1;
          yy -= height >> 1;
@@ -290,7 +290,7 @@ public abstract class Alphabet
          offset++;
       }
 
-      if(line.isEmpty() == false)
+      if(!line.isEmpty())
       {
          lines.add(line.toArray(new JHelpImage[line.size()]));
          height += this.characterHeight;
@@ -404,7 +404,7 @@ public abstract class Alphabet
          return JHelpImage.DUMMY;
       }
 
-      if(this.caseSensitive == false)
+      if(!this.caseSensitive)
       {
          character = UtilText.upperCaseWithoutAccent(character);
       }

@@ -3,6 +3,7 @@ package jhelp.util.samples.image.ani;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.UtilGUI;
@@ -11,10 +12,18 @@ import jhelp.util.gui.dynamic.JHelpDynamicImage;
 import jhelp.util.image.ani.AniImage;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 
+/**
+ * ANI image sample
+ *
+ * @author JHelp <br>
+ */
 public class SampleAni
 {
    /**
+    * Launch the ANI image sample
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
@@ -25,7 +34,7 @@ public class SampleAni
          aniImage.setPosition(256 - (aniImage.getWidth() >> 1), 256 - (aniImage.getHeight() >> 1));
 
          final JFrame frame = new JFrame();
-         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
          frame.setLayout(new BorderLayout());
          final SampleLabelJHelpImage sampleLabelJHelpImage = new SampleLabelJHelpImage(dynamicImage.getImage());
          sampleLabelJHelpImage.setResize(true);

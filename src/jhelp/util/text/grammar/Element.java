@@ -9,6 +9,7 @@ package jhelp.util.text.grammar;
 public abstract class Element
 {
    /** The special empty rule 0 */
+   @SuppressWarnings("StaticInitializerReferencesSubClass")
    public static final Element EMPTY = new ElementRegularExpression("");
 
    /**

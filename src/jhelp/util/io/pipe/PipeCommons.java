@@ -93,7 +93,7 @@ public class PipeCommons
             {
                bufferedReader.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -116,7 +116,7 @@ public class PipeCommons
 
       try
       {
-         if(UtilIO.createFile(file) == false)
+         if(!UtilIO.createFile(file))
          {
             throw new IOException("Can't create file : " + file.getAbsolutePath());
          }
@@ -137,7 +137,7 @@ public class PipeCommons
             {
                bufferedWriter.flush();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
 
@@ -145,7 +145,7 @@ public class PipeCommons
             {
                bufferedWriter.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }

@@ -11,7 +11,7 @@ import java.util.Locale;
  * Must have an XML per language, and a generic XML (by default). Each XML are : <code lang="xml"><!--
  * <Texts>
  *    <Text key="textKey">
- *       The text isself
+ *       The text itself
  *    </Text>
  * </Texts>
  * --></code> The markup <b><font color="#008800">"Text"</font></b> defines an association to a <font
@@ -134,7 +134,7 @@ public final class ResourceText
    {
       if(locale == null)
       {
-         throw new NullPointerException("locale musn't be null");
+         throw new NullPointerException("locale MUST NOT be null");
       }
 
       URL url = this.resources.obtainResourceURL(this.xmlReferencePathHeader + "_" + locale.getLanguage() + "_" + locale.getCountry() + ResourceText.XML);
@@ -151,7 +151,8 @@ public final class ResourceText
          return true;
       }
 
-      if(locale.getLanguage().equals("en") == true)
+      if(locale.getLanguage()
+               .equals("en"))
       {
          url = this.resources.obtainResourceURL(this.xmlReferencePathHeader + ResourceText.XML);
 
@@ -174,10 +175,10 @@ public final class ResourceText
    {
       if(resourceTextListener == null)
       {
-         throw new NullPointerException("resourceTextListener musn't be null");
+         throw new NullPointerException("resourceTextListener MUST NOT be null");
       }
 
-      if(this.resourceTextListeners.contains(resourceTextListener) == false)
+      if(!this.resourceTextListeners.contains(resourceTextListener))
       {
          this.resourceTextListeners.add(resourceTextListener);
       }
@@ -193,10 +194,10 @@ public final class ResourceText
    {
       if(locale == null)
       {
-         throw new NullPointerException("locale musn't be null");
+         throw new NullPointerException("locale MUST NOT be null");
       }
 
-      if(locale.equals(this.locale) == true)
+      if(locale.equals(this.locale))
       {
          return;
       }

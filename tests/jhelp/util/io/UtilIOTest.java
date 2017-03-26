@@ -5,34 +5,60 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import jhelp.util.HashCode;
-import jhelp.util.debug.Debug;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import jhelp.util.HashCode;
+import jhelp.util.debug.Debug;
+
 /**
  * {@link UtilIO} unit tests
- * 
+ *
  * @author JHelp
  */
 public class UtilIOTest
 {
+   /**
+    * Binarizable for test
+    *
+    * @author JHelp <br>
+    */
    public class TestBinarizable
          implements Binarizable
    {
+      /** Integer */
       private int    integer;
+      /** Name */
       private String name;
 
+      /**
+       * Create a new instance of TestBinarizable
+       */
       public TestBinarizable()
       {
       }
 
+      /**
+       * Get parent type
+       *
+       * @return Parent type
+       */
       private UtilIOTest getOuterType()
       {
          return UtilIOTest.this;
       }
 
+      /**
+       * Indicates if given object is equals <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @param obj
+       *           Tested object
+       * @return {@code true} if given object is equals
+       * @see java.lang.Object#equals(java.lang.Object)
+       */
       @Override
       public boolean equals(final Object obj)
       {
@@ -67,22 +93,51 @@ public class UtilIOTest
          return true;
       }
 
+      /**
+       * Integer
+       *
+       * @return Integer
+       */
       public int getInteger()
       {
          return this.integer;
       }
 
+      /**
+       * Name
+       *
+       * @return Name
+       */
       public String getName()
       {
          return this.name;
       }
 
+      /**
+       * Hash code <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return Hash code
+       * @see java.lang.Object#hashCode()
+       */
       @Override
       public int hashCode()
       {
          return HashCode.computeHashCode(this.getOuterType(), this.integer, this.name);
       }
 
+      /**
+       * Parse byte array to fill object <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @param byteArray
+       *           Array to parse
+       * @see jhelp.util.io.Binarizable#parseBinary(jhelp.util.io.ByteArray)
+       */
       @Override
       public void parseBinary(final ByteArray byteArray)
       {
@@ -90,6 +145,16 @@ public class UtilIOTest
          this.integer = byteArray.readInteger();
       }
 
+      /**
+       * Serialize inside array <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @param byteArray
+       *           Array where serialize
+       * @see jhelp.util.io.Binarizable#serializeBinary(jhelp.util.io.ByteArray)
+       */
       @Override
       public void serializeBinary(final ByteArray byteArray)
       {
@@ -97,16 +162,37 @@ public class UtilIOTest
          byteArray.writeInteger(this.integer);
       }
 
+      /**
+       * Change integer
+       *
+       * @param integer
+       *           New integer
+       */
       public void setInteger(final int integer)
       {
          this.integer = integer;
       }
 
+      /**
+       * Change name
+       *
+       * @param name
+       *           New name
+       */
       public void setName(final String name)
       {
          this.name = name;
       }
 
+      /**
+       * String representation <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return String representation
+       * @see java.lang.Object#toString()
+       */
       @Override
       public String toString()
       {
@@ -150,7 +236,7 @@ public class UtilIOTest
 
    /**
     * Compare 2 directories contents
-    * 
+    *
     * @param directory1
     *           First directory
     * @param directory2
@@ -160,9 +246,11 @@ public class UtilIOTest
    public static boolean compareDirectories(final File directory1, final File directory2)
    {
       final File[] children1 = directory1.listFiles();
+      assert children1 != null;
       Arrays.sort(children1, ComparatorFile.COMPARATOR_FILE);
 
       final File[] children2 = directory2.listFiles();
+      assert children2 != null;
       Arrays.sort(children2, ComparatorFile.COMPARATOR_FILE);
 
       if(children1.length != children2.length)
@@ -184,16 +272,16 @@ public class UtilIOTest
             return false;
          }
 
-         if(UtilIO.isVirtualLink(child1) == false)
+         if(!UtilIO.isVirtualLink(child1))
          {
-            if(child1.isDirectory() == true)
+            if(child1.isDirectory())
             {
-               if(UtilIOTest.compareDirectories(child1, child2) == false)
+               if(!UtilIOTest.compareDirectories(child1, child2))
                {
                   return false;
                }
             }
-            else if(UtilIOTest.compareFiles(child1, child2) == false)
+            else if(!UtilIOTest.compareFiles(child1, child2))
             {
                return false;
             }
@@ -205,7 +293,7 @@ public class UtilIOTest
 
    /**
     * Indicates if 2 files are the same
-    * 
+    *
     * @param file1
     *           First file
     * @param file2
@@ -257,7 +345,7 @@ public class UtilIOTest
             {
                fileInputStream1.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -268,7 +356,7 @@ public class UtilIOTest
             {
                fileInputStream2.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -277,22 +365,23 @@ public class UtilIOTest
 
    /**
     * Initialize directories for code coverage
-    * 
+    *
     * @throws IOException
     *            On copying issue
     */
    // @BeforeClass
    public static void initialiazeForCodeCoverage() throws IOException
    {
-      UtilIO.copy(new File("/home/jhelp/travo/worksp/JHelpUtil/testDirectory"), new File(
-            "/home/jhelp/travo/worksp/.metadata/.plugins/com.mountainminds.eclemma.core/.instr/testDirectory"));
+      UtilIO.copy(new File("/home/jhelp/travo/worksp/JHelpUtil/testDirectory"),
+            new File("/home/jhelp/travo/worksp/.metadata/.plugins/com.mountainminds.eclemma.core/.instr/testDirectory"));
    }
 
    /**
     * Test of {@link UtilIO#writeBinarizableNamed(Binarizable, java.io.OutputStream)} and
     * {@link UtilIO#readBinarizableNamed(java.io.InputStream)}
-    * 
+    *
     * @throws IOException
+    *            On issue
     */
    @Test
    public void testBinarizableObjects() throws IOException
@@ -446,10 +535,12 @@ public class UtilIOTest
       final File directory = UtilIO.obtainOutsideDirectory();
 
       boolean ok = false;
+      final File[] content = directory.listFiles();
 
-      for(final File child : directory.listFiles())
+      assert content != null;
+      for(final File child : content)
       {
-         if(UtilIOTest.TEST_DIRECTORY.equals(child.getName()) == true)
+         if(UtilIOTest.TEST_DIRECTORY.equals(child.getName()))
          {
             ok = true;
 
@@ -462,7 +553,7 @@ public class UtilIOTest
 
    /**
     * Test of {@link UtilIO#unzip(File, File)}
-    * 
+    *
     * @throws IOException
     *            On unzipping issue
     */
@@ -479,7 +570,7 @@ public class UtilIOTest
 
    /**
     * Test of {@link UtilIO#write(File, File)}
-    * 
+    *
     * @throws IOException
     *            On copy issue
     */
@@ -496,7 +587,7 @@ public class UtilIOTest
 
    /**
     * Test of {@link UtilIO#zip(File, File)}
-    * 
+    *
     * @throws IOException
     *            On zipping issue
     */

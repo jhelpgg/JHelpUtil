@@ -9,15 +9,24 @@ import jhelp.util.resources.ResourceElement;
 import jhelp.util.resources.Resources;
 import jhelp.util.resources.ResourcesSystem;
 
+/**
+ * Sample that show access to resource file system
+ *
+ * @author JHelp <br>
+ */
 public class ResourcesSystemSample
 {
 
    /**
+    * Launch the sample that show access to resource file system
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
       final Resources resources = new Resources(ResourcesSystemSample.class);
+
       try
       {
          final ResourcesSystem resourcesSystem = resources.obtainResourcesSystem();
@@ -25,14 +34,14 @@ public class ResourcesSystemSample
          stack.push(ResourcesSystem.ROOT);
          ResourceElement resourceElement;
 
-         while(stack.empty() == false)
+         while(!stack.empty())
          {
             resourceElement = stack.pop();
             Debug.printMark(DebugLevel.INFORMATION, resourceElement.getPath());
 
             for(final ResourceElement element : resourcesSystem.obtainList(resourceElement))
             {
-               if(element.isDirectory() == true)
+               if(element.isDirectory())
                {
                   stack.push(element);
                }

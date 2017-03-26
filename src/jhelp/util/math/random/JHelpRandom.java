@@ -50,346 +50,335 @@ import jhelp.util.text.UtilText;
  * --></code> Choice have 55 chance of 142 to be <font color="#008800">"P"</font> and 87 chance of 142 to be
  * <font color="#008800">"R"</font>
  *
+ * @param <CHOICE> Choice type
  * @author JHelp
- * @param <CHOICE>
- *           Choice type
  */
 public final class JHelpRandom<CHOICE>
 {
-   /**
-    * A registered limit.<br>
-    * This is a couple of value maximum and element
-    *
-    * @author JHelp
-    * @param <ELEMENT>
-    *           Element type
-    */
-   private class Limit<ELEMENT>
-   {
-      /** The element */
-      final ELEMENT element;
-      /** Maximum value */
-      final int     maximum;
+    /**
+     * Random instance to use on static methods to avoid any influence of other "random"
+     */
+    private static final Random RANDOM = new Random();
+    /**
+     * Registered limits
+     */
+    private final ArrayList<Limit<CHOICE>> limits;
+    /**
+     * Random instance to use, link to this instance
+     */
+    private final Random                   random;
+    /**
+     * Actual maximum
+     */
+    private       int                      maximum;
 
-      /**
-       * Create a new instance of Limit
-       *
-       * @param maximum
-       *           Maximum value
-       * @param element
-       *           Element
-       */
-      public Limit(final int maximum, final ELEMENT element)
-      {
-         this.maximum = maximum;
-         this.element = element;
-      }
+    /**
+     * Create a new instance of JHelpRandom
+     */
+    public JHelpRandom()
+    {
+        this.random = new Random();
+        this.limits = new ArrayList<JHelpRandom<CHOICE>.Limit<CHOICE>>();
+        this.maximum = 0;
+    }
 
-      /**
-       * String representation <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       *
-       * @return String representation
-       * @see java.lang.Object#toString()
-       */
-      @Override
-      public String toString()
-      {
-         return UtilText.concatenate("Limit (", this.maximum, " : ", this.element, ")");
-      }
-   }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static boolean random(final boolean[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /** Random instance to use on static methods to avoid any influence of other "random" */
-   private static final Random RANDOM = new Random();
+    /**
+     * Give a random value between 0 (include) and given limit (exclude)
+     *
+     * @param limit Limit to respect
+     * @return Random value
+     */
+    public static int random(final int limit)
+    {
+        if (limit == 0)
+        {
+            throw new IllegalArgumentException("limit can't be 0");
+        }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final boolean random(final boolean[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+        return UtilMath.sign(limit) * JHelpRandom.RANDOM.nextInt(Math.abs(limit));
+    }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final byte random(final byte[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static byte random(final byte[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final char random(final char[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static char random(final char[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /**
-    * Choose a value of an enum
-    *
-    * @param <E>
-    *           Enum to get a value
-    * @param clas
-    *           Enum class
-    * @return An enum value or {@code null} if failed
-    */
-   @SuppressWarnings(
-   {
-         "rawtypes", "unchecked"
-   })
-   public static final <E extends Enum> E random(final Class<E> clas)
-   {
-      E[] array = null;
+    /**
+     * Choose a value of an enum
+     *
+     * @param <E>  Enum to get a value
+     * @param clas Enum class
+     * @return An enum value or {@code null} if failed
+     */
+    @SuppressWarnings(
+            {
+                    "rawtypes", "unchecked"
+            })
+    public static <E extends Enum> E random(final Class<E> clas)
+    {
+        E[] array = null;
 
-      try
-      {
-         array = (E[]) Reflector.invokePublicMethod(clas, "values");
-      }
-      catch(final Exception exception)
-      {
-         Debug.printException(exception, "Failed to get values of ", clas.getName());
+        try
+        {
+            array = (E[]) Reflector.invokePublicMethod(clas, "values");
+        }
+        catch (final Exception exception)
+        {
+            Debug.printException(exception, "Failed to get values of ", clas.getName());
 
-         return null;
-      }
+            return null;
+        }
 
-      return JHelpRandom.random(array);
-   }
+        return JHelpRandom.random(array);
+    }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final double random(final double[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+    /**
+     * Return an element of an array.<br>
+     * {@code null} is return is the array is {@code null} or empty
+     *
+     * @param <T>   Type of array's element
+     * @param array Array to get one element
+     * @return Element get or {@code null} if array {@code null} or empty
+     */
+    public static <T> T random(final T[] array)
+    {
+        if ((array == null) || (array.length == 0))
+        {
+            return null;
+        }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final float random(final float[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /**
-    * Give a random value between 0 (include) and given limit (exclude)
-    *
-    * @param limit
-    *           Limit to respect
-    * @return Random value
-    */
-   public static final int random(final int limit)
-   {
-      if(limit == 0)
-      {
-         throw new IllegalArgumentException("limit can't be 0");
-      }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static double random(final double[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-      return UtilMath.sign(limit) * JHelpRandom.RANDOM.nextInt(Math.abs(limit));
-   }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static float random(final float[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /**
-    * Give random number inside an interval, each limit are includes
-    *
-    * @param minimum
-    *           Minimum value
-    * @param maximum
-    *           Maximum value
-    * @return Random value
-    */
-   public static final int random(final int minimum, final int maximum)
-   {
-      final int min = Math.min(minimum, maximum);
-      final int max = Math.max(minimum, maximum);
+    /**
+     * Give random number inside an interval, each limit are includes
+     *
+     * @param minimum Minimum value
+     * @param maximum Maximum value
+     * @return Random value
+     */
+    public static int random(final int minimum, final int maximum)
+    {
+        final int min = Math.min(minimum, maximum);
+        final int max = Math.max(minimum, maximum);
 
-      return min + JHelpRandom.random((max - min) + 1);
-   }
+        return min + JHelpRandom.random((max - min) + 1);
+    }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final int random(final int[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static int random(final int[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /**
-    * Return an element of a list.<br>
-    * {@code null} is return if the list is {@code null} or empty
-    *
-    * @param <T>
-    *           Type of list's element
-    * @param list
-    *           List to get one element
-    * @return Element get or {@code null} if list {@code null} or empty
-    */
-   public static final <T> T random(final List<T> list)
-   {
-      if((list == null) || (list.size() == 0))
-      {
-         return null;
-      }
+    /**
+     * Return an element of a list.<br>
+     * {@code null} is return if the list is {@code null} or empty
+     *
+     * @param <T>  Type of list's element
+     * @param list List to get one element
+     * @return Element get or {@code null} if list {@code null} or empty
+     */
+    public static <T> T random(final List<T> list)
+    {
+        if ((list == null) || (list.size() == 0))
+        {
+            return null;
+        }
 
-      return list.get(JHelpRandom.random(list.size()));
-   }
+        return list.get(JHelpRandom.random(list.size()));
+    }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final long random(final long[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static long random(final long[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /**
-    * Take randomly a element of the array.<br>
-    * The array musn't be {@code null} or empty
-    *
-    * @param array
-    *           Array to get one element
-    * @return Taken element
-    */
-   public static final short random(final short[] array)
-   {
-      return array[JHelpRandom.random(array.length)];
-   }
+    /**
+     * Take randomly a element of the array.<br>
+     * The array MUST NOT be {@code null} or empty
+     *
+     * @param array Array to get one element
+     * @return Taken element
+     */
+    public static short random(final short[] array)
+    {
+        return array[JHelpRandom.random(array.length)];
+    }
 
-   /**
-    * Return an element of an array.<br>
-    * {@code null} is return is the array is {@code null} or empty
-    *
-    * @param <T>
-    *           Type of array's element
-    * @param array
-    *           Array to get one element
-    * @return Element get or {@code null} if array {@code null} or empty
-    */
-   public static final <T> T random(final T[] array)
-   {
-      if((array == null) || (array.length == 0))
-      {
-         return null;
-      }
+    /**
+     * Add a choice
+     *
+     * @param number Frequency of the choice (Can't be < 1)
+     * @param choice The choice
+     */
+    public void addChoice(final int number, final CHOICE choice)
+    {
+        if (number <= 0)
+        {
+            throw new IllegalArgumentException("number MUST be > 0, not " + number);
+        }
 
-      return array[JHelpRandom.random(array.length)];
-   }
+        this.limits.add(new Limit<CHOICE>((this.maximum + number) - 1, choice));
 
-   /** Registered limits */
-   private final ArrayList<Limit<CHOICE>> limits;
-   /** Actual maximum */
-   private int                            maximum;
-   /** Random instance to use, link to this instance */
-   private final Random                   random;
+        this.maximum += number;
+    }
 
-   /**
-    * Create a new instance of JHelpRandom
-    */
-   public JHelpRandom()
-   {
-      this.random = new Random();
-      this.limits = new ArrayList<JHelpRandom<CHOICE>.Limit<CHOICE>>();
-      this.maximum = 0;
-   }
+    /**
+     * Choose a value randomly
+     *
+     * @return Chosen value
+     */
+    public CHOICE choose()
+    {
+        if (this.maximum == 0)
+        {
+            Debug.println(DebugLevel.WARNING, "You have to add at least something to be able have a result");
 
-   /**
-    * Add a choice
-    *
-    * @param number
-    *           Frequency of the choice (Can't be < 1)
-    * @param choice
-    *           The choice
-    */
-   public void addChoice(final int number, final CHOICE choice)
-   {
-      if(number <= 0)
-      {
-         throw new IllegalArgumentException("number MUST be > 0, not " + number);
-      }
+            return null;
+        }
 
-      this.limits.add(new Limit<CHOICE>((this.maximum + number) - 1, choice));
+        final int random = this.random.nextInt(this.maximum);
 
-      this.maximum += number;
-   }
+        for (final Limit<CHOICE> limit : this.limits)
+        {
+            if (random <= limit.maximum)
+            {
+                return limit.element;
+            }
+        }
 
-   /**
-    * Choose a value randomly
-    *
-    * @return Chosen value
-    */
-   public CHOICE choose()
-   {
-      if(this.maximum == 0)
-      {
-         Debug.println(DebugLevel.WARNING, "You have to add at least something to be able have a result");
+        Debug.println(DebugLevel.ERROR, "Shouldn't arrive here !!! random=", random, " maximum=", this.maximum, " limits=",
+                      this.limits);
+        return null;
+    }
 
-         return null;
-      }
+    /**
+     * A registered limit.<br>
+     * This is a couple of value maximum and element
+     *
+     * @param <ELEMENT> Element type
+     * @author JHelp
+     */
+    private class Limit<ELEMENT>
+    {
+        /**
+         * The element
+         */
+        final ELEMENT element;
+        /**
+         * Maximum value
+         */
+        final int     maximum;
 
-      final int random = this.random.nextInt(this.maximum);
+        /**
+         * Create a new instance of Limit
+         *
+         * @param maximum Maximum value
+         * @param element Element
+         */
+        public Limit(final int maximum, final ELEMENT element)
+        {
+            this.maximum = maximum;
+            this.element = element;
+        }
 
-      for(final Limit<CHOICE> limit : this.limits)
-      {
-         if(random <= limit.maximum)
-         {
-            return limit.element;
-         }
-      }
+        /**
+         * String representation <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @return String representation
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return UtilText.concatenate("Limit (", this.maximum, " : ", this.element, ")");
+        }
+    }
 
-      Debug.println(DebugLevel.ERROR, "Shouldn't arrive here !!! random=", random, " maximum=", this.maximum, " limits=", this.limits);
-      return null;
-   }
-
-   /**
-    * String representation <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    *
-    * @return String representation
-    * @see java.lang.Object#toString()
-    */
-   @Override
-   public String toString()
-   {
-      return UtilText.concatenate("JHelpRandom maximum=", this.maximum, " limits=", this.limits);
-   }
+    /**
+     * String representation <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return String representation
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return UtilText.concatenate("JHelpRandom maximum=", this.maximum, " limits=", this.limits);
+    }
 }

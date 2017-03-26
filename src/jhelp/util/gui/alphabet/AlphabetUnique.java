@@ -80,7 +80,7 @@ public abstract class AlphabetUnique
 
       final Dimension dimension = this.getCharacterDimension();
       final int numberPerLine = this.numberCharactersPerLine();
-      final int space = this.spaceBetwwenCharacters();
+      final int space = this.spaceBetweenCharacters();
       final int x = (index % numberPerLine) * (dimension.width + space);
       final int y = (index / numberPerLine) * dimension.height;
 
@@ -106,5 +106,5 @@ public abstract class AlphabetUnique
     * 
     * @return Space between characters in big image
     */
-   protected abstract int spaceBetwwenCharacters();
+   protected abstract int spaceBetweenCharacters();
 }

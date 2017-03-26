@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.JHelpImage;
@@ -17,9 +18,20 @@ import jhelp.util.io.UtilIO;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 import jhelp.util.time.TimeDebug;
 
+/**
+ * Binary image test
+ *
+ * @author JHelp <br>
+ */
 public class BinaryImageTest
 {
-   public static final void main(final String[] args)
+   /**
+    * Launch the binary image test
+    *
+    * @param args
+    *           Unused
+    */
+   public static void main(final String[] args)
    {
       try
       {
@@ -34,7 +46,7 @@ public class BinaryImageTest
          timeDebug.add("To image");
          SampleLabelJHelpImage labelJHelpImage = new SampleLabelJHelpImage(image);
          JFrame frame = new JFrame("BinaryImage");
-         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
          frame.setLayout(new BorderLayout());
          frame.add(labelJHelpImage, BorderLayout.CENTER);
          frame.pack();
@@ -72,7 +84,7 @@ public class BinaryImageTest
          timeDebug.add("To image 2");
          labelJHelpImage = new SampleLabelJHelpImage(image);
          frame = new JFrame("BinaryImage 2");
-         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
          frame.setLayout(new BorderLayout());
          frame.add(labelJHelpImage, BorderLayout.CENTER);
          frame.pack();

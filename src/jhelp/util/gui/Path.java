@@ -109,7 +109,7 @@ public class Path
       final double[] elements = new double[6];
       int type;
 
-      while(pathIterator.isDone() == false)
+      while(!pathIterator.isDone())
       {
          type = pathIterator.currentSegment(elements);
 

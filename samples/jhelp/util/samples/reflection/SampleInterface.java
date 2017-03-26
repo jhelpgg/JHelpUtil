@@ -1,5 +1,8 @@
 package jhelp.util.samples.reflection;
 
+/**
+ * @author JHelp <br>
+ */
 public interface SampleInterface
 {
    public String inverse(String source);

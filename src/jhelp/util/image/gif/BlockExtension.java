@@ -19,7 +19,7 @@ import java.io.InputStream;
  * @see <a href="http://www.w3.org/Graphics/GIF/spec-gif89a.txt">GIF specification</a>
  * @author JHelp
  */
-abstract class BlockExtention
+abstract class BlockExtension
       extends Block
 {
    /**
@@ -32,23 +32,23 @@ abstract class BlockExtention
     * @throws IOException
     *            If stream not contains available sub-type
     */
-   static BlockExtention readBlockExtention(final InputStream inputStream) throws IOException
+   static BlockExtension readBlockExtention(final InputStream inputStream) throws IOException
    {
-      BlockExtention blockExtention = null;
-      final int subType = inputStream.read();
+      BlockExtension blockExtention = null;
+      final int      subType        = inputStream.read();
 
       switch(subType)
       {
-         case BLOCK_EXTENTION_GRAPHIC_CONTROL:
+         case BLOCK_EXTENSION_GRAPHIC_CONTROL:
             blockExtention = new GraphicControlBlock();
          break;
-         case BLOCK_EXTENTION_COMMENT:
+         case BLOCK_EXTENSION_COMMENT:
             blockExtention = new CommentBlock();
          break;
-         case BLOCK_EXTENTION_PLAIN_TEXT:
+         case BLOCK_EXTENSION_PLAIN_TEXT:
             blockExtention = new PlainTextBlock();
          break;
-         case BLOCK_EXTENTION_APPLICATION:
+         case BLOCK_EXTENSION_APPLICATION:
             blockExtention = new ApplicationBlock();
          break;
       }

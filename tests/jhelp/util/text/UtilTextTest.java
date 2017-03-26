@@ -79,6 +79,9 @@ public class UtilTextTest
       Assert.assertEquals("{number=73 | bob=25 | polo=42}", UtilText.concatenate(map));
    }
 
+   /**
+    * {@link UtilText#extractDoubleFrom} tests
+    */
    @Test
    public void testExtractFromDouble()
    {
@@ -104,6 +107,9 @@ public class UtilTextTest
       }, UtilText.extractDoubleFrom("2...1"), UtilMath.EPSILON);
    }
 
+   /**
+    * {@link UtilText#extractIntFrom} tests
+    */
    @Test
    public void testExtractFromInt()
    {
@@ -129,6 +135,9 @@ public class UtilTextTest
       }, UtilText.extractIntFrom("2...1"));
    }
 
+   /**
+    * {@link UtilText#trim} tests
+    */
    @Test
    public void testTrim()
    {

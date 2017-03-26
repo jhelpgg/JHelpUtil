@@ -5,13 +5,19 @@ import java.io.IOException;
 import jhelp.util.debug.Debug;
 import jhelp.util.xml.DynamicWriteXML;
 
+/**
+ * Sample for write XML dynamically (Without create a tree first)
+ *
+ * @author JHelp <br>
+ */
 public class DynamicWriteXMLSample
 {
 
    /**
-    * TODO Explains what does the method main in jhelp.util.samples.xml [JHelpUtil]
-    * 
+    * Launch the sample for write XML dynamically (Without create a tree first)
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
@@ -21,6 +27,7 @@ public class DynamicWriteXMLSample
 
          dynamicWriteXML.appendComment("The scene");
          dynamicWriteXML.openMarkup("Scene");
+
          for(int i = 0; i < 5; i++)
          {
             dynamicWriteXML.openMarkup("Object");
@@ -29,6 +36,7 @@ public class DynamicWriteXMLSample
             dynamicWriteXML.closeMarkup();
             dynamicWriteXML.appendComment("This was the object " + i);
          }
+
          dynamicWriteXML.closeMarkup();
       }
       catch(final IOException exception)

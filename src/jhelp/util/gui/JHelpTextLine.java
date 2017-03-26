@@ -5,16 +5,18 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
 
 /**
  * Represents a part of text
- * 
+ *
  * @author JHelp
+ * @deprecated Think about use use {@link JHelpTextLineAlpha} instead
  */
+@Deprecated
 public class JHelpTextLine
 {
    /** Indicates if the part is a end of line */
@@ -34,7 +36,7 @@ public class JHelpTextLine
 
    /**
     * Create a new instance of JHelpTextLine
-    * 
+    *
     * @param text
     *           Text to carry
     * @param x
@@ -63,7 +65,7 @@ public class JHelpTextLine
 
    /**
     * Part height
-    * 
+    *
     * @return Part height
     */
    public int getHeight()
@@ -73,7 +75,7 @@ public class JHelpTextLine
 
    /**
     * Mask to use
-    * 
+    *
     * @return Mask to use
     */
    public JHelpMask getMask()
@@ -83,7 +85,7 @@ public class JHelpTextLine
 
    /**
     * Text carry
-    * 
+    *
     * @return Text carry
     */
    public String getText()
@@ -93,7 +95,7 @@ public class JHelpTextLine
 
    /**
     * Part width
-    * 
+    *
     * @return Part width
     */
    public int getWidth()
@@ -103,7 +105,7 @@ public class JHelpTextLine
 
    /**
     * X location
-    * 
+    *
     * @return X location
     */
    public int getX()
@@ -113,7 +115,7 @@ public class JHelpTextLine
 
    /**
     * Y location
-    * 
+    *
     * @return Y location
     */
    public int getY()
@@ -123,7 +125,7 @@ public class JHelpTextLine
 
    /**
     * Indicates if the part is a end of line
-    * 
+    *
     * @return {@code true} if the part is a end of line
     */
    public boolean isEndOfLine()

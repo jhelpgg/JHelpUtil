@@ -46,7 +46,7 @@ public class Base64InputStream
    {
       if(inputStream == null)
       {
-         throw new NullPointerException("inputStream musn't be null");
+         throw new NullPointerException("inputStream MUST NOT be null");
       }
 
       this.inputStream = inputStream;
@@ -96,12 +96,12 @@ public class Base64InputStream
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
     * 
-    * @param readlimit
+    * @param readLimit
     *           Read limit
     * @see java.io.InputStream#mark(int)
     */
    @Override
-   public synchronized void mark(final int readlimit)
+   public synchronized void mark(final int readLimit)
    {
    }
 

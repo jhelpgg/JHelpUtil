@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import jhelp.util.gui.JHelpImage;
 import jhelp.util.gui.JHelpTextAlign;
@@ -15,12 +16,21 @@ import jhelp.util.list.Pair;
 import jhelp.util.math.oldSystem.MayaNumber;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 
+/**
+ * Transformation sample
+ *
+ * @author JHelp <br>
+ */
+@SuppressWarnings("deprecation")
 public class SampleTransformation
 {
-
    /**
+    * Launch the transformation sample
+    *
     * @param args
+    *           Unused
     */
+   @SuppressWarnings("deprecation")
    public static void main(final String[] args)
    {
       final Pair<List<JHelpTextLine>, Dimension> text = MayaNumber.FONT_NUMBERS.computeTextLines("Transformation\nSinusoidale", JHelpTextAlign.CENTER);
@@ -44,7 +54,7 @@ public class SampleTransformation
       image.endDrawMode();
 
       final JFrame frame = new JFrame();
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       frame.setLayout(new BorderLayout());
       frame.add(new SampleLabelJHelpImage(image), BorderLayout.CENTER);
       UtilGUI.packedSize(frame);

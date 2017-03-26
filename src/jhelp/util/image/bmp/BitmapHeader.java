@@ -115,7 +115,7 @@ public class BitmapHeader
    {
       int info;
 
-      if(jumpHeader == false)
+      if(!jumpHeader)
       {
          // *** Header ***
 
@@ -247,6 +247,7 @@ public class BitmapHeader
          green = inputStream.read();
          blue = inputStream.read();
          // Just throw away this one
+         //noinspection ResultOfMethodCallIgnored
          inputStream.read();
 
          this.colorTable[i] = 0xFF000000 | (red << 16) | (green << 8) | blue;

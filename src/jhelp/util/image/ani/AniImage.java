@@ -65,7 +65,7 @@ public class AniImage
    /** Image duration */
    private int                             imageDuration;
    /** List of information */
-   private final List<AniImageinformation> images;
+   private final List<AniImageInformation> images;
    /** Number of frames */
    private int                             numberOfFrames;
    /** Number of steps */
@@ -102,7 +102,7 @@ public class AniImage
    {
       super(inputStream);
 
-      this.images = new ArrayList<AniImageinformation>();
+      this.images = new ArrayList<AniImageInformation>();
       this.fps = 25;
       this.imageDuration = 1000;
       this.sequences = new ArrayInt();
@@ -111,7 +111,7 @@ public class AniImage
       this.rowData = false;
       final RiffChunk chunk = this.getChunk(0);
 
-      if((RiffChunk.RIFF.equals(chunk.getID()) == false) || (AniImage.LIST_NAME.equals(chunk.listName()) == false))
+      if((!RiffChunk.RIFF.equals(chunk.getID())) || (!AniImage.LIST_NAME.equals(chunk.listName())))
       {
          throw new IOException("Not a valid ANI file : " + chunk.getID() + "=>" + chunk.listName());
       }
@@ -123,7 +123,7 @@ public class AniImage
          this.parse(chunk.getChunk(i));
       }
 
-      if((this.asSequenceData == false) || (this.sequences.isEmpty() == true))
+      if((!this.asSequenceData) || (this.sequences.isEmpty()))
       {
          this.sequences.clear();
 
@@ -133,7 +133,7 @@ public class AniImage
          }
       }
 
-      if(this.rates.isEmpty() == true)
+      if(this.rates.isEmpty())
       {
          for(int i = 0; i < this.numberOfSteps; i++)
          {
@@ -166,23 +166,23 @@ public class AniImage
       final String id = chunk.getID();
       final String listName = chunk.listName();
 
-      if(AniImage.CHUNK_ANI_HEADER.equals(id) == true)
+      if(AniImage.CHUNK_ANI_HEADER.equals(id))
       {
          this.parseAniHeader(chunk);
       }
-      else if((RiffChunk.LIST.equals(id) == true) && (AniImage.FRAME_LIST_NAME.equals(listName) == true))
+      else if((RiffChunk.LIST.equals(id)) && (AniImage.FRAME_LIST_NAME.equals(listName)))
       {
          this.parseFrameList(chunk);
       }
-      else if(AniImage.CHUNK_ICON.equals(id) == true)
+      else if(AniImage.CHUNK_ICON.equals(id))
       {
          this.parseIcon(chunk);
       }
-      else if(AniImage.CHUNK_SEQUENCE.equals(id) == true)
+      else if(AniImage.CHUNK_SEQUENCE.equals(id))
       {
          this.parseSequences(chunk);
       }
-      else if(AniImage.CHUNK_RATE.equals(id) == true)
+      else if(AniImage.CHUNK_RATE.equals(id))
       {
          this.parseRate(chunk);
       }
@@ -261,39 +261,39 @@ public class AniImage
     */
    private void parseIcon(final RiffChunk chunk) throws IOException
    {
-      if(this.rowData == true)
+      if(this.rowData)
       {
          switch(this.bitCount)
          {
             case BitmapHeader.IMAGE_BINARY:
                final BinaryImage binaryImage = new BinaryImage(this.width, this.height);
                binaryImage.parseBitmapStream(chunk.dataAsStream());
-               this.images.add(new AniImageinformation(binaryImage));
+               this.images.add(new AniImageInformation(binaryImage));
             break;
             case BitmapHeader.IMAGE_4_BITS:
                final Image4Bit image4Bit = new Image4Bit(this.width, this.height);
                image4Bit.parseBitmapStream(chunk.dataAsStream());
-               this.images.add(new AniImageinformation(image4Bit));
+               this.images.add(new AniImageInformation(image4Bit));
             break;
             case BitmapHeader.IMAGE_8_BITS:
                final Image8Bit image8Bit = new Image8Bit(this.width, this.height);
                image8Bit.parseBitmapStream(chunk.dataAsStream());
-               this.images.add(new AniImageinformation(image8Bit));
+               this.images.add(new AniImageInformation(image8Bit));
             break;
             case BitmapHeader.IMAGE_16_BITS:
                final Image16Bit image16Bit = new Image16Bit(this.width, this.height);
                image16Bit.parseBitmapStream(chunk.dataAsStream());
-               this.images.add(new AniImageinformation(image16Bit));
+               this.images.add(new AniImageInformation(image16Bit));
             break;
             case BitmapHeader.IMAGE_24_BITS:
                final Image24Bit image24Bit = new Image24Bit(this.width, this.height);
                image24Bit.parseBitmapStream(chunk.dataAsStream());
-               this.images.add(new AniImageinformation(image24Bit));
+               this.images.add(new AniImageInformation(image24Bit));
             break;
             case BitmapHeader.IMAGE_32_BITS:
                final Image32Bit image32Bit = new Image32Bit(this.width, this.height);
                image32Bit.parseBitmapStream(chunk.dataAsStream());
-               this.images.add(new AniImageinformation(image32Bit));
+               this.images.add(new AniImageInformation(image32Bit));
             break;
          }
 
@@ -313,10 +313,10 @@ public class AniImage
       switch(info)
       {
          case 2:
-            this.images.add(new AniImageinformation(new IcoImage(chunk.dataAsStream(), RasterImageType.getRasterImageType(this.bitCount))));
+            this.images.add(new AniImageInformation(new IcoImage(chunk.dataAsStream(), RasterImageType.getRasterImageType(this.bitCount))));
          break;
          case 1:
-            this.images.add(new AniImageinformation(new CurImage(chunk.dataAsStream())));
+            this.images.add(new AniImageInformation(new CurImage(chunk.dataAsStream())));
          break;
       }
    }
@@ -395,8 +395,8 @@ public class AniImage
          index++;
       }
 
-      final int sequence = this.sequences.getInteger(index);
-      final AniImageinformation aniImageinformation = this.images.get(sequence);
+      final int                 sequence            = this.sequences.getInteger(index);
+      final AniImageInformation aniImageinformation = this.images.get(sequence);
       aniImageinformation.draw(image, this.x, this.y);
 
       return true;

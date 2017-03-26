@@ -133,17 +133,17 @@ public class HttpCommunication
    {
       if(urlPath == null)
       {
-         throw new NullPointerException("urlPath musn't be null");
+         throw new NullPointerException("urlPath MUST NOT be null");
       }
 
       if(method == null)
       {
-         throw new NullPointerException("method musn't be null");
+         throw new NullPointerException("method MUST NOT be null");
       }
 
       if(responseReceiver == null)
       {
-         throw new NullPointerException("responseReceiver musn't be null");
+         throw new NullPointerException("responseReceiver MUST NOT be null");
       }
 
       this.urlPath = urlPath;
@@ -183,7 +183,7 @@ public class HttpCommunication
          {
             this.inputStream.close();
          }
-         catch(final Exception exception)
+         catch(final Exception ignored)
          {
          }
       }
@@ -222,7 +222,7 @@ public class HttpCommunication
          {
             this.errorStream.close();
          }
-         catch(final Exception exception)
+         catch(final Exception ignored)
          {
          }
       }
@@ -246,7 +246,7 @@ public class HttpCommunication
       {
          this.inputStream.close();
       }
-      catch(final Exception exception)
+      catch(final Exception ignored)
       {
       }
 
@@ -254,7 +254,7 @@ public class HttpCommunication
       {
          this.errorStream.close();
       }
-      catch(final Exception exception)
+      catch(final Exception ignored)
       {
       }
 
@@ -279,7 +279,7 @@ public class HttpCommunication
       {
          final StringBuilder path = new StringBuilder(this.urlPath);
 
-         if((this.fields.isEmpty() == false) && (this.file == null))
+         if((!this.fields.isEmpty()) && (this.file == null))
          {
             path.append('?');
 
@@ -415,20 +415,20 @@ public class HttpCommunication
    {
       if(key == null)
       {
-         throw new NullPointerException("key musn't be null");
+         throw new NullPointerException("key MUST NOT be null");
       }
 
       if(file == null)
       {
-         throw new NullPointerException("file musn't be null");
+         throw new NullPointerException("file MUST NOT be null");
       }
 
       if(mimeType == null)
       {
-         throw new NullPointerException("mimeType musn't be null");
+         throw new NullPointerException("mimeType MUST NOT be null");
       }
 
-      if(file.exists() == false)
+      if(!file.exists())
       {
          throw new IllegalArgumentException(file.getAbsolutePath() + " dosen't exits");
       }
@@ -451,12 +451,12 @@ public class HttpCommunication
    {
       if(key == null)
       {
-         throw new NullPointerException("key musn't be null");
+         throw new NullPointerException("key MUST NOT be null");
       }
 
       if(value == null)
       {
-         throw new NullPointerException("value musn't be null");
+         throw new NullPointerException("value MUST NOT be null");
       }
 
       this.fields.put(key, value);
@@ -475,12 +475,12 @@ public class HttpCommunication
    {
       if(key == null)
       {
-         throw new NullPointerException("key musn't be null");
+         throw new NullPointerException("key MUST NOT be null");
       }
 
       if(value == null)
       {
-         throw new NullPointerException("value musn't be null");
+         throw new NullPointerException("value MUST NOT be null");
       }
 
       this.headers.put(key, value);

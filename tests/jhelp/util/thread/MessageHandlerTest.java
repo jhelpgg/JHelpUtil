@@ -1,18 +1,35 @@
 package jhelp.util.thread;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import jhelp.util.Utilities;
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+/**
+ * Tests of {@link MessageHandler}
+ *
+ * @author JHelp <br>
+ */
 public class MessageHandlerTest
       extends MessageHandler<String>
 {
+   /** Indicates if a message is delivering */
    private boolean     inDelivery;
+   /** Synchronization mutex */
    private final Mutex mutex = new Mutex();
 
+   /**
+    * Called when a message arrived <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param message
+    *           Message received
+    * @see jhelp.util.thread.MessageHandler#messageArrived(java.lang.Object)
+    */
    @Override
    protected void messageArrived(final String message)
    {
@@ -23,7 +40,7 @@ public class MessageHandlerTest
       this.inDelivery = true;
       this.mutex.unlock();
 
-      if(delivery == true)
+      if(delivery)
       {
          Assert.fail("2 message in same time");
       }
@@ -37,6 +54,24 @@ public class MessageHandlerTest
       this.mutex.unlock();
    }
 
+   /**
+    * Called when handler about to be terminated <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @see jhelp.util.thread.MessageHandler#willBeTerminated()
+    */
+   @Override
+   protected void willBeTerminated()
+   {
+      // {@todo} TODO Implements willBeTerminated
+      Debug.printTodo("Implements willBeTerminated");
+   }
+
+   /**
+    * Test if two messages comes in same time
+    */
    @Test
    public void testTwoMessagesInSameTime()
    {

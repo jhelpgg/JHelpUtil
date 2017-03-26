@@ -3,9 +3,16 @@ package jhelp.util.math.rational;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Big rational tests
+ *
+ * @author JHelp <br>
+ */
 public class BigRationalTest
 {
-
+   /**
+    * Comparison tests
+    */
    @Test
    public void testComparison()
    {

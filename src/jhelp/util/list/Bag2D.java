@@ -33,9 +33,9 @@ public class Bag2D<OBJECT extends SizedObject>
       /** Area priority */
       long priority;
       /** X top-left corner */
-      int  x;
+      final int  x;
       /** Y top-left corner */
-      int  y;
+      final int  y;
 
       /**
        * Create a new instance of Area
@@ -49,6 +49,7 @@ public class Bag2D<OBJECT extends SizedObject>
        * @param height
        *           Height
        */
+      @SuppressWarnings("ConstantConditions")
       Area(final int x, final int y, final int width, final int height)
       {
          this.x = x;
@@ -86,7 +87,7 @@ public class Bag2D<OBJECT extends SizedObject>
                   }
 
                   eliminateLine = true;
-                  for(int yyy = yy + 1; (yyy < h) && (eliminateLine == true); yyy++)
+                  for(int yyy = yy + 1; (yyy < h) && (eliminateLine); yyy++)
                   {
                      for(int xxx = xx; xxx < mx; xxx++)
                      {
@@ -97,7 +98,7 @@ public class Bag2D<OBJECT extends SizedObject>
                         }
                      }
 
-                     if(eliminateLine == true)
+                     if(eliminateLine)
                      {
                         for(int xxx = xx; xxx < mx; xxx++)
                         {
@@ -197,7 +198,7 @@ public class Bag2D<OBJECT extends SizedObject>
             {
                found = true;
 
-               for(int yy = (y + h) - 1; (yy >= y) && (found == true); yy--)
+               for(int yy = (y + h) - 1; (yy >= y) && (found); yy--)
                {
                   for(int xx = (x + w) - 1; xx >= x; xx--)
                   {
@@ -209,7 +210,7 @@ public class Bag2D<OBJECT extends SizedObject>
                   }
                }
 
-               if(found == true)
+               if(found)
                {
                   a = new Area(x, y, w, h);
 
@@ -247,7 +248,7 @@ public class Bag2D<OBJECT extends SizedObject>
    }
 
    /**
-    * Obtain the object coresponding to the index
+    * Obtain the object corresponding to the index
     * 
     * @param index
     *           Index
@@ -295,7 +296,7 @@ public class Bag2D<OBJECT extends SizedObject>
    }
 
    /**
-    * Obtain position (That embed the object it self) the object coresponding to the index
+    * Obtain position (That embed the object it self) the object corresponding to the index
     * 
     * @param index
     *           Index
@@ -319,7 +320,8 @@ public class Bag2D<OBJECT extends SizedObject>
 
       for(int i = 0; i < size; i++)
       {
-         if(this.objects.getElement(i).equals(object) == true)
+         if(this.objects.getElement(i)
+                        .equals(object))
          {
             return i;
          }
@@ -341,12 +343,12 @@ public class Bag2D<OBJECT extends SizedObject>
    }
 
    /**
-    * List of all objects postion (Embed the objects) inside the bag <br>
+    * List of all objects position (Embed the objects) inside the bag <br>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
     * 
-    * @return List of all objects postion (Embed the objects) inside the bag
+    * @return List of all objects position (Embed the objects) inside the bag
     * @see java.lang.Iterable#iterator()
     */
    @Override

@@ -1,11 +1,12 @@
 /**
  * <h1>License :</h1> <br>
- * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any
+ * damage it may
  * cause.<br>
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -22,883 +23,880 @@ import jhelp.util.io.UtilIO;
 
 /**
  * Image with sensitive areas
- * 
+ *
  * @author JHelp
  */
 public class ImageArea
 {
-   /**
-    * Describe an area
-    * 
-    * @author JHelp
-    */
-   class Area
-   {
-      /** Part of image inside the area */
-      private JHelpImage part;
-      /** Height */
-      int                height;
-      /** Width */
-      int                width;
-      /** X */
-      int                x;
-      /** Y */
-      int                y;
+    /** Image area file extension */
+    public static final  String EXTENSION  = "jha";
+    /** Area color */
+    static final         int    COLOR_AREA = 0x87654321;
+    /** Over color */
+    static final         int    COLOR_OVER = 0x42100124;
+    /** Edge/corner thick size */
+    private static final int    THICK      = 5;
+    /** Areas list */
+    private final List<Area>  areas;
+    /** Base image */
+    private       JHelpImage  base;
+    /** Grid height */
+    private       int         gridHeight;
+    /** Grid width */
+    private       int         gridWidth;
+    /** Rectangle over */
+    private       Rectangle   overRectangle;
+    /** Sprite over */
+    private       JHelpSprite spriteOver;
+    /**
+     * Create a new instance of ImageArea
+     *
+     * @param base
+     *           Image base
+     */
+    public ImageArea(final JHelpImage base)
+    {
+        this();
+        this.base = base;
+        this.initializeSpriteOver();
+    }
+    /**
+     * Create a new instance of ImageArea
+     */
+    private ImageArea()
+    {
+        this.areas = new ArrayList<Area>();
+        this.gridWidth = 1;
+        this.gridHeight = 1;
+    }
 
-      /**
-       * Create a new instance of Area
-       * 
-       * @param x
-       *           X
-       * @param y
-       *           Y
-       * @param width
-       *           Width
-       * @param height
-       *           Height
-       */
-      Area(final int x, final int y, final int width, final int height)
-      {
-         this.x = x;
-         this.y = y;
-         this.width = width;
-         this.height = height;
-      }
+    /**
+     * Load an image area from a stream
+     *
+     * @param inputStream
+     *           Stream to read
+     * @return Loaded image area
+     * @throws IOException
+     *            On reading exception or stream not a valid image area
+     */
+    public static ImageArea loadImageArea(final InputStream inputStream) throws IOException
+    {
+        final ImageArea imageArea = new ImageArea();
+        imageArea.load(inputStream);
+        return imageArea;
+    }
 
-      /**
-       * Area height
-       * 
-       * @return Area height
-       */
-      public int getHeight()
-      {
-         return this.height;
-      }
+    /**
+     * Load image area from stream
+     *
+     * @param inputStream
+     *           Stream to read
+     * @throws IOException
+     *            On read issue or stream not a valid image area
+     */
+    private void load(final InputStream inputStream) throws IOException
+    {
+        final int size = UtilIO.readInteger(inputStream);
+        int       x, y, width, height;
 
-      /**
-       * Image part associated to the area
-       * 
-       * @return Image part associated to the area
-       */
-      public JHelpImage getPart()
-      {
-         if(this.part == null)
-         {
-            this.part = ImageArea.this.obtainPart(this);
-         }
+        for (int i = 0; i < size; i++)
+        {
+            x = UtilIO.readInteger(inputStream);
+            y = UtilIO.readInteger(inputStream);
+            width = UtilIO.readInteger(inputStream);
+            height = UtilIO.readInteger(inputStream);
+            this.areas.add(new Area(x, y, width, height));
+        }
 
-         return this.part;
-      }
+        this.base = JHelpImage.loadImage(inputStream);
+        this.initializeSpriteOver();
+        this.updateOver();
+    }
 
-      /**
-       * Area width
-       * 
-       * @return Area width
-       */
-      public int getWidth()
-      {
-         return this.width;
-      }
+    /**
+     * Initialize sprite over area
+     */
+    private void initializeSpriteOver()
+    {
+        final boolean drawMode = this.base.isDrawMode();
+        this.base.endDrawMode();
+        this.spriteOver = this.base.createSprite(0, 0, this.base.getWidth() - 1, this.base.getHeight() - 1);
+        this.spriteOver.setVisible(true);
 
-      /**
-       * Area X
-       * 
-       * @return X
-       */
-      public int getX()
-      {
-         return this.x;
-      }
+        if (drawMode)
+        {
+            this.base.startDrawMode();
+        }
+    }
 
-      /**
-       * Area Y
-       * 
-       * @return Y
-       */
-      public int getY()
-      {
-         return this.y;
-      }
-   }
+    /**
+     * Update over sprite
+     */
+    private void updateOver()
+    {
+        if (this.overRectangle != null)
+        {
+            if (this.overRectangle.left > this.overRectangle.right)
+            {
+                final int temp = this.overRectangle.left;
+                this.overRectangle.left = this.overRectangle.right;
+                this.overRectangle.right = temp;
+            }
 
-   /**
-    * Position relative to an area
-    * 
-    * @author JHelp
-    */
-   public static enum OverPosition
-   {
-      /** Indicates that position is on down edge of the area */
-      DOWN_EDGE(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR)),
-      /** Indicates that position is on down left corner of the area */
-      DOWN_LEFT_CORNER(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR)),
-      /** Indicates that position is on down right corner of the area */
-      DOWN_RIGHT_CORNER(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR)),
-      /** Indicates that position is inside the area */
-      INSIDE(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)),
-      /** Indicates that position is on left edge of the area */
-      LEFT_EDGE(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)),
-      /** Indicates that position is outside the area */
-      OUTSIDE(Cursor.getDefaultCursor()),
-      /** Indicates that position is on right edge of the area */
-      RIGHT_EDGE(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)),
-      /** Indicates that position is on up edge of the area */
-      UP_EDGE(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR)),
-      /** Indicates that position is on up left corner of the area */
-      UP_LEFT_CORNER(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR)),
-      /** Indicates that position is on up right corner of the area */
-      UP_RIGHT_CORNER(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
-      /** Suggested cursor to use for area manipulation */
-      private final Cursor cursor;
+            if (this.overRectangle.up > this.overRectangle.down)
+            {
+                final int temp = this.overRectangle.up;
+                this.overRectangle.up = this.overRectangle.down;
+                this.overRectangle.down = temp;
+            }
 
-      /**
-       * Create a new instance of OverPosition
-       * 
-       * @param cursor
-       *           Suggested cursor to use for area manipulation
-       */
-      OverPosition(final Cursor cursor)
-      {
-         this.cursor = cursor;
-      }
+            this.overRectangle.left = Math.max(0, this.overRectangle.left);
+            this.overRectangle.right = Math.min(this.base.getWidth() - 1, this.overRectangle.right);
+            this.overRectangle.up = Math.max(0, this.overRectangle.up);
+            this.overRectangle.down = Math.min(this.base.getHeight() - 1, this.overRectangle.down);
+        }
 
-      /**
-       * Suggested cursor to use for area manipulation
-       * 
-       * @return Suggested cursor to use for area manipulation
-       */
-      public Cursor getCursor()
-      {
-         return this.cursor;
-      }
-   }
+        final JHelpImage image = this.spriteOver.getImage();
+        this.spriteOver.setVisible(false);
+        image.startDrawMode();
+        image.clear(0);
 
-   /**
-    * Rectangle
-    * 
-    * @author JHelp
-    */
-   public class Rectangle
-   {
-      /** Down points Y */
-      int down;
-      /** Left points X */
-      int left;
-      /** Right points X */
-      int right;
-      /** Up points Y */
-      int up;
+        for (final Area area : this.areas)
+        {
+            image.fillRectangle(area.x, area.y, area.width, area.height, ImageArea.COLOR_AREA);
+        }
 
-      /**
-       * Create a new instance of Rectangle
-       * 
-       * @param x1
-       *           First corner X
-       * @param y1
-       *           First corner Y
-       * @param x2
-       *           Second corner X
-       * @param y2
-       *           Second corner Y
-       */
-      Rectangle(final int x1, final int y1, final int x2, final int y2)
-      {
-         this.left = Math.min(x1, x2);
-         this.up = Math.min(y1, y2);
-         this.right = Math.max(x1, x2);
-         this.down = Math.max(y1, y2);
-      }
+        if (this.overRectangle != null)
+        {
+            final int x      = this.overRectangle.getX();
+            final int y      = this.overRectangle.getY();
+            int       width  = this.overRectangle.getWidth();
+            int       height = this.overRectangle.getHeight();
+            final int w      = width / this.gridWidth;
+            final int h      = height / this.gridHeight;
+            width = w * this.gridWidth;
+            height = h * this.gridHeight;
+            final int more  = ImageArea.THICK >> 1;
+            final int thick = more << 1;
 
-      /**
-       * Height
-       * 
-       * @return Height
-       */
-      public int getHeight()
-      {
-         return 1 + Math.abs(this.up - this.down);
-      }
+            image.fillRectangle(x, y, width, height, ImageArea.COLOR_OVER);
+            image.drawThickRectangle(x - more, y - more, width + thick, height + thick, ImageArea.THICK, 0x44FFFFFF);
 
-      /**
-       * Width
-       * 
-       * @return Width
-       */
-      public int getWidth()
-      {
-         return 1 + Math.abs(this.left - this.right);
-      }
+            int       yy = y;
+            int       xx = x;
+            final int x2 = x + width;
+            final int y2 = y + height;
 
-      /**
-       * X up left corner
-       * 
-       * @return X up left corner
-       */
-      public int getX()
-      {
-         return Math.min(this.left, this.right);
-      }
+            for (int hh = 0; hh <= this.gridHeight; hh++)
+            {
+                image.drawHorizontalLine(x, x2, yy, 0xFF000000);
+                yy += h;
+            }
 
-      /**
-       * Y up left corner
-       * 
-       * @return Y up left corner
-       */
-      public int getY()
-      {
-         return Math.min(this.up, this.down);
-      }
-   }
+            for (int ww = 0; ww <= this.gridWidth; ww++)
+            {
+                image.drawVerticalLine(xx, y, y2, 0xFF000000);
+                xx += w;
+            }
+        }
 
-   /** Edge/corner thick size */
-   private static final int   THICK      = 5;
-   /** Area color */
-   static final int           COLOR_AREA = 0x87654321;
-   /** Over color */
-   static final int           COLOR_OVER = 0x42100124;
-   /** Image area file extension */
-   public static final String EXTENTION  = "jha";
+        image.endDrawMode();
+        this.spriteOver.setVisible(true);
+    }
 
-   /**
-    * Load an image area from a stream
-    * 
-    * @param inputStream
-    *           Stream to read
-    * @return Loaded image area
-    * @throws IOException
-    *            On reading exception or stream not a valid image area
-    */
-   public static ImageArea loadImageArea(final InputStream inputStream) throws IOException
-   {
-      final ImageArea imageArea = new ImageArea();
-      imageArea.load(inputStream);
-      return imageArea;
-   }
+    /**
+     * Compute image part of an area
+     *
+     * @param area
+     *           Area to get its image part
+     * @return Image part
+     */
+    JHelpImage obtainPart(final Area area)
+    {
+        this.spriteOver.setVisible(false);
+        final JHelpImage part = this.base.extractSubImage(area.x, area.y, area.width, area.height);
+        this.spriteOver.setVisible(true);
 
-   /** Areas list */
-   private final List<Area> areas;
-   /** Base image */
-   private JHelpImage       base;
-   /** Grid height */
-   private int              gridHeight;
-   /** Grid width */
-   private int              gridWidth;
-   /** Rectangle over */
-   private Rectangle        overRectangle;
-   /** Sprite over */
-   private JHelpSprite      spriteOver;
+        return part;
+    }
 
-   /**
-    * Create a new instance of ImageArea
-    */
-   private ImageArea()
-   {
-      this.areas = new ArrayList<Area>();
-      this.gridWidth = 1;
-      this.gridHeight = 1;
-   }
+    /**
+     * Add actual selected rectangle/grid as areas
+     */
+    public void addActualOverAsArea()
+    {
+        if (this.overRectangle == null)
+        {
+            return;
+        }
 
-   /**
-    * Create a new instance of ImageArea
-    * 
-    * @param base
-    *           Image base
-    */
-   public ImageArea(final JHelpImage base)
-   {
-      this();
-      this.base = base;
-      this.initializeSpriteOver();
-   }
+        final int x      = this.overRectangle.getX();
+        final int y      = this.overRectangle.getY();
+        final int width  = this.overRectangle.getWidth();
+        final int height = this.overRectangle.getHeight();
+        final int w      = width / this.gridWidth;
+        final int h      = height / this.gridHeight;
+        int       yy     = y;
+        int       xx     = x;
 
-   /**
-    * Initialize sprite over area
-    */
-   private void initializeSpriteOver()
-   {
-      final boolean drawMode = this.base.isDrawMode();
-      this.base.endDrawMode();
-      this.spriteOver = this.base.createSprite(0, 0, this.base.getWidth() - 1, this.base.getHeight() - 1);
-      this.spriteOver.setVisible(true);
+        for (int hh = 0; hh < this.gridHeight; hh++)
+        {
+            xx = x;
 
-      if(drawMode == true)
-      {
-         this.base.startDrawMode();
-      }
-   }
+            for (int ww = 0; ww < this.gridWidth; ww++)
+            {
+                this.areas.add(new Area(xx, yy, w, h));
+                xx += w;
+            }
 
-   /**
-    * Load image area from stream
-    * 
-    * @param inputStream
-    *           Stream to read
-    * @throws IOException
-    *            On read issue or stream not a valid image area
-    */
-   private void load(final InputStream inputStream) throws IOException
-   {
-      final int size = UtilIO.readInteger(inputStream);
-      int x, y, width, height;
-
-      for(int i = 0; i < size; i++)
-      {
-         x = UtilIO.readInteger(inputStream);
-         y = UtilIO.readInteger(inputStream);
-         width = UtilIO.readInteger(inputStream);
-         height = UtilIO.readInteger(inputStream);
-         this.areas.add(new Area(x, y, width, height));
-      }
-
-      this.base = JHelpImage.loadImage(inputStream);
-      this.initializeSpriteOver();
-      this.updateOver();
-   }
-
-   /**
-    * Update over sprite
-    */
-   private void updateOver()
-   {
-      if(this.overRectangle != null)
-      {
-         if(this.overRectangle.left > this.overRectangle.right)
-         {
-            final int temp = this.overRectangle.left;
-            this.overRectangle.left = this.overRectangle.right;
-            this.overRectangle.right = temp;
-         }
-
-         if(this.overRectangle.up > this.overRectangle.down)
-         {
-            final int temp = this.overRectangle.up;
-            this.overRectangle.up = this.overRectangle.down;
-            this.overRectangle.down = temp;
-         }
-
-         this.overRectangle.left = Math.max(0, this.overRectangle.left);
-         this.overRectangle.right = Math.min(this.base.getWidth() - 1, this.overRectangle.right);
-         this.overRectangle.up = Math.max(0, this.overRectangle.up);
-         this.overRectangle.down = Math.min(this.base.getHeight() - 1, this.overRectangle.down);
-      }
-
-      final JHelpImage image = this.spriteOver.getImage();
-      this.spriteOver.setVisible(false);
-      image.startDrawMode();
-      image.clear(0);
-
-      for(final Area area : this.areas)
-      {
-         image.fillRectangle(area.x, area.y, area.width, area.height, ImageArea.COLOR_AREA);
-      }
-
-      if(this.overRectangle != null)
-      {
-         final int x = this.overRectangle.getX();
-         final int y = this.overRectangle.getY();
-         int width = this.overRectangle.getWidth();
-         int height = this.overRectangle.getHeight();
-         final int w = width / this.gridWidth;
-         final int h = height / this.gridHeight;
-         width = w * this.gridWidth;
-         height = h * this.gridHeight;
-         final int more = ImageArea.THICK >> 1;
-         final int thick = more << 1;
-
-         image.fillRectangle(x, y, width, height, ImageArea.COLOR_OVER);
-         image.drawThickRectangle(x - more, y - more, width + thick, height + thick, ImageArea.THICK, 0x44FFFFFF);
-
-         int yy = y;
-         int xx = x;
-         final int x2 = x + width;
-         final int y2 = y + height;
-
-         for(int hh = 0; hh <= this.gridHeight; hh++)
-         {
-            image.drawHorizontalLine(x, x2, yy, 0xFF000000);
             yy += h;
-         }
+        }
+    }
 
-         for(int ww = 0; ww <= this.gridWidth; ww++)
-         {
-            image.drawVerticalLine(xx, y, y2, 0xFF000000);
-            xx += w;
-         }
-      }
+    /**
+     * Add an area
+     *
+     * @param x
+     *           X
+     * @param y
+     *           Y
+     * @param width
+     *           Width
+     * @param height
+     *           Height
+     */
+    public void addArea(final int x, final int y, final int width, final int height)
+    {
+        this.areas.add(new Area(x, y, width, height));
+        this.updateOver();
+    }
 
-      image.endDrawMode();
-      this.spriteOver.setVisible(true);
-   }
+    /**
+     * Divide image in grid selection
+     *
+     * @param horizontal
+     *           Number horizontal cell
+     * @param vertical
+     *           Number vertical cell
+     */
+    public void divide(final int horizontal, final int vertical)
+    {
+        final int width  = this.base.getWidth() / Math.max(1, horizontal);
+        final int height = this.base.getHeight() / Math.max(1, vertical);
+        final int x      = (this.base.getWidth() - width) >> 1;
+        final int y      = (this.base.getHeight() - height) >> 1;
+        this.setOverRectangle(x, y, (x + width) - 1, (y + height) - 1);
+    }
 
-   /**
-    * Compute image part of an area
-    * 
-    * @param area
-    *           Area to get its image part
-    * @return Image part
-    */
-   JHelpImage obtainPart(final Area area)
-   {
-      this.spriteOver.setVisible(false);
-      final JHelpImage part = this.base.extractSubImage(area.x, area.y, area.width, area.height);
-      this.spriteOver.setVisible(true);
+    /**
+     * Changes the over rectangle
+     *
+     * @param x1
+     *           First corner X
+     * @param y1
+     *           First corner Y
+     * @param x2
+     *           Second corner X
+     * @param y2
+     *           Second corner Y
+     */
+    public void setOverRectangle(final int x1, final int y1, final int x2, final int y2)
+    {
+        this.overRectangle = new Rectangle(x1, y1, x2, y2);
+        this.updateOver();
+    }
 
-      return part;
-   }
+    /**
+     * Obtain an area
+     *
+     * @param index
+     *           Area index
+     * @return The area
+     */
+    public Area getArea(final int index)
+    {
+        return this.areas.get(index);
+    }
 
-   /**
-    * Add actual selected rectangle/grid as areas
-    */
-   public void addActualOverAsArea()
-   {
-      if(this.overRectangle == null)
-      {
-         return;
-      }
+    /**
+     * Image base
+     *
+     * @return Image base
+     */
+    public JHelpImage getBase()
+    {
+        return this.base;
+    }
 
-      final int x = this.overRectangle.getX();
-      final int y = this.overRectangle.getY();
-      final int width = this.overRectangle.getWidth();
-      final int height = this.overRectangle.getHeight();
-      final int w = width / this.gridWidth;
-      final int h = height / this.gridHeight;
-      int yy = y;
-      int xx = x;
+    /**
+     * Grid height
+     *
+     * @return Grid height
+     */
+    public int getGridHeight()
+    {
+        return this.gridHeight;
+    }
 
-      for(int hh = 0; hh < this.gridHeight; hh++)
-      {
-         xx = x;
+    /**
+     * Grid width
+     *
+     * @return Grid width
+     */
+    public int getGridWidth()
+    {
+        return this.gridWidth;
+    }
 
-         for(int ww = 0; ww < this.gridWidth; ww++)
-         {
-            this.areas.add(new Area(xx, yy, w, h));
-            xx += w;
-         }
+    /**
+     * Over rectangle
+     *
+     * @return Over rectangle
+     */
+    public Rectangle getOverRectangle()
+    {
+        return this.overRectangle;
+    }
 
-         yy += h;
-      }
-   }
+    /**
+     * Selection down right coordinate
+     *
+     * @return Selection down right coordinate
+     */
+    public Point getPointDownRight()
+    {
+        if (this.overRectangle == null)
+        {
+            return null;
+        }
 
-   /**
-    * Add an area
-    * 
-    * @param x
-    *           X
-    * @param y
-    *           Y
-    * @param width
-    *           Width
-    * @param height
-    *           Height
-    */
-   public void addArea(final int x, final int y, final int width, final int height)
-   {
-      this.areas.add(new Area(x, y, width, height));
-      this.updateOver();
-   }
+        this.updateOver();
+        return new Point(this.overRectangle.right, this.overRectangle.down);
+    }
 
-   /**
-    * Divide image in grid selection
-    * 
-    * @param horizontal
-    *           Number horizontal cell
-    * @param vertical
-    *           Number vertical cell
-    */
-   public void divide(final int horizontal, final int vertical)
-   {
-      final int width = this.base.getWidth() / Math.max(1, horizontal);
-      final int height = this.base.getHeight() / Math.max(1, vertical);
-      final int x = (this.base.getWidth() - width) >> 1;
-      final int y = (this.base.getHeight() - height) >> 1;
-      this.setOverRectangle(x, y, (x + width) - 1, (y + height) - 1);
-   }
+    /**
+     * Selection up left coordinate
+     *
+     * @return Selection up left coordinate
+     */
+    public Point getPointUpLeft()
+    {
+        if (this.overRectangle == null)
+        {
+            return null;
+        }
 
-   /**
-    * Obtain an area
-    * 
-    * @param index
-    *           Area index
-    * @return The area
-    */
-   public Area getArea(final int index)
-   {
-      return this.areas.get(index);
-   }
+        this.updateOver();
+        return new Point(this.overRectangle.left, this.overRectangle.up);
+    }
 
-   /**
-    * Image base
-    * 
-    * @return Image base
-    */
-   public JHelpImage getBase()
-   {
-      return this.base;
-   }
+    /**
+     * Hide over rectangle
+     */
+    public void hideOverRectangle()
+    {
+        this.overRectangle = null;
+        this.updateOver();
+    }
 
-   /**
-    * Grid height
-    * 
-    * @return Grid height
-    */
-   public int getGridHeight()
-   {
-      return this.gridHeight;
-   }
+    /**
+     * Make a color transparent
+     *
+     * @param x
+     *           X pixel
+     * @param y
+     *           Y pixel
+     */
+    public void makeTransparent(final int x, final int y)
+    {
+        this.base.startDrawMode();
+        this.base.replaceColor(this.base.pickColor(x, y), 0, 1);
+        this.base.endDrawMode();
+    }
 
-   /**
-    * Grid width
-    * 
-    * @return Grid width
-    */
-   public int getGridWidth()
-   {
-      return this.gridWidth;
-   }
+    /**
+     * Number of areas
+     *
+     * @return Number of areas
+     */
+    public int numberOfArea()
+    {
+        return this.areas.size();
+    }
 
-   /**
-    * Over rectangle
-    * 
-    * @return Over rectangle
-    */
-   public Rectangle getOverRectangle()
-   {
-      return this.overRectangle;
-   }
+    /**
+     * Obtain relative position from current selection
+     *
+     * @param x
+     *           X
+     * @param y
+     *           Y
+     * @return Relative position
+     */
+    public OverPosition obtainPosition(final int x, final int y)
+    {
+        this.updateOver();
 
-   /**
-    * Selection down right coordinate
-    * 
-    * @return Selection down right coordinate
-    */
-   public Point getPointDownRight()
-   {
-      if(this.overRectangle == null)
-      {
-         return null;
-      }
+        if (this.overRectangle == null)
+        {
+            return OverPosition.OUTSIDE;
+        }
 
-      this.updateOver();
-      return new Point(this.overRectangle.right, this.overRectangle.down);
-   }
+        final int xMin = Math.min(this.overRectangle.left, this.overRectangle.right);
+        final int xMax = Math.max(this.overRectangle.left, this.overRectangle.right);
+        final int yMin = Math.min(this.overRectangle.up, this.overRectangle.down);
+        final int yMax = Math.max(this.overRectangle.up, this.overRectangle.down);
 
-   /**
-    * Selection up left coordinate
-    * 
-    * @return Selection up left coordinate
-    */
-   public Point getPointUpLeft()
-   {
-      if(this.overRectangle == null)
-      {
-         return null;
-      }
+        if ((x < xMin) || (x > xMax) || (y < yMin) || (y > yMax))
+        {
+            return OverPosition.OUTSIDE;
+        }
 
-      this.updateOver();
-      return new Point(this.overRectangle.left, this.overRectangle.up);
-   }
+        if ((x - xMin) < ImageArea.THICK)
+        {
+            if ((y - yMin) < ImageArea.THICK)
+            {
+                return OverPosition.UP_LEFT_CORNER;
+            }
 
-   /**
-    * Hide over rectangle
-    */
-   public void hideOverRectangle()
-   {
-      this.overRectangle = null;
-      this.updateOver();
-   }
+            if ((yMax - y) < ImageArea.THICK)
+            {
+                return OverPosition.UP_RIGHT_CORNER;
+            }
 
-   /**
-    * Make a color transparent
-    * 
-    * @param x
-    *           X pixel
-    * @param y
-    *           Y pixel
-    */
-   public void makeTransparent(final int x, final int y)
-   {
-      this.base.startDrawMode();
-      this.base.replaceColor(this.base.pickColor(x, y), 0, 1);
-      this.base.endDrawMode();
-   }
+            return OverPosition.LEFT_EDGE;
+        }
 
-   /**
-    * Number of areas
-    * 
-    * @return Number of areas
-    */
-   public int numberOfArea()
-   {
-      return this.areas.size();
-   }
+        if ((xMax - x) < ImageArea.THICK)
+        {
+            if ((y - yMin) < ImageArea.THICK)
+            {
+                return OverPosition.DOWN_LEFT_CORNER;
+            }
 
-   /**
-    * Obtain relative position from current selection
-    * 
-    * @param x
-    *           X
-    * @param y
-    *           Y
-    * @return Relative position
-    */
-   public OverPosition obtainPosition(final int x, final int y)
-   {
-      this.updateOver();
+            if ((yMax - y) < ImageArea.THICK)
+            {
+                return OverPosition.DOWN_RIGHT_CORNER;
+            }
 
-      if(this.overRectangle == null)
-      {
-         return OverPosition.OUTSIDE;
-      }
+            return OverPosition.RIGHT_EDGE;
+        }
 
-      final int xMin = Math.min(this.overRectangle.left, this.overRectangle.right);
-      final int xMax = Math.max(this.overRectangle.left, this.overRectangle.right);
-      final int yMin = Math.min(this.overRectangle.up, this.overRectangle.down);
-      final int yMax = Math.max(this.overRectangle.up, this.overRectangle.down);
+        if ((y - yMin) < ImageArea.THICK)
+        {
+            return OverPosition.UP_EDGE;
+        }
 
-      if((x < xMin) || (x > xMax) || (y < yMin) || (y > yMax))
-      {
-         return OverPosition.OUTSIDE;
-      }
+        if ((yMax - y) < ImageArea.THICK)
+        {
+            return OverPosition.DOWN_EDGE;
+        }
 
-      if((x - xMin) < ImageArea.THICK)
-      {
-         if((y - yMin) < ImageArea.THICK)
-         {
-            return OverPosition.UP_LEFT_CORNER;
-         }
+        return OverPosition.INSIDE;
+    }
 
-         if((yMax - y) < ImageArea.THICK)
-         {
-            return OverPosition.UP_RIGHT_CORNER;
-         }
+    /**
+     * Save image area
+     *
+     * @param outputStream
+     *           Stream where write
+     * @throws IOException
+     *            On writing issue
+     */
+    public void saveImageArea(final OutputStream outputStream) throws IOException
+    {
+        this.spriteOver.setVisible(false);
+        UtilIO.writeInteger(this.areas.size(), outputStream);
 
-         return OverPosition.LEFT_EDGE;
-      }
+        for (final Area area : this.areas)
+        {
+            UtilIO.writeInteger(area.x, outputStream);
+            UtilIO.writeInteger(area.y, outputStream);
+            UtilIO.writeInteger(area.width, outputStream);
+            UtilIO.writeInteger(area.height, outputStream);
+        }
 
-      if((xMax - x) < ImageArea.THICK)
-      {
-         if((y - yMin) < ImageArea.THICK)
-         {
-            return OverPosition.DOWN_LEFT_CORNER;
-         }
+        JHelpImage.saveImage(outputStream, this.base);
+        this.spriteOver.setVisible(true);
+    }
 
-         if((yMax - y) < ImageArea.THICK)
-         {
-            return OverPosition.DOWN_RIGHT_CORNER;
-         }
+    /**
+     * Defines the grid
+     *
+     * @param width
+     *           Width
+     * @param height
+     *           Height
+     */
+    public void setGrid(final int width, final int height)
+    {
+        this.gridWidth = Math.max(1, width);
+        this.gridHeight = Math.max(1, height);
+    }
 
-         return OverPosition.RIGHT_EDGE;
-      }
+    /**
+     * Reduce over rectangle to one point
+     *
+     * @param x
+     *           X
+     * @param y
+     *           Y
+     */
+    public void setOnePoint(final int x, final int y)
+    {
+        this.setOverRectangle(x, y, x, y);
+    }
 
-      if((y - yMin) < ImageArea.THICK)
-      {
-         return OverPosition.UP_EDGE;
-      }
+    /**
+     * Change the selection
+     *
+     * @param x
+     *           X
+     * @param y
+     *           Y
+     * @param overPosition
+     *           Relative position to change
+     */
+    public void setPoint(final int x, final int y, final OverPosition overPosition)
+    {
+        if (this.overRectangle == null)
+        {
+            this.setOverRectangle(x, y, x, y);
+            return;
+        }
 
-      if((yMax - y) < ImageArea.THICK)
-      {
-         return OverPosition.DOWN_EDGE;
-      }
+        this.updateOver();
 
-      return OverPosition.INSIDE;
-   }
+        final int mx = (this.overRectangle.right + this.overRectangle.left) >> 1;
+        final int my = (this.overRectangle.down + this.overRectangle.up) >> 1;
+        int       vx = x - mx;
+        int       vy = y - my;
 
-   /**
-    * Save image area
-    * 
-    * @param outputStream
-    *           Stream where write
-    * @throws IOException
-    *            On writing issue
-    */
-   public void saveImageArea(final OutputStream outputStream) throws IOException
-   {
-      this.spriteOver.setVisible(false);
-      UtilIO.writeInteger(this.areas.size(), outputStream);
+        if ((this.overRectangle.left + vx) < 0)
+        {
+            vx = -this.overRectangle.left;
+        }
 
-      for(final Area area : this.areas)
-      {
-         UtilIO.writeInteger(area.x, outputStream);
-         UtilIO.writeInteger(area.y, outputStream);
-         UtilIO.writeInteger(area.width, outputStream);
-         UtilIO.writeInteger(area.height, outputStream);
-      }
+        if ((this.overRectangle.right + vx) > (this.base.getWidth() - 1))
+        {
+            vx = this.base.getWidth() - 1 - this.overRectangle.right;
+        }
 
-      JHelpImage.saveImage(outputStream, this.base);
-      this.spriteOver.setVisible(true);
-   }
+        if ((this.overRectangle.up + vy) < 0)
+        {
+            vy = -this.overRectangle.up;
+        }
 
-   /**
-    * Defines the grid
-    * 
-    * @param width
-    *           Width
-    * @param height
-    *           Height
-    */
-   public void setGrid(final int width, final int height)
-   {
-      this.gridWidth = Math.max(1, width);
-      this.gridHeight = Math.max(1, height);
-   }
+        if ((this.overRectangle.down + vy) > (this.base.getHeight() - 1))
+        {
+            vy = this.base.getHeight() - 1 - this.overRectangle.down;
+        }
 
-   /**
-    * Reduce over rectangle to one point
-    * 
-    * @param x
-    *           X
-    * @param y
-    *           Y
-    */
-   public void setOnePoint(final int x, final int y)
-   {
-      this.setOverRectangle(x, y, x, y);
-   }
+        switch (overPosition)
+        {
+            case DOWN_EDGE:
+                this.overRectangle.down = y;
+                break;
+            case DOWN_LEFT_CORNER:
+                this.overRectangle.left = x;
+                this.overRectangle.down = y;
+                break;
+            case DOWN_RIGHT_CORNER:
+                this.overRectangle.right = x;
+                this.overRectangle.down = y;
+                break;
+            case INSIDE:
+                this.overRectangle.left += vx;
+                this.overRectangle.right += vx;
+                this.overRectangle.up += vy;
+                this.overRectangle.down += vy;
+                break;
+            case LEFT_EDGE:
+                this.overRectangle.left = x;
+                break;
+            case OUTSIDE:
+                break;
+            case RIGHT_EDGE:
+                this.overRectangle.right = x;
+                break;
+            case UP_EDGE:
+                this.overRectangle.up = y;
+                break;
+            case UP_LEFT_CORNER:
+                this.overRectangle.left = x;
+                this.overRectangle.up = y;
+                break;
+            case UP_RIGHT_CORNER:
+                this.overRectangle.right = x;
+                this.overRectangle.up = y;
+                break;
+        }
 
-   /**
-    * Changes the over rectangle
-    * 
-    * @param x1
-    *           First corner X
-    * @param y1
-    *           First corner Y
-    * @param x2
-    *           Second corner X
-    * @param y2
-    *           Second corner Y
-    */
-   public void setOverRectangle(final int x1, final int y1, final int x2, final int y2)
-   {
-      this.overRectangle = new Rectangle(x1, y1, x2, y2);
-      this.updateOver();
-   }
+        this.updateOver();
+    }
 
-   /**
-    * Change the selection
-    * 
-    * @param x
-    *           X
-    * @param y
-    *           Y
-    * @param overPosition
-    *           Relative position to change
-    */
-   public void setPoint(final int x, final int y, final OverPosition overPosition)
-   {
-      if(this.overRectangle == null)
-      {
-         this.setOverRectangle(x, y, x, y);
-         return;
-      }
+    /**
+     * Change selection down right corner
+     *
+     * @param x
+     *           X
+     * @param y
+     *           Y
+     */
+    public void setPointDownRight(final int x, final int y)
+    {
+        if (this.overRectangle == null)
+        {
+            this.setOverRectangle(x, y, x, y);
+            return;
+        }
 
-      this.updateOver();
+        this.overRectangle.right = x;
+        this.overRectangle.down = y;
+        this.updateOver();
+    }
 
-      final int mx = (this.overRectangle.right + this.overRectangle.left) >> 1;
-      final int my = (this.overRectangle.down + this.overRectangle.up) >> 1;
-      int vx = x - mx;
-      int vy = y - my;
+    /**
+     * Change selection up left corner
+     *
+     * @param x
+     *           X
+     * @param y
+     *           Y
+     */
+    public void setPointUpLeft(final int x, final int y)
+    {
+        if (this.overRectangle == null)
+        {
+            this.setOverRectangle(x, y, x, y);
+            return;
+        }
 
-      if((this.overRectangle.left + vx) < 0)
-      {
-         vx = -this.overRectangle.left;
-      }
+        this.overRectangle.left = x;
+        this.overRectangle.up = y;
+        this.updateOver();
+    }
 
-      if((this.overRectangle.right + vx) > (this.base.getWidth() - 1))
-      {
-         vx = this.base.getWidth() - 1 - this.overRectangle.right;
-      }
+    /**
+     * Position relative to an area
+     *
+     * @author JHelp
+     */
+    public static enum OverPosition
+    {
+        /** Indicates that position is on down edge of the area */
+        DOWN_EDGE(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR)),
+        /** Indicates that position is on down left corner of the area */
+        DOWN_LEFT_CORNER(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR)),
+        /** Indicates that position is on down right corner of the area */
+        DOWN_RIGHT_CORNER(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR)),
+        /** Indicates that position is inside the area */
+        INSIDE(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)),
+        /** Indicates that position is on left edge of the area */
+        LEFT_EDGE(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)),
+        /** Indicates that position is outside the area */
+        OUTSIDE(Cursor.getDefaultCursor()),
+        /** Indicates that position is on right edge of the area */
+        RIGHT_EDGE(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)),
+        /** Indicates that position is on up edge of the area */
+        UP_EDGE(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR)),
+        /** Indicates that position is on up left corner of the area */
+        UP_LEFT_CORNER(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR)),
+        /** Indicates that position is on up right corner of the area */
+        UP_RIGHT_CORNER(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+        /** Suggested cursor to use for area manipulation */
+        private final Cursor cursor;
 
-      if((this.overRectangle.up + vy) < 0)
-      {
-         vy = -this.overRectangle.up;
-      }
+        /**
+         * Create a new instance of OverPosition
+         *
+         * @param cursor
+         *           Suggested cursor to use for area manipulation
+         */
+        OverPosition(final Cursor cursor)
+        {
+            this.cursor = cursor;
+        }
 
-      if((this.overRectangle.down + vy) > (this.base.getHeight() - 1))
-      {
-         vy = this.base.getHeight() - 1 - this.overRectangle.down;
-      }
+        /**
+         * Suggested cursor to use for area manipulation
+         *
+         * @return Suggested cursor to use for area manipulation
+         */
+        public Cursor getCursor()
+        {
+            return this.cursor;
+        }
+    }
 
-      switch(overPosition)
-      {
-         case DOWN_EDGE:
-            this.overRectangle.down = y;
-         break;
-         case DOWN_LEFT_CORNER:
-            this.overRectangle.left = x;
-            this.overRectangle.down = y;
-         break;
-         case DOWN_RIGHT_CORNER:
-            this.overRectangle.right = x;
-            this.overRectangle.down = y;
-         break;
-         case INSIDE:
-            this.overRectangle.left += vx;
-            this.overRectangle.right += vx;
-            this.overRectangle.up += vy;
-            this.overRectangle.down += vy;
-         break;
-         case LEFT_EDGE:
-            this.overRectangle.left = x;
-         break;
-         case OUTSIDE:
-         break;
-         case RIGHT_EDGE:
-            this.overRectangle.right = x;
-         break;
-         case UP_EDGE:
-            this.overRectangle.up = y;
-         break;
-         case UP_LEFT_CORNER:
-            this.overRectangle.left = x;
-            this.overRectangle.up = y;
-         break;
-         case UP_RIGHT_CORNER:
-            this.overRectangle.right = x;
-            this.overRectangle.up = y;
-         break;
-      }
+    /**
+     * Describe an area
+     *
+     * @author JHelp
+     */
+    class Area
+    {
+        /** Height */
+        final   int        height;
+        /** Width */
+        final   int        width;
+        /** X */
+        final   int        x;
+        /** Y */
+        final   int        y;
+        /** Part of image inside the area */
+        private JHelpImage part;
 
-      this.updateOver();
-   }
+        /**
+         * Create a new instance of Area
+         *
+         * @param x
+         *           X
+         * @param y
+         *           Y
+         * @param width
+         *           Width
+         * @param height
+         *           Height
+         */
+        Area(final int x, final int y, final int width, final int height)
+        {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
 
-   /**
-    * Change selection down right corner
-    * 
-    * @param x
-    *           X
-    * @param y
-    *           Y
-    */
-   public void setPointDownRight(final int x, final int y)
-   {
-      if(this.overRectangle == null)
-      {
-         this.setOverRectangle(x, y, x, y);
-         return;
-      }
+        /**
+         * Area height
+         *
+         * @return Area height
+         */
+        public int getHeight()
+        {
+            return this.height;
+        }
 
-      this.overRectangle.right = x;
-      this.overRectangle.down = y;
-      this.updateOver();
-   }
+        /**
+         * Image part associated to the area
+         *
+         * @return Image part associated to the area
+         */
+        public JHelpImage getPart()
+        {
+            if (this.part == null)
+            {
+                this.part = ImageArea.this.obtainPart(this);
+            }
 
-   /**
-    * Change selection up left corner
-    * 
-    * @param x
-    *           X
-    * @param y
-    *           Y
-    */
-   public void setPointUpLeft(final int x, final int y)
-   {
-      if(this.overRectangle == null)
-      {
-         this.setOverRectangle(x, y, x, y);
-         return;
-      }
+            return this.part;
+        }
 
-      this.overRectangle.left = x;
-      this.overRectangle.up = y;
-      this.updateOver();
-   }
+        /**
+         * Area width
+         *
+         * @return Area width
+         */
+        public int getWidth()
+        {
+            return this.width;
+        }
+
+        /**
+         * Area X
+         *
+         * @return X
+         */
+        public int getX()
+        {
+            return this.x;
+        }
+
+        /**
+         * Area Y
+         *
+         * @return Y
+         */
+        public int getY()
+        {
+            return this.y;
+        }
+    }
+
+    /**
+     * Rectangle
+     *
+     * @author JHelp
+     */
+    public class Rectangle
+    {
+        /** Down points Y */
+        int down;
+        /** Left points X */
+        int left;
+        /** Right points X */
+        int right;
+        /** Up points Y */
+        int up;
+
+        /**
+         * Create a new instance of Rectangle
+         *
+         * @param x1
+         *           First corner X
+         * @param y1
+         *           First corner Y
+         * @param x2
+         *           Second corner X
+         * @param y2
+         *           Second corner Y
+         */
+        Rectangle(final int x1, final int y1, final int x2, final int y2)
+        {
+            this.left = Math.min(x1, x2);
+            this.up = Math.min(y1, y2);
+            this.right = Math.max(x1, x2);
+            this.down = Math.max(y1, y2);
+        }
+
+        /**
+         * Height
+         *
+         * @return Height
+         */
+        public int getHeight()
+        {
+            return 1 + Math.abs(this.up - this.down);
+        }
+
+        /**
+         * Width
+         *
+         * @return Width
+         */
+        public int getWidth()
+        {
+            return 1 + Math.abs(this.left - this.right);
+        }
+
+        /**
+         * X up left corner
+         *
+         * @return X up left corner
+         */
+        public int getX()
+        {
+            return Math.min(this.left, this.right);
+        }
+
+        /**
+         * Y up left corner
+         *
+         * @return Y up left corner
+         */
+        public int getY()
+        {
+            return Math.min(this.up, this.down);
+        }
+    }
 }

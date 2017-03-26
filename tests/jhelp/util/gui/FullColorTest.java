@@ -1,15 +1,24 @@
 package jhelp.util.gui;
 
-import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import jhelp.util.debug.Debug;
+import jhelp.util.debug.DebugLevel;
+
+/**
+ * Full color tests
+ *
+ * @author JHelp <br>
+ */
 public class FullColorTest
 {
+   /** Comparison epsilon */
    private static final double EPSILON = 0.01;
 
+   /**
+    * Convert tests
+    */
    @Test
    public void testConvert()
    {
@@ -25,5 +34,4 @@ public class FullColorTest
       Assert.assertEquals(0.75, fullColor.getValue(), FullColorTest.EPSILON);
       Debug.println(DebugLevel.INFORMATION, fullColor.getColorName());
    }
-
 }

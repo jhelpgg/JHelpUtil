@@ -9,25 +9,39 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.UtilGUI;
 import jhelp.util.math.oldSystem.MayaNumber;
 import jhelp.util.math.oldSystem.TribalNumber;
 
+/**
+ * Frame that shows tribal numbers sample
+ *
+ * @author JHelp <br>
+ */
 public class SampleTribalFrame
       extends JFrame
       implements ActionListener
 {
+   /** Label where tribal number is show */
    private final JLabel     label;
+   /** Edit text where decimal number is typed */
    private final JTextField textField;
 
+   /**
+    * Create a new instance of SampleTribalFrame
+    *
+    * @throws HeadlessException
+    *            On creation issue
+    */
    public SampleTribalFrame()
          throws HeadlessException
    {
       super("Tribal");
 
-      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
       this.label = new JLabel("Type a number ...", SwingConstants.CENTER);
       this.label.setFont(MayaNumber.FONT_NUMBERS.getFont());
@@ -39,8 +53,8 @@ public class SampleTribalFrame
       this.add(this.label, BorderLayout.NORTH);
       this.add(this.textField, BorderLayout.SOUTH);
 
-      final TribalNumber tribalNumber = TribalNumber.parse(TribalNumber.GROUP_625, TribalNumber.GROUP_125, TribalNumber.GROUP_25, TribalNumber.DIGIT_5, TribalNumber.DIGIT_4, TribalNumber.DIGIT_3, TribalNumber.DIGIT_2,
-            TribalNumber.DIGIT_1, TribalNumber.DIGIT_0);
+      final TribalNumber tribalNumber = TribalNumber.parse(TribalNumber.GROUP_625, TribalNumber.GROUP_125, TribalNumber.GROUP_25, TribalNumber.DIGIT_5,
+            TribalNumber.DIGIT_4, TribalNumber.DIGIT_3, TribalNumber.DIGIT_2, TribalNumber.DIGIT_1, TribalNumber.DIGIT_0);
       this.label.setText(tribalNumber.toString());
       this.textField.setText(String.valueOf(tribalNumber.getNumber()));
 
@@ -48,6 +62,16 @@ public class SampleTribalFrame
       UtilGUI.centerOnScreen(this);
    }
 
+   /**
+    * Called when enter is pressed is edit text to submit decimal number to convert in tribal number <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param actionEvent
+    *           Event description
+    * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+    */
    @Override
    public void actionPerformed(final ActionEvent actionEvent)
    {

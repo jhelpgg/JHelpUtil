@@ -3,6 +3,7 @@ package jhelp.util.samples.gui;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import jhelp.util.gui.JHelpFont;
 import jhelp.util.gui.JHelpImage;
@@ -12,18 +13,32 @@ import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 import jhelp.util.thread.ThreadManager;
 import jhelp.util.thread.ThreadedVerySimpleTask;
 
+/**
+ * Neon effect sample
+ *
+ * @author JHelp <br>
+ */
 public class SampleNeon
       extends ThreadedVerySimpleTask
 {
+   /** Image where draw */
    static JHelpImage image;
+   /** Animation end index */
    static int        indexEnd;
+   /** Animation start index */
    static int        indexStart;
-   static int        numberStep = 256;
+   /** Number of animation step */
+   static final int numberStep = 256;
+   /** Path follow by neon effect */
    static Path       path;
+   /** Animation thread ID */
    static int        threadID;
 
    /**
+    * Launch the sample of neon effect
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
@@ -33,7 +48,7 @@ public class SampleNeon
       SampleNeon.image = new JHelpImage(1024, 512, 0xFF000000);
 
       final JFrame frame = new JFrame();
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       frame.setLayout(new BorderLayout());
       final SampleLabelJHelpImage sampleLabelJHelpImage = new SampleLabelJHelpImage(SampleNeon.image);
       sampleLabelJHelpImage.setResize(true);
@@ -45,9 +60,16 @@ public class SampleNeon
       SampleNeon.indexStart = 0;
       SampleNeon.indexEnd = 0;
       SampleNeon.threadID = ThreadManager.THREAD_MANAGER.repeatThread(new SampleNeon(), null, 1024, 1);
-
    }
 
+   /**
+    * Do one animation step <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @see jhelp.util.thread.ThreadedVerySimpleTask#doVerySimpleAction()
+    */
    @Override
    protected void doVerySimpleAction()
    {

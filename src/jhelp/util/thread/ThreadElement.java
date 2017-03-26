@@ -20,11 +20,11 @@ final class ThreadElement<PARAMETER, RESULT, PROGRESS>
    /** Next thread element ID */
    private static int                                nextId        = 0;
    /** Indicates if the element is alive */
-   private boolean                                   alive;
+   private       boolean   alive;
    /** Thread element ID */
-   private int                                       id;
+   private final int       id;
    /** Parameter to give to the thread */
-   private PARAMETER                                 parameter;
+   private       PARAMETER parameter;
    /** For synchronize */
    private final ReentrantLock                       reentrantLock = new ReentrantLock(true);
    /** Repeat time */
@@ -206,7 +206,7 @@ final class ThreadElement<PARAMETER, RESULT, PROGRESS>
 
       try
       {
-         if((this.threadedTask != null) && (this.alive == true))
+         if((this.threadedTask != null) && (this.alive))
          {
             final RESULT result = this.threadedTask.doThreadAction(this.parameter);
 

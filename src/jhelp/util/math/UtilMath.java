@@ -20,38 +20,38 @@ public final class UtilMath
    /** 2 in high definition */
    public static final BigInteger BIG_TWO             = UtilMath.createBigInteger(2);
    /** One centimeter in pica */
-   public static double           CENTIMETER_IN_PICA  = 6.0 / 2.54;
+   public static final double     CENTIMETER_IN_PICA  = 6.0 / 2.54;
    /** One centimeter in point */
-   public static double           CENTIMETER_IN_POINT = 72.0 / 2.54;
+   public static final double     CENTIMETER_IN_POINT = 72.0 / 2.54;
    /** Epsilon precision for doubles */
    public static final double     EPSILON             = UtilMath.max(Double.MIN_NORMAL, Math.abs(Math.E - Math.exp(1)), Math.abs(Math.PI - Math.acos(-1)));
    /** Epsilon precision for floats */
    public static final float      EPSILON_FLOAT       = UtilMath.max(Float.MIN_NORMAL, Math.abs((float) Math.E - (float) Math.exp(1)),
          Math.abs((float) Math.PI - (float) Math.acos(-1)));
    /** One grade in degree */
-   public static double           GRADE_IN_DEGREE     = 0.9;
+   public static final double     GRADE_IN_DEGREE     = 0.9;
    /** One grade in radian */
-   public static double           GRADE_IN_RADIAN     = Math.PI / 200d;
+   public static       double GRADE_IN_RADIAN     = Math.PI / 200d;
    /** One inch in centimeter */
-   public static double           INCH_IN_CENTIMETER  = 2.54;
+   public static final double INCH_IN_CENTIMETER  = 2.54;
    /** One inch in millimeter */
-   public static double           INCH_IN_MILLIMETER  = 25.4;
+   public static final double INCH_IN_MILLIMETER  = 25.4;
    /** One inch in pica */
-   public static double           INCH_IN_PICA        = 6.0;
+   public static final double INCH_IN_PICA        = 6.0;
    /** One inch in point */
-   public static double           INCH_IN_POINT       = 72.0;
+   public static final double INCH_IN_POINT       = 72.0;
    /** ln(2) */
-   public static final double     LOG_2               = Math.log(2);
+   public static final double LOG_2               = Math.log(2);
    /** One millimeter in point */
-   public static double           MILLIMETER_IN_POINT = 72.0 / 25.4;
+   public static final double MILLIMETER_IN_POINT = 72.0 / 25.4;
    /** PI / 2 */
-   public static double           PI_2                = Math.PI / 2;
+   public static final double PI_2                = Math.PI / 2;
    /** One pica in millimeter */
-   public static double           PICA_IN_MILLIMETER  = 25.4 / 6.0;
+   public static final double PICA_IN_MILLIMETER  = 25.4 / 6.0;
    /** One pica in point */
-   public static double           PICA_IN_POINT       = 12.0;
+   public static final double PICA_IN_POINT       = 12.0;
    /** 2 * PI */
-   public static double           TWO_PI              = Math.PI * 2;
+   public static final double TWO_PI              = Math.PI * 2;
 
    /**
     * Compute the Bernouilli value
@@ -198,7 +198,6 @@ public final class UtilMath
       int size = arrayInt.getSize();
       int test;
       int num, gcd;
-      long result = 1;
 
       // For each denominator number
       for(int i = min; i >= 2; i--)
@@ -249,6 +248,7 @@ public final class UtilMath
       // q divide p if q=rp (r in N)
       // max = ap+b (a,b in N, a ≥ 0, 0 ≤ b < p) => max + (p-b) in {(max+1), ..., (max+min)} AND max + (p-b) = ap+b+p-b = (a+1)p
       // so max + (p-b) divide p, so it exists at least one element in {(max+1), ..., (max+min)} that can be divide by p
+      long result = 1;
 
       for(int i = 0; i < size; i++)
       {
@@ -666,11 +666,11 @@ public final class UtilMath
       {
          vz = UtilMath.vectorialZ(points[i], points[(i + 1) % length], points[(i + 2) % length]);
 
-         if(UtilMath.isNul(vectorialZ) == true)
+         if(UtilMath.isNul(vectorialZ))
          {
             vectorialZ = vz;
          }
-         else if((UtilMath.isNul(vz) == false) && (UtilMath.sign(vz) != UtilMath.sign(vectorialZ)))
+         else if((!UtilMath.isNul(vz)) && (UtilMath.sign(vz) != UtilMath.sign(vectorialZ)))
          {
             return false;
          }
@@ -844,7 +844,7 @@ public final class UtilMath
     *           Doubles to have the maximum
     * @return Maximum of doubles
     */
-   public static final double max(final double... doubles)
+   public static double max(final double... doubles)
    {
       double max = doubles[0];
 
@@ -886,7 +886,7 @@ public final class UtilMath
     *           Integer to have the maximum
     * @return Maximum of integers
     */
-   public static final int maxIntegers(final int... integers)
+   public static int maxIntegers(final int... integers)
    {
       int max = integers[0];
 
@@ -955,7 +955,7 @@ public final class UtilMath
     *           Doubles to have the minimum
     * @return Minimum of doubles
     */
-   public static final double min(final double... doubles)
+   public static double min(final double... doubles)
    {
       double min = doubles[0];
 
@@ -976,7 +976,7 @@ public final class UtilMath
     *           Integer to have the minimum
     * @return Minimum of integers
     */
-   public static final int minIntegers(final int... integers)
+   public static int minIntegers(final int... integers)
    {
       int min = integers[0];
 
@@ -1089,7 +1089,7 @@ public final class UtilMath
 
       final double space = max - min;
 
-      if(UtilMath.isNul(space) == true)
+      if(UtilMath.isNul(space))
       {
          throw new IllegalArgumentException("Can't take modulo in empty interval");
       }
@@ -1126,7 +1126,7 @@ public final class UtilMath
 
       final float space = max - min;
 
-      if(UtilMath.isNul(space) == true)
+      if(UtilMath.isNul(space))
       {
          throw new IllegalArgumentException("Can't take modulo in empty interval");
       }
@@ -1453,7 +1453,7 @@ public final class UtilMath
     */
    public static int sign(final double real)
    {
-      if(UtilMath.isNul(real) == true)
+      if(UtilMath.isNul(real))
       {
          return 0;
       }
@@ -1494,7 +1494,7 @@ public final class UtilMath
     */
    public static int sign(final float real)
    {
-      if(UtilMath.isNul(real) == true)
+      if(UtilMath.isNul(real))
       {
          return 0;
       }
@@ -1529,7 +1529,7 @@ public final class UtilMath
     *           Integer to have sign
     * @return Integer sign
     */
-   public static final int sign(final int integer)
+   public static int sign(final int integer)
    {
       if(integer > 0)
       {

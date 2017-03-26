@@ -226,11 +226,7 @@ public class Real
          return false;
       }
       final Real other = (Real) obj;
-      if(this.value != other.value)
-      {
-         return false;
-      }
-      return true;
+      return this.value == other.value;
    }
 
    @Override

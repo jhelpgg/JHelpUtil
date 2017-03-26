@@ -66,7 +66,7 @@ public abstract class StateMachine
     */
    protected final void doState(final int state)
    {
-      if(this.canDoMoreState() == false)
+      if(!this.canDoMoreState())
       {
          throw new IllegalStateException("Can't wait more thread than " + this.numberMaxOfWaitingState);
       }
@@ -76,7 +76,7 @@ public abstract class StateMachine
       this.waitingStates[this.queue] = state;
       this.queue = (this.queue + 1) % this.numberMaxOfWaitingState;
 
-      if(launch == true)
+      if(launch)
       {
          ThreadManager.THREAD_MANAGER.doThread(this, null);
       }
@@ -95,7 +95,7 @@ public abstract class StateMachine
    {
       final int state = this.waitingStates[this.head];
 
-      if(this.canPass(this.state, state) == false)
+      if(!this.canPass(this.state, state))
       {
          Debug.println(DebugLevel.WARNING, "Illegal pass state ", this.state, " to ", state);
 

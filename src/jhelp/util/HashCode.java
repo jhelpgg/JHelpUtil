@@ -61,7 +61,7 @@ public class HashCode
    {
       this.hashCode *= HashCode.PRIME;
 
-      if(value == true)
+      if(value)
       {
          this.hashCode += 1;
       }
@@ -216,53 +216,53 @@ public class HashCode
 
       Class<?> type = object.getClass();
 
-      if(type.isPrimitive() == true)
+      if(type.isPrimitive())
       {
          final String name = type.getName();
 
-         if(Reflector.PRIMITIVE_BOOLEAN.equals(name) == true)
+         if(Reflector.PRIMITIVE_BOOLEAN.equals(name))
          {
             this.add((boolean) object);
             return;
          }
 
-         if(Reflector.PRIMITIVE_BYTE.equals(name) == true)
+         if(Reflector.PRIMITIVE_BYTE.equals(name))
          {
             this.add((byte) object);
             return;
          }
 
-         if(Reflector.PRIMITIVE_CHAR.equals(name) == true)
+         if(Reflector.PRIMITIVE_CHAR.equals(name))
          {
             this.add((char) object);
             return;
          }
 
-         if(Reflector.PRIMITIVE_DOUBLE.equals(name) == true)
+         if(Reflector.PRIMITIVE_DOUBLE.equals(name))
          {
             this.add((double) object);
             return;
          }
 
-         if(Reflector.PRIMITIVE_FLOAT.equals(name) == true)
+         if(Reflector.PRIMITIVE_FLOAT.equals(name))
          {
             this.add((float) object);
             return;
          }
 
-         if(Reflector.PRIMITIVE_INT.equals(name) == true)
+         if(Reflector.PRIMITIVE_INT.equals(name))
          {
             this.add((int) object);
             return;
          }
 
-         if(Reflector.PRIMITIVE_LONG.equals(name) == true)
+         if(Reflector.PRIMITIVE_LONG.equals(name))
          {
             this.add((long) object);
             return;
          }
 
-         if(Reflector.PRIMITIVE_SHORT.equals(name) == true)
+         if(Reflector.PRIMITIVE_SHORT.equals(name))
          {
             this.add((short) object);
             return;
@@ -271,55 +271,55 @@ public class HashCode
          return;
       }
 
-      if(Boolean.class.equals(type) == true)
+      if(Boolean.class.equals(type))
       {
          this.add(((Boolean) object).booleanValue());
          return;
       }
 
-      if(Character.class.equals(type) == true)
+      if(Character.class.equals(type))
       {
          this.add(((Character) object).charValue());
          return;
       }
 
-      if(Byte.class.equals(type) == true)
+      if(Byte.class.equals(type))
       {
          this.add(((Byte) object).byteValue());
          return;
       }
 
-      if(Short.class.equals(type) == true)
+      if(Short.class.equals(type))
       {
          this.add(((Short) object).shortValue());
          return;
       }
 
-      if(Integer.class.equals(type) == true)
+      if(Integer.class.equals(type))
       {
          this.add(((Integer) object).intValue());
          return;
       }
 
-      if(Long.class.equals(type) == true)
+      if(Long.class.equals(type))
       {
          this.add(((Long) object).longValue());
          return;
       }
 
-      if(Float.class.equals(type) == true)
+      if(Float.class.equals(type))
       {
          this.add(((Float) object).floatValue());
          return;
       }
 
-      if(Double.class.equals(type) == true)
+      if(Double.class.equals(type))
       {
          this.add(((Double) object).doubleValue());
          return;
       }
 
-      if(type.isEnum() == true)
+      if(type.isEnum())
       {
          this.add(((Enum<?>) object).ordinal());
          return;
@@ -327,7 +327,7 @@ public class HashCode
 
       this.hashCode *= HashCode.PRIME;
 
-      if(type.isArray() == false)
+      if(!type.isArray())
       {
          this.hashCode += object.hashCode();
          return;
@@ -338,11 +338,11 @@ public class HashCode
 
       this.hashCode += length;
 
-      if(type.isPrimitive() == true)
+      if(type.isPrimitive())
       {
          final String name = type.getName();
 
-         if(Reflector.PRIMITIVE_BOOLEAN.equals(name) == true)
+         if(Reflector.PRIMITIVE_BOOLEAN.equals(name))
          {
             for(final boolean value : (boolean[]) object)
             {
@@ -352,7 +352,7 @@ public class HashCode
             return;
          }
 
-         if(Reflector.PRIMITIVE_BYTE.equals(name) == true)
+         if(Reflector.PRIMITIVE_BYTE.equals(name))
          {
             for(final byte value : (byte[]) object)
             {
@@ -362,7 +362,7 @@ public class HashCode
             return;
          }
 
-         if(Reflector.PRIMITIVE_CHAR.equals(name) == true)
+         if(Reflector.PRIMITIVE_CHAR.equals(name))
          {
             for(final char value : (char[]) object)
             {
@@ -372,7 +372,7 @@ public class HashCode
             return;
          }
 
-         if(Reflector.PRIMITIVE_DOUBLE.equals(name) == true)
+         if(Reflector.PRIMITIVE_DOUBLE.equals(name))
          {
             for(final double value : (double[]) object)
             {
@@ -382,7 +382,7 @@ public class HashCode
             return;
          }
 
-         if(Reflector.PRIMITIVE_FLOAT.equals(name) == true)
+         if(Reflector.PRIMITIVE_FLOAT.equals(name))
          {
             for(final float value : (float[]) object)
             {
@@ -392,7 +392,7 @@ public class HashCode
             return;
          }
 
-         if(Reflector.PRIMITIVE_INT.equals(name) == true)
+         if(Reflector.PRIMITIVE_INT.equals(name))
          {
             for(final int value : (int[]) object)
             {
@@ -402,7 +402,7 @@ public class HashCode
             return;
          }
 
-         if(Reflector.PRIMITIVE_LONG.equals(name) == true)
+         if(Reflector.PRIMITIVE_LONG.equals(name))
          {
             for(final long value : (long[]) object)
             {
@@ -412,7 +412,7 @@ public class HashCode
             return;
          }
 
-         if(Reflector.PRIMITIVE_SHORT.equals(name) == true)
+         if(Reflector.PRIMITIVE_SHORT.equals(name))
          {
             for(final short value : (short[]) object)
             {

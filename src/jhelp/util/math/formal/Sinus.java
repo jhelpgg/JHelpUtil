@@ -3,215 +3,208 @@ package jhelp.util.math.formal;
 /**
  * Sinus <br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 public class Sinus
-      extends UnaryOperator
+        extends UnaryOperator
 {
-   /**
-    * Sinus simplifier
-    * 
-    * @author JHelp
-    */
-   class SinusSimplifier
-         implements FunctionSimplifier
-   {
-      /**
-       * Simplification : sin(C1) -> C2
-       * 
-       * @param constant
-       *           Constant argument C1
-       * @return Simplification
-       */
-      private Function simplify(final Constant constant)
-      {
-         if(constant.isUndefined() == true)
-         {
-            return Constant.UNDEFINED;
-         }
+    /**
+     * Sinus simplifier
+     */
+    private SinusSimplifier sinusSimplifier;
 
-         return new Constant(Math.sin(constant.obtainRealValueNumber()));
-      }
+    /**
+     * Constructs the sinus
+     *
+     * @param parameter Parameter
+     */
+    public Sinus(final Function parameter)
+    {
+        super("sin", parameter);
+    }
 
-      /**
-       * Simplification : sin(X) -> sin(X)
-       * 
-       * @param function
-       *           Function argument X
-       * @return Simplification
-       */
-      private Function simplify(final Function function)
-      {
-         return new Sinus(function.simplify());
-      }
+    /**
+     * Indicates if function equals to this sinus <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param function Function to test
+     * @return {@code true} if equals
+     * @see jhelp.util.math.formal.Function#functionIsEqualsMoreSimple(jhelp.util.math.formal.Function)
+     */
+    @Override
+    protected boolean functionIsEqualsMoreSimple(final Function function)
+    {
+        if (function == null)
+        {
+            return false;
+        }
 
-      /**
-       * Simplification : sin(-X) -> -sin(X)
-       * 
-       * @param minusUnary
-       *           Minus unary argument -X
-       * @return Simplification
-       */
-      private Function simplify(final MinusUnary minusUnary)
-      {
-         return new MinusUnary(new Sinus(minusUnary.parameter.simplify()));
-      }
+        if (function instanceof Sinus)
+        {
+            return this.parameter.functionIsEqualsMoreSimple(((Sinus) function).parameter);
+        }
 
-      /**
-       * Simplification of the sinus <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       * 
-       * @return Simplification
-       * @see jhelp.util.math.formal.FunctionSimplifier#simplify()
-       */
-      @Override
-      public Function simplify()
-      {
-         if((Sinus.this.parameter instanceof Constant) == true)
-         {
-            return this.simplify((Constant) Sinus.this.parameter);
-         }
+        return false;
+    }
 
-         if((Sinus.this.parameter instanceof MinusUnary) == true)
-         {
-            return this.simplify((MinusUnary) Sinus.this.parameter);
-         }
+    /**
+     * Indicates if a function is equals to this function
+     *
+     * @param function Function tested
+     * @return {@code true} if there sure equals. {@code false} doesn't mean not equals, but not sure about equality
+     * @see jhelp.util.math.formal.Function#functionIsEquals(jhelp.util.math.formal.Function)
+     */
+    @Override
+    public boolean functionIsEquals(final Function function)
+    {
+        if (function == null)
+        {
+            return false;
+        }
 
-         return this.simplify(Sinus.this.parameter.simplify());
-      }
-   }
+        if (function instanceof Sinus)
+        {
+            final Sinus sinus = (Sinus) function;
+            return this.parameter.functionIsEquals(sinus.parameter);
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-   /** Sinus simplifier */
-   private SinusSimplifier sinusSimplifier;
+    /**
+     * Derive the function
+     *
+     * @param variable Variable for derive
+     * @return Derived
+     * @see jhelp.util.math.formal.Function#derive(jhelp.util.math.formal.Variable)
+     */
+    @Override
+    public Function derive(final Variable variable)
+    {
+        final Function d = this.parameter.derive(variable);
+        return Function.createMultiplication(d, new Cosinus(this.parameter));
+    }
 
-   /**
-    * Constructs the sinus
-    * 
-    * @param parameter
-    *           Parameter
-    */
-   public Sinus(final Function parameter)
-   {
-      super("sin", parameter);
-   }
+    /**
+     * Copy the function
+     *
+     * @return Copy
+     * @see jhelp.util.math.formal.Function#getCopy()
+     */
+    @Override
+    public Function getCopy()
+    {
+        return new Sinus(this.parameter.getCopy());
+    }
 
-   /**
-    * Indicates if function equals to this sinus <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param function
-    *           Function to test
-    * @return {@code true} if equals
-    * @see jhelp.util.math.formal.Function#functionIsEqualsMoreSimple(jhelp.util.math.formal.Function)
-    */
-   @Override
-   protected boolean functionIsEqualsMoreSimple(final Function function)
-   {
-      if(function == null)
-      {
-         return false;
-      }
+    /**
+     * Replace variable by function
+     *
+     * @param variable Variable to replace
+     * @param function Function for replace
+     * @return Result function
+     * @see jhelp.util.math.formal.Function#replace(jhelp.util.math.formal.Variable, jhelp.util.math.formal.Function)
+     */
+    @Override
+    public Function replace(final Variable variable, final Function function)
+    {
+        return new Sinus(this.parameter.replace(variable, function));
+    }
 
-      if(function instanceof Sinus)
-      {
-         return this.parameter.functionIsEqualsMoreSimple(((Sinus) function).parameter);
-      }
+    /**
+     * Sinus simplifier <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Sinus simplifier
+     * @see jhelp.util.math.formal.Function#obtainFunctionSimplifier()
+     */
+    @Override
+    public FunctionSimplifier obtainFunctionSimplifier()
+    {
+        if (this.sinusSimplifier == null)
+        {
+            this.sinusSimplifier = new SinusSimplifier();
+        }
 
-      return false;
-   }
+        return this.sinusSimplifier;
+    }
 
-   /**
-    * Derive the function
-    * 
-    * @param variable
-    *           Variable for derive
-    * @return Derived
-    * @see jhelp.util.math.formal.Function#derive(jhelp.util.math.formal.Variable)
-    */
-   @Override
-   public Function derive(final Variable variable)
-   {
-      final Function d = this.parameter.derive(variable);
-      return Function.createMultiplication(d, new Cosinus(this.parameter));
-   }
+    /**
+     * Sinus simplifier
+     *
+     * @author JHelp
+     */
+    class SinusSimplifier
+            implements FunctionSimplifier
+    {
+        /**
+         * Simplification of the sinus <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @return Simplification
+         * @see jhelp.util.math.formal.FunctionSimplifier#simplify()
+         */
+        @Override
+        public Function simplify()
+        {
+            if ((Sinus.this.parameter instanceof Constant))
+            {
+                return this.simplify((Constant) Sinus.this.parameter);
+            }
 
-   /**
-    * Indicates if a function is equals to this function
-    * 
-    * @param function
-    *           Function tested
-    * @return {@code true} if there sure equals. {@code false} dosen't mean not equals, but not sure about equality
-    * @see jhelp.util.math.formal.Function#functionIsEquals(jhelp.util.math.formal.Function)
-    */
-   @Override
-   public boolean functionIsEquals(final Function function)
-   {
-      if(function == null)
-      {
-         return false;
-      }
+            if ((Sinus.this.parameter instanceof MinusUnary))
+            {
+                return this.simplify((MinusUnary) Sinus.this.parameter);
+            }
 
-      if(function instanceof Sinus)
-      {
-         final Sinus sinus = (Sinus) function;
-         return this.parameter.functionIsEquals(sinus.parameter);
-      }
-      else
-      {
-         return false;
-      }
-   }
+            return this.simplify(Sinus.this.parameter.simplify());
+        }
 
-   /**
-    * Copy the function
-    * 
-    * @return Copy
-    * @see jhelp.util.math.formal.Function#getCopy()
-    */
-   @Override
-   public Function getCopy()
-   {
-      return new Sinus(this.parameter.getCopy());
-   }
+        /**
+         * Simplification : sin(C1) -> C2
+         *
+         * @param constant Constant argument C1
+         * @return Simplification
+         */
+        private Function simplify(final Constant constant)
+        {
+            if (constant.isUndefined())
+            {
+                return Constant.UNDEFINED;
+            }
 
-   /**
-    * Sinus simplifier <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @return Sinus simplifier
-    * @see jhelp.util.math.formal.Function#obtainFunctionSimplifier()
-    */
-   @Override
-   public FunctionSimplifier obtainFunctionSimplifier()
-   {
-      if(this.sinusSimplifier == null)
-      {
-         this.sinusSimplifier = new SinusSimplifier();
-      }
+            return new Constant(Math.sin(constant.obtainRealValueNumber()));
+        }
 
-      return this.sinusSimplifier;
-   }
+        /**
+         * Simplification : sin(X) -> sin(X)
+         *
+         * @param function Function argument X
+         * @return Simplification
+         */
+        private Function simplify(final Function function)
+        {
+            return new Sinus(function.simplify());
+        }
 
-   /**
-    * Replace variable by function
-    * 
-    * @param variable
-    *           Variable to replace
-    * @param function
-    *           Function for replace
-    * @return Result function
-    * @see jhelp.util.math.formal.Function#replace(jhelp.util.math.formal.Variable, jhelp.util.math.formal.Function)
-    */
-   @Override
-   public Function replace(final Variable variable, final Function function)
-   {
-      return new Sinus(this.parameter.replace(variable, function));
-   }
+        /**
+         * Simplification : sin(-X) -> -sin(X)
+         *
+         * @param minusUnary Minus unary argument -X
+         * @return Simplification
+         */
+        private Function simplify(final MinusUnary minusUnary)
+        {
+            return new MinusUnary(new Sinus(minusUnary.parameter.simplify()));
+        }
+    }
 }

@@ -3,6 +3,7 @@ package jhelp.util.samples.gui;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
@@ -20,13 +21,23 @@ import jhelp.util.gui.dynamic.font.FontGif;
 import jhelp.util.math.random.JHelpRandom;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 
+/**
+ * Dynamic animation sample
+ * 
+ * @author JHelp <br>
+ */
 public class SampleDynamicAnimation
 {
-   private static int TIME_ACROSS_SCREEN = 10;
-   private static int TIME_CHANGE_IMAGE  = 20;
+   /** Time for flag to cross the screen (in milliseconds) */
+   private static final int TIME_ACROSS_SCREEN = 10;
+   /** Time for texture on flag change (in milliseconds) */
+   private static final int TIME_CHANGE_IMAGE  = 20;
 
    /**
+    * Launch the dynamic animation sample
+    * 
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
@@ -44,7 +55,7 @@ public class SampleDynamicAnimation
          animationPosition.addFrame(JHelpDynamicImage.FPS * SampleDynamicAnimation.TIME_ACROSS_SCREEN * 2, new Position(0, 128));
          final JHelpDynamicImage dynamicImage = new JHelpDynamicImage(2048, 1024);
          final JFrame frame = new JFrame();
-         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
          frame.setLayout(new BorderLayout());
          final SampleLabelJHelpImage sampleLabelJHelpImage = new SampleLabelJHelpImage(dynamicImage.getImage());
          sampleLabelJHelpImage.setResize(true);

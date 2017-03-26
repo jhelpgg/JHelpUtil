@@ -71,7 +71,7 @@ public class AnimationZoom
    {
       if(interpolation == null)
       {
-         throw new NullPointerException("interpolation musn't be null");
+         throw new NullPointerException("interpolation MUST NOT be null");
       }
 
       this.maxZoomImage = maxZoomImage;

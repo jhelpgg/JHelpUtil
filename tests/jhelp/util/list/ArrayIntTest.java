@@ -3,6 +3,11 @@ package jhelp.util.list;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * Array int tests
+ *
+ * @author JHelp <br>
+ */
 public class ArrayIntTest
 {
    /**

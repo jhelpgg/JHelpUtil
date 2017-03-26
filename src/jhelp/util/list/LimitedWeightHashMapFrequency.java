@@ -10,507 +10,497 @@ import java.util.Map.Entry;
  * <li>If their enough space, the element is add</li>
  * <li>If its allowed, remove less used elements to make enough room to put the new one</li>
  * </ol>
- * 
+ *
+ * @param <KEY>   Key type
+ * @param <VALUE> Value type
  * @author JHelp
- * @param <KEY>
- *           Key type
- * @param <VALUE>
- *           Value type
  */
 public class LimitedWeightHashMapFrequency<KEY, VALUE extends HeavyObject>
-      implements LimitedWeightHashMap<KEY, VALUE>
+        implements LimitedWeightHashMap<KEY, VALUE>
 {
-   /**
-    * Map element
-    * 
-    * @author JHelp
-    */
-   class Element
-   {
-      /** Usage count of element */
-      long  frequency;
-      /** Element value */
-      VALUE value;
+    /**
+     * Map of elements
+     */
+    private final HashMap<KEY, Element> hashMap;
+    /**
+     * Maximum weight
+     */
+    private final long                  maximumWeight;
+    /**
+     * Weight free left
+     */
+    private       long                  freeWeight;
+    /**
+     * Create a hash map with limited number of element in memory
+     *
+     * @param maximumWeight Maximum weight
+     */
+    public LimitedWeightHashMapFrequency(final long maximumWeight)
+    {
+        this.hashMap = new HashMap<KEY, Element>();
+        this.maximumWeight = Math.max(1024L, maximumWeight);
+        this.freeWeight = this.maximumWeight;
+    }
 
-      /**
-       * Create a new instance of Element
-       * 
-       * @param value
-       *           Carry value
-       */
-      Element(final VALUE value)
-      {
-         this.frequency = 1;
-         this.value = value;
-      }
-   }
+    /**
+     * Obtain an element of the map <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param key Element key
+     * @return Element value
+     * @see jhelp.util.list.LimitedWeightHashMap#get(java.lang.Object)
+     */
+    @Override
+    public VALUE get(final KEY key)
+    {
+        final Element element = this.hashMap.get(key);
 
-   /** Weight free left */
-   private long                        freeWeight;
-   /** Map of elements */
-   private final HashMap<KEY, Element> hashMap;
-   /** Maximum weight */
-   private final long                  maximumWeight;
+        if (element == null)
+        {
+            return null;
+        }
 
-   /**
-    * Create a hash map with limited number of element in memory
-    * 
-    * @param maximumWeight
-    *           Maximum weight
-    */
-   public LimitedWeightHashMapFrequency(final long maximumWeight)
-   {
-      this.hashMap = new HashMap<KEY, Element>();
-      this.maximumWeight = Math.max(1024L, maximumWeight);
-      this.freeWeight = this.maximumWeight;
-   }
+        element.frequency++;
+        return element.value;
+    }
 
-   /**
-    * Automatic remove operation for making room
-    * 
-    * @param keepIt
-    *           Element to keep ({@code null} if no element to keep)
-    * @param weightNeed
-    *           Minimum free room need
-    */
-   private void automaticRemove(final Element keepIt, final long weightNeed)
-   {
-      Entry<KEY, Element> lessFrequency;
+    /**
+     * Free weight left <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Free weight left
+     * @see jhelp.util.list.LimitedWeightHashMap#getFreeWeight()
+     */
+    @Override
+    public long getFreeWeight()
+    {
+        return this.freeWeight;
+    }
 
-      while(this.freeWeight < weightNeed)
-      {
-         lessFrequency = this.lessFrequencyElement(keepIt);
+    /**
+     * Maximum weight <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Maximum weight
+     * @see jhelp.util.list.LimitedWeightHashMap#getMaximumWeight()
+     */
+    @Override
+    public long getMaximumWeight()
+    {
+        return this.maximumWeight;
+    }
 
-         this.freeWeight += lessFrequency.getValue().value.getWeight();
-         this.hashMap.remove(lessFrequency.getKey());
-      }
-   }
+    /**
+     * Number of elements inside the map <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Number of elements inside the map
+     * @see jhelp.util.list.LimitedWeightHashMap#getSize()
+     */
+    @Override
+    public int getSize()
+    {
+        return this.hashMap.size();
+    }
 
-   /**
-    * Obtain the less used element in the map
-    * 
-    * @param ignoreIt
-    *           Element to ignore ({@code null} if no element to ignore)
-    * @return Less used element in the map
-    */
-   private Entry<KEY, Element> lessFrequencyElement(final Element ignoreIt)
-   {
-      long min = Long.MAX_VALUE;
-      Entry<KEY, Element> lessFrequency = null;
-      Element element;
+    /**
+     * Add/modify element in the map <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param key     Element key
+     * @param creator Describe how to create the element (To be able avoid create object if not add/modify)
+     * @return {@code true} if value is add or modify without removing any object. {@code false} if at least one element is
+     * removes from the map
+     * @throws IllegalArgumentException If the element weight is bigger than map maximum weight
+     * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator)
+     */
+    @Override
+    public boolean put(final KEY key, final HeavyObjectCreator<VALUE> creator)
+    {
+        final Result result = this.put(key, creator, true);
 
-      for(final Entry<KEY, Element> entry : this.hashMap.entrySet())
-      {
-         element = entry.getValue();
-         if((element.value != ignoreIt) && (element.frequency < min))
-         {
-            lessFrequency = entry;
-            min = entry.getValue().frequency;
-         }
-      }
+        if (result == Result.TOO_MUCH_HEAVY)
+        {
+            throw new IllegalArgumentException("The given object is too heavy for the list");
+        }
 
-      return lessFrequency;
-   }
+        return (result == Result.UPDATED) || (result == Result.ADDED);
+    }
 
-   /**
-    * Obtain an element of the map <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param key
-    *           Element key
-    * @return Element value
-    * @see jhelp.util.list.LimitedWeightHashMap#get(java.lang.Object)
-    */
-   @Override
-   public VALUE get(final KEY key)
-   {
-      final Element element = this.hashMap.get(key);
+    /**
+     * Add/modify element in the map.<br>
+     * The result can be :
+     * <table border=0>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#ADD_WITH_AT_LEAST_ONE_REMOVED}</th>
+     * <td>:</td>
+     * <td>If the element is add, but at least one element is removed from the list (Only happen if remove is allow)</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#ADDED}</th>
+     * <td>:</td>
+     * <td>If the element is added, and no element is removed from the list</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#NOT_ADDED}</th>
+     * <td>:</td>
+     * <td>If the element is not added, it need to make room but remove is not allow</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#NOT_UPDATED}</th>
+     * <td>:</td>
+     * <td>If the element is not updated, it need make room but remove not allowed</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#TOO_MUCH_HEAVY}</th>
+     * <td>:</td>
+     * <td>If the element weight is bigger than the maximum weight</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#UPDATED}</th>
+     * <td>:</td>
+     * <td>If the element is updated</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#UPDATED_WITH_AT_LEAST_ONE_REMOVED}</th>
+     * <td>:</td>
+     * <td>If the element is updated, but at least one element is removed from the list (Only happen if remove is allow)
+     * </td>
+     * </tr>
+     * </table>
+     * <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param key                  Element key
+     * @param creator              Describe how to create the element (To be able avoid create object if not add/modify)
+     * @param allowAutomaticRemove Indicates if remove elements to make room is allowed
+     * @return The result operation
+     * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator, boolean)
+     */
+    @Override
+    public Result put(final KEY key, final HeavyObjectCreator<VALUE> creator, final boolean allowAutomaticRemove)
+    {
+        if (key == null)
+        {
+            throw new NullPointerException("key MUST NOT be null");
+        }
 
-      if(element == null)
-      {
-         return null;
-      }
+        long weight = creator.getFutureWeight();
+        if (weight > this.maximumWeight)
+        {
+            return Result.TOO_MUCH_HEAVY;
+        }
 
-      element.frequency++;
-      return element.value;
-   }
+        final Element element = this.hashMap.get(key);
 
-   /**
-    * Free weight left <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @return Free weight left
-    * @see jhelp.util.list.LimitedWeightHashMap#getFreeWeight()
-    */
-   @Override
-   public long getFreeWeight()
-   {
-      return this.freeWeight;
-   }
+        if (element != null)
+        {
+            weight -= element.value.getWeight();
 
-   /**
-    * Maximum weight <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @return Maximum weight
-    * @see jhelp.util.list.LimitedWeightHashMap#getMaximuWeight()
-    */
-   @Override
-   public long getMaximuWeight()
-   {
-      return this.maximumWeight;
-   }
+            if (weight <= this.freeWeight)
+            {
+                element.frequency++;
+                element.value = creator.createHeavyObject();
+                this.freeWeight -= weight;
 
-   /**
-    * Number of elements inside the map <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @return Number of elements inside the map
-    * @see jhelp.util.list.LimitedWeightHashMap#getSize()
-    */
-   @Override
-   public int getSize()
-   {
-      return this.hashMap.size();
-   }
+                return Result.UPDATED;
+            }
 
-   /**
-    * Actual map weight <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @return Actual map weight
-    * @see jhelp.util.list.HeavyObject#getWeight()
-    */
-   @Override
-   public long getWeight()
-   {
-      return this.maximumWeight - this.freeWeight;
-   }
+            if (!allowAutomaticRemove)
+            {
+                return Result.NOT_UPDATED;
+            }
 
-   /**
-    * Add/modify element in the map <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param key
-    *           Element key
-    * @param creator
-    *           Describe how to create the element (To be able avoid create object if not add/modify)
-    * @return {@code true} if value is add or modify without removing any object. {@code false} if at least one element is
-    *         removes from the map
-    * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator)
-    * @throws IllegalArgumentException
-    *            If the element weight is bigger than map maximum weight
-    */
-   @Override
-   public boolean put(final KEY key, final HeavyObjectCreator<VALUE> creator)
-   {
-      final Result result = this.put(key, creator, true);
+            this.automaticRemove(element, weight);
 
-      if(result == Result.TOO_MUCH_HEAVY)
-      {
-         throw new IllegalArgumentException("The given object is too heavy for the list");
-      }
-
-      return (result == Result.UPDATED) || (result == Result.ADDED);
-   }
-
-   /**
-    * Add/modify element in the map.<br>
-    * The result can be :
-    * <table border=0>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#ADD_WITH_AT_LEAST_ONE_REMOVED}</th>
-    * <td>:</td>
-    * <td>If the element is add, but at least one element is removed from the list (Only happen if remove is allow)</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#ADDED}</th>
-    * <td>:</td>
-    * <td>If the element is added, and no element is removed from the list</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#NOT_ADDED}</th>
-    * <td>:</td>
-    * <td>If the element is not added, it need to make room but remove is not allow</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#NOT_UPDATED}</th>
-    * <td>:</td>
-    * <td>If the element is not updated, it need make room but remove not allowed</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#TOO_MUCH_HEAVY}</th>
-    * <td>:</td>
-    * <td>If the element weight is bigger than the maximum weight</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#UPDATED}</th>
-    * <td>:</td>
-    * <td>If the element is updated</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#UPDATED_WITH_AT_LEAST_ONE_REMOVED}</th>
-    * <td>:</td>
-    * <td>If the element is updated, but at least one element is removed from the list (Only happen if remove is allow)</td>
-    * </tr>
-    * </table>
-    * <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param key
-    *           Element key
-    * @param creator
-    *           Describe how to create the element (To be able avoid create object if not add/modify)
-    * @param allowAutomaticRemove
-    *           Indicates if remove elements to make room is allowed
-    * @return The result operation
-    * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator, boolean)
-    */
-   @Override
-   public Result put(final KEY key, final HeavyObjectCreator<VALUE> creator, final boolean allowAutomaticRemove)
-   {
-      if(key == null)
-      {
-         throw new NullPointerException("key musn't be null");
-      }
-
-      long weight = creator.getFutureWeight();
-      if(weight > this.maximumWeight)
-      {
-         return Result.TOO_MUCH_HEAVY;
-      }
-
-      final Element element = this.hashMap.get(key);
-
-      if(element != null)
-      {
-         weight -= element.value.getWeight();
-
-         if(weight <= this.freeWeight)
-         {
             element.frequency++;
             element.value = creator.createHeavyObject();
             this.freeWeight -= weight;
 
-            return Result.UPDATED;
-         }
+            return Result.UPDATED_WITH_AT_LEAST_ONE_REMOVED;
+        }
 
-         if(allowAutomaticRemove == false)
-         {
-            return Result.NOT_UPDATED;
-         }
+        if (weight <= this.freeWeight)
+        {
+            this.hashMap.put(key, new Element(creator.createHeavyObject()));
+            this.freeWeight -= weight;
 
-         this.automaticRemove(element, weight);
+            return Result.ADDED;
+        }
 
-         element.frequency++;
-         element.value = creator.createHeavyObject();
-         this.freeWeight -= weight;
+        if (!allowAutomaticRemove)
+        {
+            return Result.NOT_ADDED;
+        }
 
-         return Result.UPDATED_WITH_AT_LEAST_ONE_REMOVED;
-      }
+        this.automaticRemove(null, weight);
 
-      if(weight <= this.freeWeight)
-      {
-         this.hashMap.put(key, new Element(creator.createHeavyObject()));
-         this.freeWeight -= weight;
+        this.hashMap.put(key, new Element(creator.createHeavyObject()));
+        this.freeWeight -= weight;
 
-         return Result.ADDED;
-      }
+        return Result.ADD_WITH_AT_LEAST_ONE_REMOVED;
+    }
 
-      if(allowAutomaticRemove == false)
-      {
-         return Result.NOT_ADDED;
-      }
+    /**
+     * Automatic remove operation for making room
+     *
+     * @param keepIt     Element to keep ({@code null} if no element to keep)
+     * @param weightNeed Minimum free room need
+     */
+    private void automaticRemove(final Element keepIt, final long weightNeed)
+    {
+        Entry<KEY, Element> lessFrequency;
 
-      this.automaticRemove(null, weight);
+        while (this.freeWeight < weightNeed)
+        {
+            lessFrequency = this.lessFrequencyElement(keepIt);
 
-      this.hashMap.put(key, new Element(creator.createHeavyObject()));
-      this.freeWeight -= weight;
+            this.freeWeight += lessFrequency.getValue().value.getWeight();
+            this.hashMap.remove(lessFrequency.getKey());
+        }
+    }
 
-      return Result.ADD_WITH_AT_LEAST_ONE_REMOVED;
-   }
+    /**
+     * Obtain the less used element in the map
+     *
+     * @param ignoreIt Element to ignore ({@code null} if no element to ignore)
+     * @return Less used element in the map
+     */
+    private Entry<KEY, Element> lessFrequencyElement(final Element ignoreIt)
+    {
+        long                min           = Long.MAX_VALUE;
+        Entry<KEY, Element> lessFrequency = null;
+        Element             element;
 
-   /**
-    * Add/modify element in the map <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param key
-    *           Element key
-    * @param value
-    *           Element value
-    * @return {@code true} if value is add or modify without removing any object. {@code false} if at least one element is
-    *         removes from the map
-    * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator)
-    * @throws IllegalArgumentException
-    *            If the element weight is bigger than map maximum weight
-    */
-   @Override
-   public boolean put(final KEY key, final VALUE value)
-   {
-      final Result result = this.put(key, value, true);
+        for (final Entry<KEY, Element> entry : this.hashMap.entrySet())
+        {
+            element = entry.getValue();
+            if ((element.value != ignoreIt) && (element.frequency < min))
+            {
+                lessFrequency = entry;
+                min = entry.getValue().frequency;
+            }
+        }
 
-      if(result == Result.TOO_MUCH_HEAVY)
-      {
-         throw new IllegalArgumentException("The given object is too heavy for the list");
-      }
+        return lessFrequency;
+    }
 
-      return (result == Result.UPDATED) || (result == Result.ADDED);
-   }
+    /**
+     * Add/modify element in the map <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param key   Element key
+     * @param value Element value
+     * @return {@code true} if value is add or modify without removing any object. {@code false} if at least one element is
+     * removes from the map
+     * @throws IllegalArgumentException If the element weight is bigger than map maximum weight
+     * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator)
+     */
+    @Override
+    public boolean put(final KEY key, final VALUE value)
+    {
+        final Result result = this.put(key, value, true);
 
-   /**
-    * Add/modify element in the map.<br>
-    * The result can be :
-    * <table border=0>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#ADD_WITH_AT_LEAST_ONE_REMOVED}</th>
-    * <td>:</td>
-    * <td>If the element is add, but at least one element is removed from the list (Only happen if remove is allow)</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#ADDED}</th>
-    * <td>:</td>
-    * <td>If the element is added, and no element is removed from the list</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#NOT_ADDED}</th>
-    * <td>:</td>
-    * <td>If the element is not added, it need to make room but remove is not allow</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#NOT_UPDATED}</th>
-    * <td>:</td>
-    * <td>If the element is not updated, it need make room but remove not allowed</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#TOO_MUCH_HEAVY}</th>
-    * <td>:</td>
-    * <td>If the element weight is bigger than the maximum weight</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#UPDATED}</th>
-    * <td>:</td>
-    * <td>If the element is updated</td>
-    * </tr>
-    * <tr>
-    * <th>{@link LimitedWeightHashMap.Result#UPDATED_WITH_AT_LEAST_ONE_REMOVED}</th>
-    * <td>:</td>
-    * <td>If the element is updated, but at least one element is removed from the list (Only happen if remove is allow)</td>
-    * </tr>
-    * </table>
-    * <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param key
-    *           Element key
-    * @param value
-    *           Element value
-    * @param allowAutomaticRemove
-    *           Indicates if remove elemnts to make room is allowed
-    * @return The result operation
-    * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator, boolean)
-    */
-   @Override
-   public Result put(final KEY key, final VALUE value, final boolean allowAutomaticRemove)
-   {
-      if(key == null)
-      {
-         throw new NullPointerException("key musn't be null");
-      }
+        if (result == Result.TOO_MUCH_HEAVY)
+        {
+            throw new IllegalArgumentException("The given object is too heavy for the list");
+        }
 
-      long weight = value.getWeight();
-      if(weight > this.maximumWeight)
-      {
-         return Result.TOO_MUCH_HEAVY;
-      }
+        return (result == Result.UPDATED) || (result == Result.ADDED);
+    }
 
-      final Element element = this.hashMap.get(key);
+    /**
+     * Add/modify element in the map.<br>
+     * The result can be :
+     * <table border=0>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#ADD_WITH_AT_LEAST_ONE_REMOVED}</th>
+     * <td>:</td>
+     * <td>If the element is add, but at least one element is removed from the list (Only happen if remove is allow)</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#ADDED}</th>
+     * <td>:</td>
+     * <td>If the element is added, and no element is removed from the list</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#NOT_ADDED}</th>
+     * <td>:</td>
+     * <td>If the element is not added, it need to make room but remove is not allow</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#NOT_UPDATED}</th>
+     * <td>:</td>
+     * <td>If the element is not updated, it need make room but remove not allowed</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#TOO_MUCH_HEAVY}</th>
+     * <td>:</td>
+     * <td>If the element weight is bigger than the maximum weight</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#UPDATED}</th>
+     * <td>:</td>
+     * <td>If the element is updated</td>
+     * </tr>
+     * <tr>
+     * <th>{@link LimitedWeightHashMap.Result#UPDATED_WITH_AT_LEAST_ONE_REMOVED}</th>
+     * <td>:</td>
+     * <td>If the element is updated, but at least one element is removed from the list (Only happen if remove is allow)
+     * </td>
+     * </tr>
+     * </table>
+     * <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param key                  Element key
+     * @param value                Element value
+     * @param allowAutomaticRemove Indicates if remove elemnts to make room is allowed
+     * @return The result operation
+     * @see jhelp.util.list.LimitedWeightHashMap#put(java.lang.Object, jhelp.util.list.HeavyObjectCreator, boolean)
+     */
+    @Override
+    public Result put(final KEY key, final VALUE value, final boolean allowAutomaticRemove)
+    {
+        if (key == null)
+        {
+            throw new NullPointerException("key MUST NOT be null");
+        }
 
-      if(element != null)
-      {
-         weight -= element.value.getWeight();
+        long weight = value.getWeight();
+        if (weight > this.maximumWeight)
+        {
+            return Result.TOO_MUCH_HEAVY;
+        }
 
-         if(weight <= this.freeWeight)
-         {
+        final Element element = this.hashMap.get(key);
+
+        if (element != null)
+        {
+            weight -= element.value.getWeight();
+
+            if (weight <= this.freeWeight)
+            {
+                element.frequency++;
+                element.value = value;
+                this.freeWeight -= weight;
+
+                return Result.UPDATED;
+            }
+
+            if (!allowAutomaticRemove)
+            {
+                return Result.NOT_UPDATED;
+            }
+
+            this.automaticRemove(element, weight);
+
             element.frequency++;
             element.value = value;
             this.freeWeight -= weight;
 
-            return Result.UPDATED;
-         }
+            return Result.UPDATED_WITH_AT_LEAST_ONE_REMOVED;
+        }
 
-         if(allowAutomaticRemove == false)
-         {
-            return Result.NOT_UPDATED;
-         }
+        if (weight <= this.freeWeight)
+        {
+            this.hashMap.put(key, new Element(value));
+            this.freeWeight -= weight;
 
-         this.automaticRemove(element, weight);
+            return Result.ADDED;
+        }
 
-         element.frequency++;
-         element.value = value;
-         this.freeWeight -= weight;
+        if (!allowAutomaticRemove)
+        {
+            return Result.NOT_ADDED;
+        }
 
-         return Result.UPDATED_WITH_AT_LEAST_ONE_REMOVED;
-      }
+        this.automaticRemove(null, weight);
 
-      if(weight <= this.freeWeight)
-      {
-         this.hashMap.put(key, new Element(value));
-         this.freeWeight -= weight;
+        this.hashMap.put(key, new Element(value));
+        this.freeWeight -= weight;
 
-         return Result.ADDED;
-      }
+        return Result.ADD_WITH_AT_LEAST_ONE_REMOVED;
+    }
 
-      if(allowAutomaticRemove == false)
-      {
-         return Result.NOT_ADDED;
-      }
+    /**
+     * Remove an element from the map <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param key Key of element to remove
+     * @see jhelp.util.list.LimitedWeightHashMap#remove(java.lang.Object)
+     */
+    @Override
+    public void remove(final KEY key)
+    {
+        final Element element = this.hashMap.remove(key);
 
-      this.automaticRemove(null, weight);
+        if (element == null)
+        {
+            return;
+        }
 
-      this.hashMap.put(key, new Element(value));
-      this.freeWeight -= weight;
+        this.freeWeight += element.value.getWeight();
+    }
 
-      return Result.ADD_WITH_AT_LEAST_ONE_REMOVED;
-   }
+    /**
+     * Actual map weight <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Actual map weight
+     * @see jhelp.util.list.HeavyObject#getWeight()
+     */
+    @Override
+    public long getWeight()
+    {
+        return this.maximumWeight - this.freeWeight;
+    }
 
-   /**
-    * Remove an element from the map <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param key
-    *           Key of element to remove
-    * @see jhelp.util.list.LimitedWeightHashMap#remove(java.lang.Object)
-    */
-   @Override
-   public void remove(final KEY key)
-   {
-      final Element element = this.hashMap.remove(key);
+    /**
+     * Map element
+     *
+     * @author JHelp
+     */
+    class Element
+    {
+        /**
+         * Usage count of element
+         */
+        long  frequency;
+        /**
+         * Element value
+         */
+        VALUE value;
 
-      if(element == null)
-      {
-         return;
-      }
-
-      this.freeWeight += element.value.getWeight();
-   }
+        /**
+         * Create a new instance of Element
+         *
+         * @param value Carry value
+         */
+        Element(final VALUE value)
+        {
+            this.frequency = 1;
+            this.value = value;
+        }
+    }
 }

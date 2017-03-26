@@ -27,15 +27,15 @@ public class Size
    public static final long ZETTA;
    static
    {
-      KILO = 1024l;
-      MEGA = 1024l * Size.KILO;
-      GIGA = 1024l * Size.MEGA;
-      TERA = 1024l * Size.GIGA;
-      PETA = 1024l * Size.TERA;
-      EXA = 1024l * Size.PETA;
-      ZETTA = 1024l * Size.EXA;
-      YOTTA = 1024l * Size.ZETTA;
-      BRONTO = 1024l * Size.YOTTA;
+      KILO = 1024L;
+      MEGA = 1024L * Size.KILO;
+      GIGA = 1024L * Size.MEGA;
+      TERA = 1024L * Size.GIGA;
+      PETA = 1024L * Size.TERA;
+      EXA = 1024L * Size.PETA;
+      ZETTA = 1024L * Size.EXA;
+      YOTTA = 1024L * Size.ZETTA;
+      BRONTO = 1024L * Size.YOTTA;
    }
    /** Actual size */
    private long             size;
@@ -208,12 +208,12 @@ public class Size
       size = size % Size.BRONTO;
       value = size / Size.YOTTA;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("Y ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }
@@ -224,12 +224,12 @@ public class Size
       size = size % Size.YOTTA;
       value = size / Size.ZETTA;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("Z ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }
@@ -240,12 +240,12 @@ public class Size
       size = size % Size.ZETTA;
       value = size / Size.EXA;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("E ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }
@@ -256,12 +256,12 @@ public class Size
       size = size % Size.EXA;
       value = size / Size.PETA;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("P ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }
@@ -272,12 +272,12 @@ public class Size
       size = size % Size.PETA;
       value = size / Size.TERA;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("T ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }
@@ -288,12 +288,12 @@ public class Size
       size = size % Size.TERA;
       value = size / Size.GIGA;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("G ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }
@@ -304,12 +304,12 @@ public class Size
       size = size % Size.GIGA;
       value = size / Size.MEGA;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("M ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }
@@ -320,12 +320,12 @@ public class Size
       size = size % Size.MEGA;
       value = size / Size.KILO;
 
-      if((value > 0) || (started == true))
+      if((value > 0) || (started))
       {
          stringBuilder.append(value);
          stringBuilder.append("K ");
 
-         if((started == true) && (full == false))
+         if((started) && (!full))
          {
             return stringBuilder.toString().trim();
          }

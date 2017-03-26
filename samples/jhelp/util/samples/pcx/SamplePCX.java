@@ -18,10 +18,18 @@ import jhelp.util.resources.ResourcesSystem;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImage;
 import jhelp.util.text.UtilText;
 
+/**
+ * Sample of PCX parsing
+ * 
+ * @author JHelp <br>
+ */
 public class SamplePCX
 {
    /**
+    * Launch the sample
+    * 
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
@@ -41,7 +49,9 @@ public class SamplePCX
 
          for(final ResourceElement resourceElement : resourcesSystem.obtainList(ResourcesSystem.ROOT))
          {
-            if((resourceElement.isDirectory() == false) && (resourceElement.getName().toLowerCase().endsWith(".pcx") == true))
+            if((!resourceElement.isDirectory()) && (resourceElement.getName()
+                                                                   .toLowerCase()
+                                                                   .endsWith(".pcx")))
             {
                inputStream = resourcesSystem.obtainInputStream((ResourceFile) resourceElement);
                final PCX pcx = new PCX(inputStream);
@@ -97,7 +107,7 @@ public class SamplePCX
             {
                inputStream.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }

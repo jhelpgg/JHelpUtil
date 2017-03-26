@@ -3,8 +3,22 @@ package jhelp.util.gui;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * JHelpImage tests
+ *
+ * @author JHelp <br>
+ */
 public class JHelpImageTest
 {
+   /**
+    * Create test image
+    *
+    * @param width
+    *           Width
+    * @param height
+    *           Height
+    * @return Created image
+    */
    private JHelpImage createJHelpImage(final int width, final int height)
    {
       final int length = width * height;
@@ -18,6 +32,9 @@ public class JHelpImageTest
       return new JHelpImage(width, height, pixels);
    }
 
+   /**
+    * flip both
+    */
    @Test
    public void testFlipBoth()
    {
@@ -37,6 +54,9 @@ public class JHelpImageTest
       }
    }
 
+   /**
+    * Flip horizontal
+    */
    @Test
    public void testFlipHorizontal()
    {
@@ -56,6 +76,9 @@ public class JHelpImageTest
       }
    }
 
+   /**
+    * Flip vertical
+    */
    @Test
    public void testFlipVertical()
    {
@@ -75,6 +98,9 @@ public class JHelpImageTest
       }
    }
 
+   /**
+    * Rotate at 180 degree
+    */
    @Test
    public void testRotate180()
    {
@@ -93,6 +119,9 @@ public class JHelpImageTest
       }
    }
 
+   /**
+    * Rotate at 270 degree
+    */
    @Test
    public void testRotate270()
    {
@@ -112,6 +141,9 @@ public class JHelpImageTest
       }
    }
 
+   /**
+    * Rotate at 90 degree
+    */
    @Test
    public void testRotate90()
    {

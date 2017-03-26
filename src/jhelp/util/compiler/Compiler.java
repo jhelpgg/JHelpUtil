@@ -13,7 +13,7 @@ package jhelp.util.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
@@ -48,9 +48,9 @@ public class Compiler
          implements Comparable<NameCode>
    {
       /** Associate code */
-      String code;
+      final String code;
       /** Class name */
-      String name;
+      final String name;
 
       /**
        * Constructs NameCode
@@ -161,7 +161,7 @@ public class Compiler
     * @throws IOException
     *            On writing issue
     */
-   public static void compil(final File directory, final NameCode... nameCodes) throws IOException
+   public static void compile(final File directory, final NameCode... nameCodes) throws IOException
    {
       Debug.println(DebugLevel.INFORMATION, "Compile in ", directory.getAbsolutePath());
 
@@ -180,10 +180,11 @@ public class Compiler
 
       UtilIO.createDirectory(directory);
 
-      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(directory));
+      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(directory));
 
       // Do the compilation itself
-      if(compiler.getTask(null, fileManager, null, null, null, compilationUnits).call() == false)
+      if(!compiler.getTask(null, fileManager, null, null, null, compilationUnits)
+                  .call())
       {
          throw new RuntimeException("Compilation failed !");
       }
@@ -193,7 +194,7 @@ public class Compiler
    }
 
    /**
-    * Compile several class in same time (Use full if a class need an other one to compil them in same time)
+    * Compile several class in same time (Use full if a class need an other one to compile them in same time)
     * 
     * @param nameCodes
     *           Couples of name/code to compile
@@ -201,7 +202,7 @@ public class Compiler
     * @throws IOException
     *            On read/write problem
     */
-   public static File compil(final NameCode... nameCodes) throws IOException
+   public static File compile(final NameCode... nameCodes) throws IOException
    {
       final File directory = new File(UtilIO.obtainTemporaryDirectory(), UtilText.concatenate("Compiler", File.separator));
 
@@ -222,10 +223,11 @@ public class Compiler
 
       UtilIO.createDirectory(directory);
 
-      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(directory));
+      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(directory));
 
       // Do the compilation itself
-      if(compiler.getTask(null, fileManager, null, null, null, compilationUnits).call() == false)
+      if(!compiler.getTask(null, fileManager, null, null, null, compilationUnits)
+                  .call())
       {
          throw new RuntimeException("Compilation failed !");
       }
@@ -247,7 +249,7 @@ public class Compiler
     * @throws IOException
     *            On read/write issue
     */
-   public static File compil(final String classCompleteName, final String code) throws IOException
+   public static File compile(final String classCompleteName, final String code) throws IOException
    {
       final File directory = new File(UtilIO.obtainTemporaryDirectory(), UtilText.concatenate("Compiler", File.separator));
 
@@ -265,10 +267,11 @@ public class Compiler
 
       UtilIO.createDirectory(directory);
 
-      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(directory));
+      fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(directory));
 
       // Do the compilation itself
-      if(compiler.getTask(null, fileManager, null, null, null, compilationUnits).call() == false)
+      if(!compiler.getTask(null, fileManager, null, null, null, compilationUnits)
+                  .call())
       {
          throw new RuntimeException(UtilText.concatenate("Compilation of ", classCompleteName, " failed !"));
       }

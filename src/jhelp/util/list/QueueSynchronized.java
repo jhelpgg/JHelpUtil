@@ -12,169 +12,175 @@ package jhelp.util.list;
  * <br>
  * Last modification : 25 janv. 2009<br>
  * Version 0.0.1<br>
- * 
+ *
+ * @param <Element> Element type
  * @author JHelp
- * @param <Element>
- *           Element type
  */
 public class QueueSynchronized<Element>
 {
-   /**
-    * Link between tow elements in the queue <br>
-    * <br>
-    * Last modification : 25 janv. 2009<br>
-    * Version 0.0.1<br>
-    * 
-    * @author JHelp
-    * @param <Elt>
-    *           Element type
-    */
-   static class Link<Elt>
-   {
-      /** Element carry */
-      public Elt       element;
-      /** Next link */
-      public Link<Elt> next;
-   }
+    /**
+     * Head link
+     */
+    private Link<Element> head;
+    /**
+     * Queue size
+     */
+    private int           size;
+    /**
+     * Tail link
+     */
+    private Link<Element> tail;
+    /**
+     * Constructs Queue
+     */
+    public QueueSynchronized()
+    {
+        this.head = this.tail = null;
+        this.size = 0;
+    }
 
-   /** Head link */
-   private Link<Element> head;
-   /** Queue size */
-   private int           size;
-   /** Tail link */
-   private Link<Element> tail;
+    /**
+     * In queue an element
+     *
+     * @param element Element to in queue
+     */
+    public synchronized void inQueue(final Element element)
+    {
+        if (element == null)
+        {
+            throw new NullPointerException("The element MUST NOT be null !");
+        }
 
-   /**
-    * Constructs Queue
-    */
-   public QueueSynchronized()
-   {
-      this.head = this.tail = null;
-      this.size = 0;
-   }
+        if (this.head == null)
+        {
+            this.head = new Link<Element>();
+            this.head.element = element;
 
-   /**
-    * In queue an element
-    * 
-    * @param element
-    *           Element to in queue
-    */
-   public synchronized void inQueue(final Element element)
-   {
-      if(element == null)
-      {
-         throw new NullPointerException("The element musn't be null !");
-      }
+            this.tail = this.head;
 
-      if(this.head == null)
-      {
-         this.head = new Link<Element>();
-         this.head.element = element;
+            this.size = 1;
 
-         this.tail = this.head;
+            return;
+        }
 
-         this.size = 1;
+        this.tail.next = new Link<Element>();
+        this.tail = this.tail.next;
+        this.tail.element = element;
 
-         return;
-      }
+        this.size++;
+    }
 
-      this.tail.next = new Link<Element>();
-      this.tail = this.tail.next;
-      this.tail.element = element;
+    /**
+     * Indicates if the queue is empty
+     *
+     * @return {@code true} if the queue is empty
+     */
+    public synchronized boolean isEmpty()
+    {
+        return this.head == null;
+    }
 
-      this.size++;
-   }
+    /**
+     * Look the next element in the queue
+     *
+     * @return Element look
+     */
+    public synchronized Element lookQueue()
+    {
+        if (this.head == null)
+        {
+            throw new IllegalStateException("The queue is empty !");
+        }
 
-   /**
-    * Indicates if the queue is empty
-    * 
-    * @return {@code true} if the queue is empty
-    */
-   public synchronized boolean isEmpty()
-   {
-      return this.head == null;
-   }
+        return this.head.element;
+    }
 
-   /**
-    * Look the next element in the queue
-    * 
-    * @return Element look
-    */
-   public synchronized Element lookQueue()
-   {
-      if(this.head == null)
-      {
-         throw new IllegalStateException("The queue is empty !");
-      }
+    /**
+     * Out queue element
+     *
+     * @return Element out queue
+     */
+    public synchronized Element outQueue()
+    {
+        Element element;
 
-      return this.head.element;
-   }
+        if (this.head == null)
+        {
+            throw new IllegalStateException("The queue is empty !");
+        }
 
-   /**
-    * Out queue element
-    * 
-    * @return Element out queue
-    */
-   public synchronized Element outQueue()
-   {
-      Element element;
+        element = this.head.element;
+        this.head = this.head.next;
+        if (this.head == null)
+        {
+            this.tail = null;
+        }
 
-      if(this.head == null)
-      {
-         throw new IllegalStateException("The queue is empty !");
-      }
+        this.size--;
 
-      element = this.head.element;
-      this.head = this.head.next;
-      if(this.head == null)
-      {
-         this.tail = null;
-      }
+        return element;
+    }
 
-      this.size--;
+    /**
+     * Queue size
+     *
+     * @return Queue size
+     */
+    public synchronized int size()
+    {
+        return this.size;
+    }
 
-      return element;
-   }
+    /**
+     * String representation
+     *
+     * @return String representation
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuffer  stringBuffer;
+        Link<Element> link;
 
-   /**
-    * Queue size
-    * 
-    * @return Queue size
-    */
-   public synchronized int size()
-   {
-      return this.size;
-   }
+        stringBuffer = new StringBuffer("Queue : [");
 
-   /**
-    * String representation
-    * 
-    * @return String representation
-    * @see java.lang.Object#toString()
-    */
-   @Override
-   public String toString()
-   {
-      StringBuffer stringBuffer;
-      Link<Element> link;
+        link = this.head;
+        while (link != null)
+        {
+            stringBuffer.append(link.element);
 
-      stringBuffer = new StringBuffer("Queue : [");
+            link = link.next;
 
-      link = this.head;
-      while(link != null)
-      {
-         stringBuffer.append(link.element);
+            if (link != null)
+            {
+                stringBuffer.append(" | ");
+            }
+        }
 
-         link = link.next;
+        stringBuffer.append(']');
 
-         if(link != null)
-         {
-            stringBuffer.append(" | ");
-         }
-      }
+        return stringBuffer.toString();
+    }
 
-      stringBuffer.append(']');
-
-      return stringBuffer.toString();
-   }
+    /**
+     * Link between tow elements in the queue <br>
+     * <br>
+     * Last modification : 25 janv. 2009<br>
+     * Version 0.0.1<br>
+     *
+     * @param <Elt> Element type
+     * @author JHelp
+     */
+    static class Link<Elt>
+    {
+        /**
+         * Element carry
+         */
+        public Elt       element;
+        /**
+         * Next link
+         */
+        public Link<Elt> next;
+    }
 }

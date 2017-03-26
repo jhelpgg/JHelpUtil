@@ -2,291 +2,295 @@ package jhelp.util.list;
 
 /**
  * Represents a ring of elements
- * 
+ *
+ * @param <TYPE> Elements type
  * @author JHelp
- * @param <TYPE>
- *           Elements type
  */
 public class Ring<TYPE>
 {
-   /**
-    * Element of the ring
-    * 
-    * @author JHelp
-    * @param <ELEMENT>
-    *           Element type
-    */
-   static class Element<ELEMENT>
-   {
-      /** Carry element */
-      public ELEMENT          element;
-      /** Next ring element */
-      public Element<ELEMENT> next;
-      /** Previous ring element */
-      public Element<ELEMENT> previous;
+    /**
+     * Current element of the ring
+     */
+    private Element<TYPE> current;
+    /**
+     * Ring size
+     */
+    private int           size;
+    /**
+     * Create a new empty Ring
+     */
+    public Ring()
+    {
+        this.size = 0;
+    }
 
-      /**
-       * Create a new instance of Element
-       * 
-       * @param element
-       *           Element to carry
-       */
-      public Element(final ELEMENT element)
-      {
-         this.element = element;
-      }
-   }
+    /**
+     * Add element to ring
+     *
+     * @param element Element to add
+     */
+    public void add(final TYPE element)
+    {
+        if (element == null)
+        {
+            throw new NullPointerException("element MUST NOT be null");
+        }
 
-   /** Current element of the ring */
-   private Element<TYPE> current;
-   /** Ring size */
-   private int           size;
+        if (this.current == null)
+        {
+            this.current = new Element<TYPE>(element);
+            this.current.next = this.current;
+            this.current.previous = this.current;
+            this.size = 1;
 
-   /**
-    * Create a new empty Ring
-    */
-   public Ring()
-   {
-      this.size = 0;
-   }
+            return;
+        }
 
-   /**
-    * Add element to ring
-    * 
-    * @param element
-    *           Element to add
-    */
-   public void add(final TYPE element)
-   {
-      if(element == null)
-      {
-         throw new NullPointerException("element musn't be null");
-      }
+        final Element<TYPE> next = this.current.next;
 
-      if(this.current == null)
-      {
-         this.current = new Element<TYPE>(element);
-         this.current.next = this.current;
-         this.current.previous = this.current;
-         this.size = 1;
+        final Element<TYPE> elt = new Element<TYPE>(element);
+        elt.previous = this.current;
+        elt.next = next;
 
-         return;
-      }
+        this.current.next = elt;
 
-      final Element<TYPE> next = this.current.next;
+        next.previous = elt;
+        this.size++;
+    }
 
-      final Element<TYPE> elt = new Element<TYPE>(element);
-      elt.previous = this.current;
-      elt.next = next;
+    /**
+     * Clear the ring
+     */
+    public void clear()
+    {
+        while (this.current != null)
+        {
+            this.remove();
+        }
 
-      this.current.next = elt;
+        this.size = 0;
+    }
 
-      next.previous = elt;
-      this.size++;
-   }
+    /**
+     * Remove current element of the ring
+     */
+    public void remove()
+    {
+        if (this.current == null)
+        {
+            this.size = 0;
+            return;
+        }
 
-   /**
-    * Clear the ring
-    */
-   public void clear()
-   {
-      while(this.current != null)
-      {
-         this.remove();
-      }
+        if ((this.current.next == this.current) && (this.current.previous == this.current))
+        {
+            this.size = 0;
+            this.current = null;
 
-      this.size = 0;
-   }
+            return;
+        }
 
-   /**
-    * Indicates if given element inside the ring
-    * 
-    * @param element
-    *           Element searched
-    * @return {@code true} if given element inside the ring
-    */
-   public boolean contains(final TYPE element)
-   {
-      if((element == null) || (this.current == null))
-      {
-         return false;
-      }
+        this.current.previous.next = this.current.next;
+        this.current.next.previous = this.current.previous;
 
-      if(this.current.element.equals(element) == true)
-      {
-         return true;
-      }
+        this.current = this.current.next;
+        this.size--;
+    }
 
-      Element<TYPE> elementLocal = this.current.next;
+    /**
+     * Indicates if given element inside the ring
+     *
+     * @param element Element searched
+     * @return {@code true} if given element inside the ring
+     */
+    public boolean contains(final TYPE element)
+    {
+        if ((element == null) || (this.current == null))
+        {
+            return false;
+        }
 
-      while(elementLocal != this.current)
-      {
-         if(elementLocal.element.equals(element) == true)
-         {
+        if (this.current.element.equals(element))
+        {
             return true;
-         }
+        }
 
-         elementLocal = elementLocal.next;
-      }
+        Element<TYPE> elementLocal = this.current.next;
 
-      return false;
-   }
+        while (elementLocal != this.current)
+        {
+            if (elementLocal.element.equals(element))
+            {
+                return true;
+            }
 
-   /**
-    * Current element or {@code null} if ring is empty
-    * 
-    * @return Current element or {@code null} if ring is empty
-    */
-   public TYPE get()
-   {
-      if(this.current == null)
-      {
-         return null;
-      }
+            elementLocal = elementLocal.next;
+        }
 
-      return this.current.element;
-   }
+        return false;
+    }
 
-   /**
-    * Number of elements inside the ring
-    * 
-    * @return Number of elements inside the ring
-    */
-   public int getSize()
-   {
-      return this.size;
-   }
+    /**
+     * Current element or {@code null} if ring is empty
+     *
+     * @return Current element or {@code null} if ring is empty
+     */
+    public TYPE get()
+    {
+        if (this.current == null)
+        {
+            return null;
+        }
 
-   /**
-    * Indicates if ring is empty
-    * 
-    * @return {@code true} if ring is empty
-    */
-   public boolean isEmpty()
-   {
-      return this.current == null;
-   }
+        return this.current.element;
+    }
 
-   /**
-    * Pass to next element
-    */
-   public void next()
-   {
-      if(this.current != null)
-      {
-         this.current = this.current.next;
-      }
-   }
+    /**
+     * Number of elements inside the ring
+     *
+     * @return Number of elements inside the ring
+     */
+    public int getSize()
+    {
+        return this.size;
+    }
 
-   /**
-    * Pass to previous element
-    */
-   public void previous()
-   {
-      if(this.current != null)
-      {
-         this.current = this.current.previous;
-      }
-   }
+    /**
+     * Indicates if ring is empty
+     *
+     * @return {@code true} if ring is empty
+     */
+    public boolean isEmpty()
+    {
+        return this.current == null;
+    }
 
-   /**
-    * Try to reach ring element that equals to given element.<br>
-    * If succeed the stored instance equals to given is returned and the ring is on its position
-    * 
-    * @param element
-    *           Element search
-    * @return The element stored equals to given element and ring position on it OR {@code null} if not found and ring position
-    *         not changed
-    */
-   public TYPE reach(final TYPE element)
-   {
-      if(element == null)
-      {
-         throw new NullPointerException("element musn't be null");
-      }
+    /**
+     * Pass to next element
+     */
+    public void next()
+    {
+        if (this.current != null)
+        {
+            this.current = this.current.next;
+        }
+    }
 
-      if(this.current == null)
-      {
-         return null;
-      }
+    /**
+     * Pass to previous element
+     */
+    public void previous()
+    {
+        if (this.current != null)
+        {
+            this.current = this.current.previous;
+        }
+    }
 
-      if(this.current.element.equals(element) == true)
-      {
-         return this.current.element;
-      }
+    /**
+     * Try to reach ring element that equals to given element.<br>
+     * If succeed the stored instance equals to given is returned and the ring is on its position
+     *
+     * @param element Element search
+     * @return The element stored equals to given element and ring position on it OR {@code null} if not found and ring
+     * position
+     * not changed
+     */
+    public TYPE reach(final TYPE element)
+    {
+        if (element == null)
+        {
+            throw new NullPointerException("element MUST NOT be null");
+        }
 
-      Element<TYPE> elementLocal = this.current.next;
+        if (this.current == null)
+        {
+            return null;
+        }
 
-      while(elementLocal != this.current)
-      {
-         if(elementLocal.element.equals(element) == true)
-         {
-            this.current = elementLocal;
+        if (this.current.element.equals(element))
+        {
             return this.current.element;
-         }
+        }
 
-         elementLocal = elementLocal.next;
-      }
+        Element<TYPE> elementLocal = this.current.next;
 
-      return null;
-   }
+        while (elementLocal != this.current)
+        {
+            if (elementLocal.element.equals(element))
+            {
+                this.current = elementLocal;
+                return this.current.element;
+            }
 
-   /**
-    * Remove current element of the ring
-    */
-   public void remove()
-   {
-      if(this.current == null)
-      {
-         this.size = 0;
-         return;
-      }
+            elementLocal = elementLocal.next;
+        }
 
-      if((this.current.next == this.current) && (this.current.previous == this.current))
-      {
-         this.size = 0;
-         this.current = null;
+        return null;
+    }
 
-         return;
-      }
+    /**
+     * Ring string representation <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @return Ring string representation
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        final StringBuilder stringBuilder = new StringBuilder("Ring[");
 
-      this.current.previous.next = this.current.next;
-      this.current.next.previous = this.current.previous;
+        if (this.current != null)
+        {
+            stringBuilder.append(this.current.element.toString());
 
-      this.current = this.current.next;
-      this.size--;
-   }
+            Element<TYPE> element = this.current.next;
+            while (element != this.current)
+            {
+                stringBuilder.append(", ");
+                stringBuilder.append(element.element.toString());
 
-   /**
-    * Ring string representation <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @return Ring string representation
-    * @see java.lang.Object#toString()
-    */
-   @Override
-   public String toString()
-   {
-      final StringBuilder stringBuilder = new StringBuilder("Ring[");
+                element = element.next;
+            }
+        }
 
-      if(this.current != null)
-      {
-         stringBuilder.append(this.current.element.toString());
+        stringBuilder.append(']');
 
-         Element<TYPE> element = this.current.next;
-         while(element != this.current)
-         {
-            stringBuilder.append(", ");
-            stringBuilder.append(element.element.toString());
+        return stringBuilder.toString();
+    }
 
-            element = element.next;
-         }
-      }
+    /**
+     * Element of the ring
+     *
+     * @param <ELEMENT> Element type
+     * @author JHelp
+     */
+    static class Element<ELEMENT>
+    {
+        /**
+         * Carry element
+         */
+        public final ELEMENT          element;
+        /**
+         * Next ring element
+         */
+        public       Element<ELEMENT> next;
+        /**
+         * Previous ring element
+         */
+        public       Element<ELEMENT> previous;
 
-      stringBuilder.append(']');
-
-      return stringBuilder.toString();
-   }
+        /**
+         * Create a new instance of Element
+         *
+         * @param element Element to carry
+         */
+        public Element(final ELEMENT element)
+        {
+            this.element = element;
+        }
+    }
 }

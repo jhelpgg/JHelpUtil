@@ -12,7 +12,7 @@ import java.util.ListIterator;
  * List based on a fix array.<br>
  * If an element change from this list, it is also modified to the linked array.<br>
  * This list have some restriction, you can't add or remove element from it. But its possible to read/modify and element
- * 
+ *
  * @author JHelp
  * @param <TYPE>
  *           Type of the element in the array
@@ -29,7 +29,7 @@ public class ListFromArray<TYPE>
 
    /**
     * Create a new instance of ListFromArray
-    * 
+    *
     * @param modifiable
     *           Indicates if modify an element is allowed
     * @param array
@@ -45,7 +45,7 @@ public class ListFromArray<TYPE>
 
    /**
     * Create a new instance of ListFromArray
-    * 
+    *
     * @param array
     *           Array to link to the list
     */
@@ -57,7 +57,7 @@ public class ListFromArray<TYPE>
 
    /**
     * Check if an index is inside the array
-    * 
+    *
     * @param index
     *           Index to check
     */
@@ -74,7 +74,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param index
     *           Ignored
     * @param element
@@ -92,7 +92,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param e
     *           Ignored
     * @return Never return
@@ -109,7 +109,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param c
     *           Ignored
     * @return Never return
@@ -126,7 +126,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param index
     *           Ignored
     * @param c
@@ -145,7 +145,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @see java.util.List#clear()
     */
    @Override
@@ -159,7 +159,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param o
     *           Object test
     * @return {@code true} if element is inside
@@ -177,7 +177,7 @@ public class ListFromArray<TYPE>
                return true;
             }
          }
-         else if(element.equals(o) == true)
+         else if(element.equals(o))
          {
             return true;
          }
@@ -191,7 +191,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param c
     *           Collection of element to test
     * @return {@code true} if all elements are inside
@@ -202,7 +202,7 @@ public class ListFromArray<TYPE>
    {
       for(final Object o : c)
       {
-         if(this.contains(o) == false)
+         if(!this.contains(o))
          {
             return false;
          }
@@ -216,7 +216,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param index
     *           Element index
     * @return Element get
@@ -235,7 +235,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param o
     *           Element search
     * @return Element index
@@ -257,7 +257,7 @@ public class ListFromArray<TYPE>
                return i;
             }
          }
-         else if(element.equals(o) == true)
+         else if(element.equals(o))
          {
             return i;
          }
@@ -271,7 +271,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return {@code true} if list is empty
     * @see java.util.List#isEmpty()
     */
@@ -283,7 +283,7 @@ public class ListFromArray<TYPE>
 
    /**
     * Indicates if it is allowed to modify elements inside the list throw {@link #set(int, Object)} method
-    * 
+    *
     * @return {@code true} if modification are allowed
     */
    public boolean isModifiable()
@@ -296,7 +296,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return Iterator
     * @see java.util.List#iterator()
     */
@@ -311,7 +311,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param o
     *           Object search
     * @return Last index of the object
@@ -333,7 +333,7 @@ public class ListFromArray<TYPE>
                return i;
             }
          }
-         else if(element.equals(o) == true)
+         else if(element.equals(o))
          {
             return i;
          }
@@ -347,7 +347,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return List iterator
     * @see java.util.List#listIterator()
     */
@@ -362,7 +362,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param index
     *           Index to start
     * @return List iterator
@@ -381,7 +381,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param index
     *           Ignored
     * @return Never return
@@ -398,7 +398,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param o
     *           Ignored
     * @return Never return
@@ -415,7 +415,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param c
     *           Ignored
     * @return Never return
@@ -432,7 +432,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param c
     *           Ignored
     * @return Never return
@@ -450,7 +450,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param index
     *           Index of element to change
     * @param element
@@ -461,7 +461,7 @@ public class ListFromArray<TYPE>
    @Override
    public TYPE set(final int index, final TYPE element)
    {
-      if(this.modifiable == false)
+      if(!this.modifiable)
       {
          throw new UnsupportedOperationException("This list array is not modifiable");
       }
@@ -479,7 +479,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return List size
     * @see java.util.List#size()
     */
@@ -494,7 +494,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param fromIndex
     *           Start index (inclusive)
     * @param toIndex
@@ -529,7 +529,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return Array result (copy of linked array)
     * @see java.util.List#toArray()
     */
@@ -544,7 +544,7 @@ public class ListFromArray<TYPE>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param <T>
     *           Element type
     * @param a
@@ -561,6 +561,7 @@ public class ListFromArray<TYPE>
          a = (T[]) (new Object[this.length]);
       }
 
+      //noinspection SuspiciousSystemArraycopy
       System.arraycopy(this.array, 0, a, 0, Math.min(this.length, a.length));
 
       return a;

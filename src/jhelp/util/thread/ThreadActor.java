@@ -51,7 +51,7 @@ final class ThreadActor
     */
    boolean setThreadElement(final ThreadElement<?, ?, ?> threadElement)
    {
-      if(this.isFree() == false)
+      if(!this.isFree())
       {
          return false;
       }
@@ -61,7 +61,7 @@ final class ThreadActor
          this.actualThreadElement = threadElement;
       }
 
-      if(this.alive == false)
+      if(!this.alive)
       {
          this.alive = true;
          (new Thread(this)).start();
@@ -74,7 +74,7 @@ final class ThreadActor
             {
                this.LOCK.notify();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -127,7 +127,7 @@ final class ThreadActor
    @Override
    public void run()
    {
-      while(this.alive == true)
+      while(this.alive)
       {
          ThreadElement<?, ?, ?> threadElement = null;
 
@@ -146,12 +146,12 @@ final class ThreadActor
                   {
                      this.LOCK.wait(ThreadManager.MAXIMUM_WAIT);
                   }
-                  catch(final Exception exception)
+                  catch(final Exception ignored)
                   {
                   }
                }
 
-               if(this.alive == false)
+               if(!this.alive)
                {
                   return;
                }
@@ -159,7 +159,7 @@ final class ThreadActor
          }
 
          // Do the task
-         if(threadElement.isAlive() == true)
+         if(threadElement.isAlive())
          {
             threadElement.run();
          }
@@ -174,7 +174,7 @@ final class ThreadActor
          ThreadManager.THREAD_MANAGER.anActorIsFree();
 
          // If the task have to be repeat, post it again
-         if(threadElement.doRepeat() == true)
+         if(threadElement.doRepeat())
          {
             ThreadManager.THREAD_MANAGER.internalAdd(threadElement);
          }

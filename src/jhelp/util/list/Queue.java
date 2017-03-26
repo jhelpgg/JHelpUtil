@@ -153,7 +153,7 @@ public class Queue<TYPE>
 
       while(elt != null)
       {
-         if(((elt.element == null) && (element == null)) || ((elt.element != null) && (elt.element.equals(element) == true)))
+         if(((elt.element == null) && (element == null)) || ((elt.element != null) && (elt.element.equals(element))))
          {
             elt.element = null;
 

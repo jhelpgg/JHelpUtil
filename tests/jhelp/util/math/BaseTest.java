@@ -1,13 +1,21 @@
 package jhelp.util.math;
 
-import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import jhelp.util.debug.Debug;
+import jhelp.util.debug.DebugLevel;
+
+/**
+ * Unit tests for {@link Base}
+ *
+ * @author JHelp <br>
+ */
 public class BaseTest
 {
+   /**
+    * {@link Base#convert(long)} tests
+    */
    @Test
    public void testConvert()
    {
@@ -34,6 +42,9 @@ public class BaseTest
       Assert.assertEquals("-face", base.convert(-0xFACE));
    }
 
+   /**
+    * {@link Base#parse(String)} tests
+    */
    @Test
    public void testParse()
    {
@@ -60,6 +71,9 @@ public class BaseTest
       Assert.assertEquals(-0xFACE, base.parse("-face"));
    }
 
+   /**
+    * {@link Base#convert(long)} and {@link Base#parse(String)} combination tests
+    */
    @Test
    public void testParseConvert()
    {

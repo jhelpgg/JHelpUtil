@@ -247,13 +247,13 @@ public class AlphabetText
 
          this.offset = this.alphabet.drawOnLimited(this.offset, this.text, this.textAlign, this.image, xx, yy, center, this.limitWidth, this.limitHeight);
 
-         if(this.hasPrevious() == true)
+         if(this.hasPrevious())
          {
             UtilImage.drawIncrustedUpTriangle(this.image.getWidth() - AlphabetText.BORDER_SIZE_TWICE, AlphabetText.BORDER_SIZE, AlphabetText.BORDER_SIZE,
                   this.image);
          }
 
-         if(this.hasNext() == true)
+         if(this.hasNext())
          {
             UtilImage.drawIncrustedDownTriangle(this.image.getWidth() - AlphabetText.BORDER_SIZE_TWICE,
                   this.image.getHeight() - AlphabetText.BORDER_SIZE_TWICE, AlphabetText.BORDER_SIZE, this.image);
@@ -310,7 +310,7 @@ public class AlphabetText
     */
    public void next()
    {
-      if(this.hasNext() == false)
+      if(!this.hasNext())
       {
          return;
       }
@@ -324,7 +324,7 @@ public class AlphabetText
     */
    public void previous()
    {
-      if(this.hasPrevious() == false)
+      if(!this.hasPrevious())
       {
          return;
       }

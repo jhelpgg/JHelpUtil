@@ -1,15 +1,23 @@
 package jhelp.util.math.rational;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 import jhelp.util.math.random.JHelpRandom;
 import jhelp.util.time.TimeDebug;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+/**
+ * Matrix of rationals tests
+ *
+ * @author JHelp <br>
+ */
 public class MatrixRationalTest
 {
+   /**
+    * Addition
+    */
    @Test
    public void testAddition()
    {
@@ -47,6 +55,9 @@ public class MatrixRationalTest
       Assert.assertEquals("Addition failed", expected, matrix);
    }
 
+   /**
+    * Big matrix
+    */
    @Test
    public void testBigMatrix()
    {
@@ -74,18 +85,25 @@ public class MatrixRationalTest
       timeDebug.dump();
    }
 
+   /**
+    * Copy
+    */
    @Test
    public void testCopy()
    {
       final MatrixRational matrix = new MatrixRational(5, 4);
-      matrix.setValues(Rational.createRational(2), Rational.createRational(3), Rational.createRational(42), Rational.createRational((float) Math.PI), Rational.createRational((float) Math.E), Rational.createRational(-123456789),
-            Rational.createRational(852), Rational.createRational(0.1234567891011123141516171819f), Rational.createRational(9), Rational.createRational(-10), Rational.createRational(11), Rational.createRational(21),
-            Rational.createRational(13), Rational.createRational(14), Rational.createRational(1515), Rational.createRational(16), Rational.createRational(17), Rational.createRational(18), Rational.createRational(19),
-            Rational.createRational(20));
+      matrix.setValues(Rational.createRational(2), Rational.createRational(3), Rational.createRational(42), Rational.createRational((float) Math.PI),
+            Rational.createRational((float) Math.E), Rational.createRational(-123456789), Rational.createRational(852),
+            Rational.createRational(0.1234567891011123141516171819f), Rational.createRational(9), Rational.createRational(-10), Rational.createRational(11),
+            Rational.createRational(21), Rational.createRational(13), Rational.createRational(14), Rational.createRational(1515), Rational.createRational(16),
+            Rational.createRational(17), Rational.createRational(18), Rational.createRational(19), Rational.createRational(20));
       final MatrixRational copy = matrix.copy();
       Assert.assertEquals("Copy different !", matrix, copy);
    }
 
+   /**
+    * Determinant
+    */
    @Test
    public void testDeterminant()
    {
@@ -104,6 +122,9 @@ public class MatrixRationalTest
       Assert.assertTrue("Determinant is not 0, but " + determinant, determinant == Rational.ZERO);
    }
 
+   /**
+    * Determinant and adjacent
+    */
    @Test
    public void testDeterminantAdjacent()
    {
@@ -112,7 +133,9 @@ public class MatrixRationalTest
 
       for(int y = 0; y < size; y++)
       {
-         for(int x = y; x < size; x++)
+         for(
+                 @SuppressWarnings("SuspiciousNameCombination")
+                 int x = y; x < size; x++)
          {
             matrix.set(x, y, Rational.createRational(1.1f));
          }
@@ -129,6 +152,9 @@ public class MatrixRationalTest
       Assert.assertTrue(determinant1.equals(determinant2));
    }
 
+   /**
+    * Equals
+    */
    @Test
    public void testEqualsObject()
    {
@@ -142,6 +168,9 @@ public class MatrixRationalTest
       Assert.assertEquals("Third failed", matrix, second);
    }
 
+   /**
+    * Get/set
+    */
    @Test
    public void testGet()
    {
@@ -161,6 +190,9 @@ public class MatrixRationalTest
       Assert.assertTrue("Value must be 10 not " + matrix.get(2, 1), Rational.createRational(10).equals(matrix.get(2, 1)));
    }
 
+   /**
+    * Height
+    */
    @Test
    public void testGetHeight()
    {
@@ -176,6 +208,9 @@ public class MatrixRationalTest
       }
    }
 
+   /**
+    * Width
+    */
    @Test
    public void testGetWidth()
    {
@@ -191,6 +226,9 @@ public class MatrixRationalTest
       }
    }
 
+   /**
+    * Invert
+    */
    @Test
    public void testInvert()
    {
@@ -228,6 +266,9 @@ public class MatrixRationalTest
       Assert.assertTrue("Way 4", invert.multiplication(matrix).isIdentity());
    }
 
+   /**
+    * Identity
+    */
    @Test
    public void testIsIdentity()
    {
@@ -247,6 +288,9 @@ public class MatrixRationalTest
       Assert.assertTrue(matrix.isIdentity());
    }
 
+   /**
+    * Multiplication
+    */
    @Test
    public void testMultiplication()
    {
@@ -270,19 +314,22 @@ public class MatrixRationalTest
       second.set(1, 0, Rational.createRational(4));
 
       MatrixRational result = new MatrixRational(2, 2);
-      result.set(0, 0, Rational.createRational(1 * 3));
-      result.set(1, 0, Rational.createRational(1 * 4));
+      result.set(0, 0, Rational.createRational(3));
+      result.set(1, 0, Rational.createRational(4));
       result.set(0, 1, Rational.createRational(2 * 3));
       result.set(1, 1, Rational.createRational(2 * 4));
 
       Assert.assertEquals("Multiplication failed 1", result, first.multiplication(second));
 
       result = new MatrixRational(1, 1);
-      result.set(0, 0, Rational.createRational((1 * 3) + (2 * 4)));
+      result.set(0, 0, Rational.createRational((3) + (2 * 4)));
 
       Assert.assertEquals("Multiplication failed 2", result, second.multiplication(first));
    }
 
+   /**
+    * Get/set
+    */
    @Test
    public void testSet()
    {
@@ -302,6 +349,9 @@ public class MatrixRationalTest
       Assert.assertTrue("Value must be 10 not " + matrix.get(2, 1), Rational.createRational(10).equals(matrix.get(2, 1)));
    }
 
+   /**
+    * subtraction
+    */
    @Test
    public void testSubtraction()
    {
@@ -329,6 +379,9 @@ public class MatrixRationalTest
       Assert.assertEquals("Subtraction failed", new MatrixRational(5, 4), matrix);
    }
 
+   /**
+    * Identity
+    */
    @Test
    public void testToIndentity()
    {
@@ -358,6 +411,9 @@ public class MatrixRationalTest
 
    }
 
+   /**
+    * Zero
+    */
    @Test
    public void testToZero()
    {
@@ -372,6 +428,9 @@ public class MatrixRationalTest
       Assert.assertEquals("Zero failed", new MatrixRational(5, 3), matrix);
    }
 
+   /**
+    * Transpose
+    */
    @Test
    public void testTranspose()
    {
@@ -391,6 +450,7 @@ public class MatrixRationalTest
       {
          for(int x = 0; x < 5; x++)
          {
+            //noinspection SuspiciousNameCombination,SuspiciousNameCombination
             expected.set(y, x, Rational.createRational(value++));
          }
       }

@@ -1,14 +1,21 @@
 package jhelp.util.math.rational;
 
-import jhelp.util.debug.Debug;
-import jhelp.util.debug.DebugLevel;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import jhelp.util.debug.Debug;
+import jhelp.util.debug.DebugLevel;
+
+/**
+ * Rational numbers test
+ *
+ * @author JHelp <br>
+ */
 public class RationalTest
 {
-
+   /**
+    * Comparison
+    */
    @Test
    public void testComparison()
    {
@@ -20,6 +27,9 @@ public class RationalTest
       Assert.assertTrue(Rational.createRational(-2, 3).compareTo(Rational.createRational(1, 2)) < 0);
    }
 
+   /**
+    * Create from float
+    */
    @Test
    public void testCreateRationalFloat()
    {

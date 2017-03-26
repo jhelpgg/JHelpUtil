@@ -10,26 +10,41 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.UtilGUI;
 import jhelp.util.math.oldSystem.MayaNumber;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImageCenter;
 
+/**
+ * Frame that show Maya numbers sample
+ *
+ * @author JHelp <br>
+ */
 public class SampleMayaFrame
       extends JFrame
       implements ActionListener
 {
+   /** Label that show Maya number in simple version */
    private final JLabel                      label;
+   /** Image that show Maya number in totem version */
    private final SampleLabelJHelpImageCenter sampleLabelJHelpImageCenter;
+   /** Text field for type decimal number */
    private final JTextField                  textField;
 
+   /**
+    * Create a new instance of SampleMayaFrame
+    *
+    * @throws HeadlessException
+    *            On creation issue
+    */
    public SampleMayaFrame()
          throws HeadlessException
    {
       super("Maya");
 
-      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
       this.label = new JLabel("", SwingConstants.CENTER);
       this.label.setFont(MayaNumber.FONT_MAYA.getFont());
@@ -46,6 +61,16 @@ public class SampleMayaFrame
       UtilGUI.takeAllScreen(this);
    }
 
+   /**
+    * Called when user validate the number <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param actionEvent
+    *           Event description
+    * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+    */
    @Override
    public void actionPerformed(final ActionEvent actionEvent)
    {

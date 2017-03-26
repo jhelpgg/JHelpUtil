@@ -24,7 +24,7 @@ import jhelp.util.io.UtilIO;
  * @author JHelp
  */
 class ApplicationBlock
-      extends BlockExtention
+      extends BlockExtension
 {
    /** Application code */
    private final byte[]    applicationCode;

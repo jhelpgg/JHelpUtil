@@ -56,7 +56,7 @@ public class RiffInfo
     */
    public static RiffInfo extractInfo(final RiffChunk chunk) throws IOException
    {
-      if(RiffInfo.INFO_CHUNK.equals(chunk.listName()) == true)
+      if(RiffInfo.INFO_CHUNK.equals(chunk.listName()))
       {
          return new RiffInfo(chunk);
       }
@@ -107,15 +107,15 @@ public class RiffInfo
          chunk = chunkInfo.getChunk(i);
          id = chunk.getID();
 
-         if(RiffInfo.INFO_ARTIST.endsWith(id) == true)
+         if(RiffInfo.INFO_ARTIST.endsWith(id))
          {
             artist = RiffChunk.readAsciiString(chunk.dataAsStream());
          }
-         else if(RiffInfo.INFO_COPYRIGHT.endsWith(id) == true)
+         else if(RiffInfo.INFO_COPYRIGHT.endsWith(id))
          {
             copyright = RiffChunk.readAsciiString(chunk.dataAsStream());
          }
-         else if(RiffInfo.INFO_NAME.endsWith(id) == true)
+         else if(RiffInfo.INFO_NAME.endsWith(id))
          {
             name = RiffChunk.readAsciiString(chunk.dataAsStream());
          }

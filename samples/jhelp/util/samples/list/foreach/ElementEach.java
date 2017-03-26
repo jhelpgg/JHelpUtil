@@ -6,16 +6,29 @@ import jhelp.util.Utilities;
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 
+/**
+ * Element each used in for each sample
+ *
+ * @author JHelp <br>
+ */
 public class ElementEach
 {
+   /** Next element ID */
    private static final AtomicInteger NEXT_ID = new AtomicInteger(1);
+   /** Element ID */
    private final int                  id;
 
+   /**
+    * Create a new instance of ElementEach
+    */
    public ElementEach()
    {
       this.id = ElementEach.NEXT_ID.getAndIncrement();
    }
 
+   /**
+    * Do an action
+    */
    public void doSomething()
    {
       Debug.println(DebugLevel.INFORMATION, "Element ", this.id, " start do something");
@@ -32,6 +45,11 @@ public class ElementEach
       Debug.println(DebugLevel.INFORMATION, "Element ", this.id, " end do something");
    }
 
+   /**
+    * Element ID
+    *
+    * @return Element ID
+    */
    public int getID()
    {
       return this.id;

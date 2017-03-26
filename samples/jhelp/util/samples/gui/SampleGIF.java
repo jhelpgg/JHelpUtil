@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import jhelp.util.debug.Debug;
 import jhelp.util.gui.GIF;
@@ -96,7 +97,8 @@ public class SampleGIF
          {
             element = JHelpRandom.random(elements);
 
-            if(element.getName().endsWith(".gif") == false)
+            if(!element.getName()
+                       .endsWith(".gif"))
             {
                element = null;
             }
@@ -110,7 +112,7 @@ public class SampleGIF
          Debug.printException(exception, "Failed to show !");
       }
 
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
       frame.pack();
       frame.setVisible(true);
    }

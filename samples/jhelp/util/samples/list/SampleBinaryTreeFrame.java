@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 import jhelp.util.gui.JHelpFont;
 import jhelp.util.gui.JHelpImage;
@@ -25,30 +26,78 @@ import jhelp.util.gui.renderer.BinaryTreeModelElementRenderer;
 import jhelp.util.list.Pair;
 import jhelp.util.samples.common.gui.SampleLabelJHelpImageCenter;
 
+/**
+ * Frame that show a binary tree
+ *
+ * @author JHelp <br>
+ */
+@SuppressWarnings("deprecation")
 public class SampleBinaryTreeFrame
       extends JFrame
 {
+   /**
+    * UI events manager
+    *
+    * @author JHelp <br>
+    */
    class EventManager
          implements ActionListener, Comparator<String>, BinaryTreeModelElementRenderer<String>, BinaryTreeModelListener<String>
    {
+      /** Font use for print text in tree */
       private final JHelpFont font = new JHelpFont("Arial", 24);
 
+      /**
+       * Create a new instance of EventManager
+       */
       EventManager()
       {
       }
 
+      /**
+       * Called when "Add" button is pressed or enter in text field <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @param actionEvent
+       *           Event description
+       * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+       */
       @Override
       public void actionPerformed(final ActionEvent actionEvent)
       {
          SampleBinaryTreeFrame.this.doActionPerformed(actionEvent);
       }
 
+      /**
+       * Called when binary tree model changed <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @param binaryTreeModel
+       *           Binary tree model
+       * @see jhelp.util.gui.event.BinaryTreeModelListener#binaryTreeModelChanged(jhelp.util.gui.model.BinaryTreeModel)
+       */
       @Override
       public void binaryTreeModelChanged(final BinaryTreeModel<String> binaryTreeModel)
       {
          SampleBinaryTreeFrame.this.updateImage();
       }
 
+      /**
+       * Compare two strings <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @param string1
+       *           First
+       * @param string2
+       *           Second
+       * @return Comparison result
+       * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+       */
       @Override
       public int compare(final String string1, final String string2)
       {
@@ -62,6 +111,21 @@ public class SampleBinaryTreeFrame
          return string1.compareTo(string2);
       }
 
+      /**
+       * Compute image to use for one tree element <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @param binaryTreeModel
+       *           Binary tree model
+       * @param element
+       *           Element to render
+       * @return Computed image
+       * @see jhelp.util.gui.renderer.BinaryTreeModelElementRenderer#obtainBinaryTreeModelElementImage(jhelp.util.gui.model.BinaryTreeModel,
+       *      java.lang.Object)
+       */
+      @SuppressWarnings("deprecation")
       @Override
       public JHelpImage obtainBinaryTreeModelElementImage(final BinaryTreeModel<String> binaryTreeModel, final String element)
       {
@@ -79,18 +143,29 @@ public class SampleBinaryTreeFrame
       }
    }
 
+   /** Add button text and action */
    private static final String               ACTION_ADD = "ADD";
+   /** Binary tree model */
    private final BinaryTreeModel<String>     binaryTreeModel;
+   /** UI events manager */
    private final EventManager                eventManager;
+   /** Label where tree is draw */
    private final SampleLabelJHelpImageCenter sampleLabelJHelpImageCenter;
+   /** Edit text for user input */
    private final JTextField                  textField;
 
+   /**
+    * Create a new instance of SampleBinaryTreeFrame
+    *
+    * @throws HeadlessException
+    *            On creation issue
+    */
    public SampleBinaryTreeFrame()
          throws HeadlessException
    {
       super("Sample binary tree");
 
-      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
       this.eventManager = new EventManager();
       this.binaryTreeModel = new BinaryTreeModel<String>(String.class, this.eventManager, this.eventManager, 0xFF000000, 0xFFFFFFFF);
@@ -116,19 +191,27 @@ public class SampleBinaryTreeFrame
       UtilGUI.takeAllScreen(this);
    }
 
+   /**
+    * Called when button press or enter in edit text field
+    *
+    * @param actionEvent
+    *           Event description
+    */
    void doActionPerformed(final ActionEvent actionEvent)
    {
       final String action = actionEvent.getActionCommand();
 
-      if(SampleBinaryTreeFrame.ACTION_ADD.equals(action) == true)
+      if(SampleBinaryTreeFrame.ACTION_ADD.equals(action))
       {
          final String text = this.textField.getText().trim();
          this.textField.setText("");
          this.binaryTreeModel.putElement(text);
-         return;
       }
    }
 
+   /**
+    * Update tree image
+    */
    void updateImage()
    {
       this.sampleLabelJHelpImageCenter.setJHelpImage(this.binaryTreeModel.obtainImageTree());

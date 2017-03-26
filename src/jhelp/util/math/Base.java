@@ -45,7 +45,7 @@ public class Base
 
       if(Utilities.indexOf(baseDigits, '-') >= 0)
       {
-         throw new IllegalArgumentException("The - (minus sign) MUSN'T be used as digit");
+         throw new IllegalArgumentException("The - (minus sign) MUST NOT be used as digit");
       }
 
       for(int i = 0; i < this.base; i++)
@@ -101,7 +101,7 @@ public class Base
       {
          base -= 10;
 
-         if(lowerCaseBeforeUpperCase == true)
+         if(lowerCaseBeforeUpperCase)
          {
             this.addLowerCaseLetterAt(10, base);
          }
@@ -114,7 +114,7 @@ public class Base
          {
             base -= 26;
 
-            if(lowerCaseBeforeUpperCase == true)
+            if(lowerCaseBeforeUpperCase)
             {
                this.addUpperCaseLetterAt(36, base);
             }
@@ -198,7 +198,7 @@ public class Base
    {
       final boolean negative = number < 0;
 
-      if(negative == true)
+      if(negative)
       {
          number *= -1;
       }
@@ -215,7 +215,7 @@ public class Base
       }
       while(number > 0);
 
-      if(negative == true)
+      if(negative)
       {
          index--;
          this.buffer[index] = '-';
@@ -291,7 +291,7 @@ public class Base
       final boolean negative = characters[0] == '-';
       int start = 0;
 
-      if(negative == true)
+      if(negative)
       {
          if(length == 1)
          {
@@ -316,7 +316,7 @@ public class Base
          number = (number * this.base) + digit;
       }
 
-      if(negative == true)
+      if(negative)
       {
          return -number;
       }

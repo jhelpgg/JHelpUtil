@@ -4,32 +4,79 @@ import jhelp.util.list.Bag2D;
 import jhelp.util.list.Scramble;
 import jhelp.util.list.SizedObject;
 
+/**
+ * Sample of 2D bag
+ *
+ * @author JHelp <br>
+ */
 public class SampleBag2D
 {
+   /**
+    * Object to put in bag
+    *
+    * @author JHelp <br>
+    */
    public static class Sized
          implements SizedObject
    {
+      /** Height */
       private final int height;
+      /** Width */
       private final int width;
 
+      /**
+       * Create a new instance of Sized
+       *
+       * @param width
+       *           Object width
+       * @param height
+       *           Object height
+       */
       Sized(final int width, final int height)
       {
          this.width = width;
          this.height = height;
       }
 
+      /**
+       * Object height <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return Object height
+       * @see jhelp.util.list.SizedObject#getHeight()
+       */
       @Override
       public int getHeight()
       {
          return this.height;
       }
 
+      /**
+       * Object width <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return Object width
+       * @see jhelp.util.list.SizedObject#getWidth()
+       */
       @Override
       public int getWidth()
       {
          return this.width;
       }
 
+      /**
+       * String representation <br>
+       * <br>
+       * <b>Parent documentation:</b><br>
+       * {@inheritDoc}
+       *
+       * @return String representation
+       * @see java.lang.Object#toString()
+       */
       @Override
       public String toString()
       {
@@ -38,9 +85,10 @@ public class SampleBag2D
    }
 
    /**
-    * TODO Explains what does the method main in jhelp.util.samples.list [JHelpUtil]
-    * 
+    * Launch the sample
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {

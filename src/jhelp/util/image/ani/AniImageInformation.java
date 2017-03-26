@@ -20,7 +20,7 @@ import jhelp.util.image.raster.RasterImage;
  * 
  * @author JHelp
  */
-public class AniImageinformation
+public class AniImageInformation
 {
    /** Cur image embed */
    private final CurImage curImage;
@@ -30,12 +30,12 @@ public class AniImageinformation
    private RasterImage    rasterImage;
 
    /**
-    * Create a new instance of AniImageinformation based on cur image
+    * Create a new instance of AniImageInformation based on cur image
     * 
     * @param curImage
     *           Cur image
     */
-   public AniImageinformation(final CurImage curImage)
+   public AniImageInformation(final CurImage curImage)
    {
       this.icoImage = null;
       this.curImage = curImage;
@@ -43,12 +43,12 @@ public class AniImageinformation
    }
 
    /**
-    * Create a new instance of AniImageinformation based on ico image
+    * Create a new instance of AniImageInformation based on ico image
     * 
     * @param icoImage
     *           Ico image
     */
-   public AniImageinformation(final IcoImage icoImage)
+   public AniImageInformation(final IcoImage icoImage)
    {
       this.icoImage = icoImage;
       this.curImage = null;
@@ -56,12 +56,12 @@ public class AniImageinformation
    }
 
    /**
-    * Create a new instance of AniImageinformation based on raster image
+    * Create a new instance of AniImageInformation based on raster image
     * 
     * @param rasterImage
     *           Raster image
     */
-   public AniImageinformation(final RasterImage rasterImage)
+   public AniImageInformation(final RasterImage rasterImage)
    {
       this.icoImage = null;
       this.curImage = null;

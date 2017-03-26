@@ -100,10 +100,11 @@ public class RiffChunk
       if((this.dataSize & 1) != 0)
       {
          // Consume 1 byte to be sure have read even bytes
+         //noinspection ResultOfMethodCallIgnored
          inputStream.read();
       }
 
-      if((RiffChunk.RIFF.equals(this.id) == true) || (RiffChunk.LIST.equals(this.id) == true))
+      if((RiffChunk.RIFF.equals(this.id)) || (RiffChunk.LIST.equals(this.id)))
       {
          this.parseDataAsListOfChunk();
       }

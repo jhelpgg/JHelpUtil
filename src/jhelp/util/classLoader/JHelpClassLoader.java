@@ -108,7 +108,7 @@ public class JHelpClassLoader
          this.manualDefined.remove(name);
          clazz = this.defineClass(name, code, 0, code.length);
 
-         if(resolve == true)
+         if(resolve)
          {
             this.resolveClass(clazz);
          }
@@ -129,7 +129,8 @@ public class JHelpClassLoader
          tempFile = f;
          index = path.length - 1;
 
-         while((tempFile != null) && (tempFile.getName().equals(path[index]) == true))
+         while((tempFile != null) && (tempFile.getName()
+                                              .equals(path[index])))
          {
             tempFile = tempFile.getParentFile();
             index--;
@@ -175,7 +176,7 @@ public class JHelpClassLoader
             clazz = this.defineClass(name, temp, 0, temp.length);
             temp = null;
 
-            if(resolve == true)
+            if(resolve)
             {
                this.resolveClass(clazz);
             }
@@ -228,7 +229,7 @@ public class JHelpClassLoader
     */
    public void add(final ClassLoader classLoader)
    {
-      if(this.loaders.contains(classLoader) == false)
+      if(!this.loaders.contains(classLoader))
       {
          this.loaders.add(classLoader);
       }
@@ -244,7 +245,7 @@ public class JHelpClassLoader
     */
    public void add(final File file)
    {
-      if((file.exists() == true) && (this.files.contains(file) == false))
+      if((file.exists()) && (!this.files.contains(file)))
       {
          this.files.add(file);
       }
@@ -262,7 +263,7 @@ public class JHelpClassLoader
     */
    public void addClass(final String name, final byte[] byteCode)
    {
-      if(this.loadedClass.containsKey(name) == true)
+      if(this.loadedClass.containsKey(name))
       {
          throw new IllegalArgumentException(name + " already loaded and it its impossible to unload");
       }
@@ -293,9 +294,11 @@ public class JHelpClassLoader
          tempFile = f;
          index = path.length - 1;
 
-         if(tempFile.getName().equals(path[index]) == true)
+         if(tempFile.getName()
+                    .equals(path[index]))
          {
-            while((tempFile != null) && (tempFile.getName().equals(path[index]) == true))
+            while((tempFile != null) && (tempFile.getName()
+                                                 .equals(path[index])))
             {
                tempFile = tempFile.getParentFile();
                index--;
@@ -354,6 +357,7 @@ public class JHelpClassLoader
    {
       try
       {
+         //noinspection ConstantConditions
          return this.getResource(name).openStream();
       }
       catch(final Exception e)
@@ -390,9 +394,11 @@ public class JHelpClassLoader
          tempFile = f;
          index = path.length - 1;
 
-         if(tempFile.getName().equals(path[index]) == true)
+         if(tempFile.getName()
+                    .equals(path[index]))
          {
-            while((tempFile != null) && (tempFile.getName().equals(path[index]) == true))
+            while((tempFile != null) && (tempFile.getName()
+                                                 .equals(path[index])))
             {
                tempFile = tempFile.getParentFile();
                index--;

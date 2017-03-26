@@ -20,7 +20,7 @@ import java.io.InputStream;
  * @author JHelp
  */
 class GraphicControlBlock
-      extends BlockExtention
+      extends BlockExtension
 {
    /** Disposal method */
    private int  disposalMethod;
@@ -71,12 +71,13 @@ class GraphicControlBlock
       this.time = 10L * UtilGIF.read2ByteInt(inputStream);
       this.transparencyIndex = inputStream.read();
 
-      if(transparencyIndexGiven == false)
+      if(!transparencyIndexGiven)
       {
          this.transparencyIndex = -1;
       }
 
       // Consume the block terminator
+      //noinspection ResultOfMethodCallIgnored
       inputStream.read();
    }
 

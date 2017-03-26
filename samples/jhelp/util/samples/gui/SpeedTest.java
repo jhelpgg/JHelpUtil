@@ -118,11 +118,11 @@ public class SpeedTest
       int mx, my, w, h, w2, h2;
       image.startDrawMode();
 
-      while(stack.isEmpty() == false)
+      while(!stack.isEmpty())
       {
          rectangle = stack.outQueue();
 
-         if(shape.contains(rectangle) == true)
+         if(shape.contains(rectangle))
          {
             image.fillRectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height,//
                   0xFFFF0000);
@@ -141,22 +141,22 @@ public class SpeedTest
                mx = rectangle.x + w;
                my = rectangle.y + h;
 
-               if(shape.intersects(rectangle.x, rectangle.y, w, h) == true)
+               if(shape.intersects(rectangle.x, rectangle.y, w, h))
                {
                   stack.inQueue(new Rectangle(rectangle.x, rectangle.y, w, h));
                }
 
-               if(shape.intersects(mx, rectangle.y, w2, h) == true)
+               if(shape.intersects(mx, rectangle.y, w2, h))
                {
                   stack.inQueue(new Rectangle(mx, rectangle.y, w2, h));
                }
 
-               if(shape.intersects(rectangle.x, my, w, h2) == true)
+               if(shape.intersects(rectangle.x, my, w, h2))
                {
                   stack.inQueue(new Rectangle(rectangle.x, my, w, h2));
                }
 
-               if(shape.intersects(mx, my, w2, h2) == true)
+               if(shape.intersects(mx, my, w2, h2))
                {
                   stack.inQueue(new Rectangle(mx, my, w2, h2));
                }

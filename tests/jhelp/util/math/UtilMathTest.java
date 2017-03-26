@@ -5,6 +5,11 @@ import java.awt.geom.Point2D;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * {@link UtilMath} unit tests
+ *
+ * @author JHelp <br>
+ */
 public class UtilMathTest
 {
    /**
@@ -44,7 +49,7 @@ public class UtilMathTest
    @Test
    public void testFactorial()
    {
-      Assert.assertEquals(1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9, UtilMath.factorial(9));
+      Assert.assertEquals(2 * 3 * 4 * 5 * 6 * 7 * 8 * 9, UtilMath.factorial(9));
    }
 
    /**
@@ -233,7 +238,7 @@ public class UtilMathTest
       Assert.assertArrayEquals(new double[]
       {
             1, 2.0, 3.0, 4.0
-      }, UtilMath.PCubiques(1, 2, 3, 4, 4, cub), UtilMath.EPSILON);
+      }, UtilMath.PCubiques(1, 2, 3, 4, 4, cub), 1e-9);
    }
 
    /**

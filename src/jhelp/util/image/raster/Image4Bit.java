@@ -193,7 +193,7 @@ public class Image4Bit
 
             while((index < 4) && (x < this.width))
             {
-               if(highRead == true)
+               if(highRead)
                {
                   colorIndex = (buffer[index] & 0xF0) >> 4;
                   highRead = false;
@@ -262,7 +262,7 @@ public class Image4Bit
 
                   for(int i = 0; i < count; i++)
                   {
-                     if(highRead == true)
+                     if(highRead)
                      {
                         colorIndex = info >> 4;
                         highRead = false;
@@ -358,7 +358,7 @@ public class Image4Bit
 
                         for(int i = 0; i < info; i++)
                         {
-                           if(highRead == true)
+                           if(highRead)
                            {
                               colorIndex = internBuffer[internIndex] >> 4;
                               highRead = false;
@@ -465,10 +465,7 @@ public class Image4Bit
    {
       final int limit = Math.min(16 - colorIndexStart, colors.length);
 
-      for(int i = 0; i < limit; i++)
-      {
-         this.colorTable[i + colorIndexStart] = colors[i];
-      }
+      System.arraycopy(colors, 0, this.colorTable, colorIndexStart, limit);
    }
 
    /**
@@ -516,7 +513,7 @@ public class Image4Bit
 
       for(int pix = 0; pix < length; pix++)
       {
-         if(high == true)
+         if(high)
          {
             colorIndex = info >> 4;
             high = false;

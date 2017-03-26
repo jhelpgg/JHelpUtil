@@ -80,7 +80,7 @@ public class ElementRegularExpression
    @Override
    public String toRegex()
    {
-      if(this.regex.isEmpty() == true)
+      if(this.regex.isEmpty())
       {
          return "";
       }

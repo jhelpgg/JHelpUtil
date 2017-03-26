@@ -9,10 +9,18 @@ import jhelp.util.debug.DebugLevel;
 import jhelp.util.list.foreach.ForEach;
 import jhelp.util.time.LapsTime;
 
+/**
+ * Launch sample of for each
+ *
+ * @author JHelp <br>
+ */
 public class ForEachSample
 {
    /**
+    * Launch sample of for each
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {

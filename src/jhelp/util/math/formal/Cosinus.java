@@ -26,7 +26,7 @@ public class Cosinus
        */
       private Function simplify(final Constant constant)
       {
-         if(constant.isUndefined() == true)
+         if(constant.isUndefined())
          {
             return Constant.UNDEFINED;
          }
@@ -72,12 +72,12 @@ public class Cosinus
       {
          final Function function = Cosinus.this.parameter.simplify();
 
-         if((function instanceof Constant) == true)
+         if((function instanceof Constant))
          {
             return this.simplify((Constant) function);
          }
 
-         if((function instanceof MinusUnary) == true)
+         if((function instanceof MinusUnary))
          {
             return this.simplify((MinusUnary) function);
          }
@@ -86,7 +86,7 @@ public class Cosinus
       }
    }
 
-   /** Simpilifier for cosinus */
+   /** Simplifier for cosinus */
    private CosinusSimplifier cosinusSimplifier;
 
    /**
@@ -147,7 +147,7 @@ public class Cosinus
     * 
     * @param function
     *           Function tested
-    * @return {@code true} if there sure equals. {@code false} dosen't mean not equals, but not sure about equality
+    * @return {@code true} if there sure equals. {@code false} doesn't mean not equals, but not sure about equality
     * @see jhelp.util.math.formal.Function#functionIsEquals(jhelp.util.math.formal.Function)
     */
    @Override

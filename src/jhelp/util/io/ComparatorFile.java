@@ -39,18 +39,14 @@ public class ComparatorFile
    public int compare(final File file1, final File file2)
    {
       final boolean virtualLink1 = UtilIO.isVirtualLink(file1);
-      final boolean directory1 = virtualLink1 == true
-            ? false
-            : file1.isDirectory();
+      final boolean directory1 = !virtualLink1 && file1.isDirectory();
 
       final boolean virtualLink2 = UtilIO.isVirtualLink(file2);
-      final boolean directory2 = virtualLink2 == true
-            ? false
-            : file2.isDirectory();
+      final boolean directory2 = !virtualLink2 && file2.isDirectory();
 
       if(directory1 != directory2)
       {
-         if(directory1 == true)
+         if(directory1)
          {
             return -1;
          }
@@ -60,7 +56,7 @@ public class ComparatorFile
 
       if(virtualLink1 != virtualLink2)
       {
-         if(virtualLink1 == true)
+         if(virtualLink1)
          {
             return -1;
          }

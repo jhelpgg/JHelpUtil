@@ -6,13 +6,19 @@ import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 import jhelp.util.io.pipe.PipeWriter;
 
+/**
+ * Launch pipe writer in pipe sample
+ *
+ * @author JHelp <br>
+ */
 public class SampleWriter
 {
 
    /**
-    * TODO Explains what does the method main in jhelp.util.samples.io.pipe [JHelpUtil]
-    * 
+    * Launch pipe writer in pipe sample
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {

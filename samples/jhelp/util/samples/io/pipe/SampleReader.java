@@ -6,9 +6,19 @@ import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 import jhelp.util.io.pipe.PipeReader;
 
+/**
+ * Launch pipe reader in pipe sample
+ *
+ * @author JHelp <br>
+ */
 public class SampleReader
 {
-
+   /**
+    * Launch pipe reader in pipe sample
+    *
+    * @param args
+    *           Unused
+    */
    public static void main(final String[] args)
    {
       final PipeReader pipeReader = new PipeReader(new File("/home/jhelp/pipeSample"));
@@ -26,6 +36,6 @@ public class SampleReader
             Debug.printException(exception, "Issue on reading");
          }
       }
-      while("--END--".equals(message) == false);
+      while(!"--END--".equals(message));
    }
 }

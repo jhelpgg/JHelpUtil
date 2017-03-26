@@ -43,7 +43,7 @@ public class FileImageInformation
                                                                                  @Override
                                                                                  public boolean accept(final File pathname)
                                                                                  {
-                                                                                    if(pathname.isDirectory() == true)
+                                                                                    if(pathname.isDirectory())
                                                                                     {
                                                                                        return true;
                                                                                     }
@@ -68,7 +68,7 @@ public class FileImageInformation
                                                                                  @Override
                                                                                  public boolean accept(final File pathname)
                                                                                  {
-                                                                                    if(pathname.isDirectory() == true)
+                                                                                    if(pathname.isDirectory())
                                                                                     {
                                                                                        return false;
                                                                                     }
@@ -131,7 +131,7 @@ public class FileImageInformation
       this.file = file;
       this.width = this.height = -1;
 
-      if((file.exists() == false) || (file.isDirectory() == true) || (file.canRead() == false))
+      if((!file.exists()) || (file.isDirectory()) || (!file.canRead()))
       {
          return;
       }
@@ -197,7 +197,7 @@ public class FileImageInformation
                   {
                      fileInputStream.close();
                   }
-                  catch(final Exception exception)
+                  catch(final Exception ignored)
                   {
                   }
                }

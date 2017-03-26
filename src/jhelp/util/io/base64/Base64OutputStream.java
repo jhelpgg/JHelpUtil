@@ -46,7 +46,7 @@ public class Base64OutputStream
    {
       if(outputStream == null)
       {
-         throw new NullPointerException("outputStream musn't be null");
+         throw new NullPointerException("outputStream MUST NOT be null");
       }
 
       this.outputStream = outputStream;

@@ -5,17 +5,19 @@
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.io.json;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import jhelp.util.HashCode;
 import jhelp.util.io.UtilIO;
@@ -27,7 +29,7 @@ import jhelp.util.text.UtilText;
  * JSON value.<br>
  * For {@link #NULL}, {@link #TRUE} and {@link #FALSE}, it is safe to use == for comparison, because anyway they are created,
  * the unique instance is used
- * 
+ *
  * @author JHelp
  */
 public final class ValueJSON
@@ -49,7 +51,7 @@ public final class ValueJSON
     * Search the corresponding } OR ] on string.<br>
     * We count { and [ as +1, } and ] as -1, if we have negative value, we found the corresponding.<br>
     * It returns -1 if not found
-    * 
+    *
     * @param string
     *           String to parse
     * @param start
@@ -72,7 +74,7 @@ public final class ValueJSON
          switch(chars[i])
          {
             case '{':
-               if((insideString == false) && (antiSlash == false))
+               if((!insideString) && (!antiSlash))
                {
                   accolades++;
                }
@@ -80,7 +82,7 @@ public final class ValueJSON
                antiSlash = false;
             break;
             case '[':
-               if((insideString == false) && (antiSlash == false))
+               if((!insideString) && (!antiSlash))
                {
                   barks++;
                }
@@ -88,7 +90,7 @@ public final class ValueJSON
                antiSlash = false;
             break;
             case '}':
-               if((insideString == false) && (antiSlash == false))
+               if((!insideString) && (!antiSlash))
                {
                   accolades--;
 
@@ -101,7 +103,7 @@ public final class ValueJSON
                antiSlash = false;
             break;
             case ']':
-               if((insideString == false) && (antiSlash == false))
+               if((!insideString) && (!antiSlash))
                {
                   barks--;
 
@@ -117,7 +119,7 @@ public final class ValueJSON
                antiSlash = !antiSlash;
             break;
             case '"':
-               if(antiSlash == false)
+               if(!antiSlash)
                {
                   insideString = !insideString;
                }
@@ -136,7 +138,7 @@ public final class ValueJSON
    /**
     * Parse a part of String to JSON value and next index to read.<br>
     * It returns {@code null} if part String not a JSON value
-    * 
+    *
     * @param string
     *           String to parse
     * @param first
@@ -163,7 +165,7 @@ public final class ValueJSON
       {
          switch(string.charAt(first))
          {
-         // Try to parse as String
+            // Try to parse as String
             case '"':
             {
                int end = first + 1;
@@ -171,7 +173,7 @@ public final class ValueJSON
                boolean found = false;
 
                // Search String end
-               for(; (end <= last) && (found == false); end++)
+               for(; (end <= last) && (!found); end++)
                {
                   switch(string.charAt(end))
                   {
@@ -179,7 +181,7 @@ public final class ValueJSON
                         antiSlash = !antiSlash;
                      break;
                      case '"':
-                        if(antiSlash == false)
+                        if(!antiSlash)
                         {
                            found = true;
                         }
@@ -240,7 +242,7 @@ public final class ValueJSON
 
       // Search key word or number end
       int end = first + 1;
-      while((end <= last) && (string.charAt(end) > 32))
+      while((end <= last) && (string.charAt(end) > 32) && (string.charAt(end) != ',') && (string.charAt(end) != ']') && (string.charAt(end) != '}'))
       {
          end++;
       }
@@ -248,17 +250,17 @@ public final class ValueJSON
       // Try to recognize the extracted word
       final String value = string.substring(first, end);
 
-      if(ValueJSON.KEY_NULL.equals(value) == true)
+      if(ValueJSON.KEY_NULL.equals(value))
       {
          return new Pair<ValueJSON, Integer>(ValueJSON.NULL, end);
       }
 
-      if(ValueJSON.KEY_TRUE.equals(value) == true)
+      if(ValueJSON.KEY_TRUE.equals(value))
       {
          return new Pair<ValueJSON, Integer>(ValueJSON.TRUE, end);
       }
 
-      if(ValueJSON.KEY_FALSE.equals(value) == true)
+      if(ValueJSON.KEY_FALSE.equals(value))
       {
          return new Pair<ValueJSON, Integer>(ValueJSON.FALSE, end);
       }
@@ -267,7 +269,7 @@ public final class ValueJSON
       {
          return new Pair<ValueJSON, Integer>(ValueJSON.newValue(Double.parseDouble(value)), end);
       }
-      catch(final Exception exception)
+      catch(final Exception ignored)
       {
       }
 
@@ -276,7 +278,7 @@ public final class ValueJSON
 
    /**
     * Create JSON value with a JSON array inside
-    * 
+    *
     * @param array
     *           Array content
     * @return Created JSON value
@@ -285,7 +287,7 @@ public final class ValueJSON
    {
       if(array == null)
       {
-         throw new NullPointerException("array musn't be null");
+         throw new NullPointerException("array MUST NOT be null");
       }
 
       return new ValueJSON(ValueType.ARRAY, array);
@@ -293,14 +295,14 @@ public final class ValueJSON
 
    /**
     * Create boolean value
-    * 
+    *
     * @param value
     *           Value
     * @return Created value
     */
    public static ValueJSON newValue(final boolean value)
    {
-      if(value == true)
+      if(value)
       {
          return ValueJSON.TRUE;
       }
@@ -310,7 +312,7 @@ public final class ValueJSON
 
    /**
     * Create JSON value with a number inside
-    * 
+    *
     * @param number
     *           Number content
     * @return Created JSON value
@@ -322,7 +324,7 @@ public final class ValueJSON
 
    /**
     * Create a JSON value from a file
-    * 
+    *
     * @param file
     *           File to put inside JSON value
     * @return Created JSON value
@@ -331,7 +333,7 @@ public final class ValueJSON
     */
    public static ValueJSON newValue(final File file) throws IOException
    {
-      if(file.exists() == false)
+      if(!file.exists())
       {
          throw new IOException(file.getAbsolutePath() + " doesn't exists !");
       }
@@ -355,7 +357,7 @@ public final class ValueJSON
             {
                fileInputStream.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -365,7 +367,7 @@ public final class ValueJSON
    /**
     * Create a JSON value from a stream.<br>
     * The stream not close by the method
-    * 
+    *
     * @param inputStream
     *           Stream to read
     * @return Created JSON value
@@ -379,7 +381,7 @@ public final class ValueJSON
 
    /**
     * Create JSON value with a JSON object inside
-    * 
+    *
     * @param object
     *           Object content
     * @return Created JSON value
@@ -388,7 +390,7 @@ public final class ValueJSON
    {
       if(object == null)
       {
-         throw new NullPointerException("object musn't be null");
+         throw new NullPointerException("object MUST NOT be null");
       }
 
       return new ValueJSON(ValueType.OBJECT, object);
@@ -396,7 +398,7 @@ public final class ValueJSON
 
    /**
     * Create JSON value with a String inside
-    * 
+    *
     * @param string
     *           String content
     * @return Created JSON value
@@ -405,7 +407,7 @@ public final class ValueJSON
    {
       if(string == null)
       {
-         throw new NullPointerException("string musn't be null");
+         throw new NullPointerException("string MUST NOT be null");
       }
 
       return new ValueJSON(ValueType.STRING, string);
@@ -419,7 +421,7 @@ public final class ValueJSON
 
    /**
     * Create a new instance of ValueJSON
-    * 
+    *
     * @param valueType
     *           Value type
     * @param value
@@ -432,11 +434,58 @@ public final class ValueJSON
    }
 
    /**
+    * Serialize inside a stream
+    *
+    * @param bufferedWriter
+    *           Stream where write
+    * @param compact
+    *           Indicates if compact version
+    * @param headerSize
+    *           Header size
+    * @throws IOException
+    *            On writing issue
+    */
+   void serialize(final BufferedWriter bufferedWriter, final boolean compact, final int headerSize) throws IOException
+   {
+      switch(this.valueType)
+      {
+         case ARRAY:
+            ((ArrayJSON) this.value).serialize(bufferedWriter, compact, headerSize);
+         break;
+         case BOOLEAN:
+            if(((Boolean) this.value))
+            {
+               bufferedWriter.write("true");
+            }
+            else
+            {
+               bufferedWriter.write("false");
+            }
+
+         break;
+         case NULL:
+            bufferedWriter.write("null");
+         break;
+         case NUMBER:
+            bufferedWriter.write(this.value.toString());
+         break;
+         case OBJECT:
+            ((ObjectJSON) this.value).serialize(bufferedWriter, compact, headerSize);
+         break;
+         case STRING:
+            bufferedWriter.write(UtilText.concatenate('"', this.value, '"'));
+         break;
+      }
+
+      bufferedWriter.flush();
+   }
+
+   /**
     * Indicates if an object is equals to this value <br>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @param object
     *           Tested object
     * @return {@code true} if the object is equals to this value
@@ -455,7 +504,7 @@ public final class ValueJSON
          return false;
       }
 
-      if((object instanceof ValueJSON) == false)
+      if(!(object instanceof ValueJSON))
       {
          return false;
       }
@@ -485,7 +534,7 @@ public final class ValueJSON
    /**
     * Obtain JSON array content.<br>
     * The value type <b>MUST</b> be an array
-    * 
+    *
     * @return JSON array content
     */
    public ArrayJSON getArray()
@@ -500,7 +549,7 @@ public final class ValueJSON
 
    /**
     * Get JSON value as binary and write it inside a file
-    * 
+    *
     * @param file
     *           File where write
     * @throws IOException
@@ -508,7 +557,7 @@ public final class ValueJSON
     */
    public void getBinary(final File file) throws IOException
    {
-      if(UtilIO.createFile(file) == false)
+      if(!UtilIO.createFile(file))
       {
          throw new IOException("Can't create file " + file.getAbsolutePath());
       }
@@ -532,7 +581,7 @@ public final class ValueJSON
             {
                fileOutputStream.flush();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
 
@@ -540,7 +589,7 @@ public final class ValueJSON
             {
                fileOutputStream.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -550,7 +599,7 @@ public final class ValueJSON
    /**
     * Get JSON value as binary and write it inside a stream.<br>
     * The stream i not close by the method
-    * 
+    *
     * @param outputStream
     *           Stream where write
     * @throws IOException
@@ -565,7 +614,7 @@ public final class ValueJSON
     * Obtain boolean content.<br>
     * The value type <b>MUST</b> be a boolean<br>
     * If value type is a String, it tries to convert it to boolean
-    * 
+    *
     * @return Boolean content
     */
    public boolean getBoolean()
@@ -577,12 +626,12 @@ public final class ValueJSON
          case STRING:
             final String value = ((String) this.value).trim();
 
-            if("true".equalsIgnoreCase(value) == true)
+            if("true".equalsIgnoreCase(value))
             {
                return true;
             }
 
-            if("false".equalsIgnoreCase(value) == true)
+            if("false".equalsIgnoreCase(value))
             {
                return false;
             }
@@ -597,7 +646,7 @@ public final class ValueJSON
     * Obtain number content.<br>
     * The value type <b>MUST</b> be a number.<br>
     * If value type is a String it tries to convert it to a number
-    * 
+    *
     * @return Number content
     */
    public double getNumber()
@@ -616,7 +665,7 @@ public final class ValueJSON
    /**
     * Obtain JSON object content.<br>
     * The value type <b>MUST</b> be an object
-    * 
+    *
     * @return JSON object content
     */
    public ObjectJSON getObject()
@@ -632,7 +681,7 @@ public final class ValueJSON
    /**
     * Obtain String content.<br>
     * It returns {@code null} if this is the {@link #NULL} value
-    * 
+    *
     * @return String content OR {@code null} if this is the {@link #NULL} value
     */
    public String getString()
@@ -647,7 +696,7 @@ public final class ValueJSON
 
    /**
     * Value type
-    * 
+    *
     * @return Value type
     */
    public ValueType getType()
@@ -660,7 +709,7 @@ public final class ValueJSON
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return Hash code
     * @see java.lang.Object#hashCode()
     */
@@ -672,7 +721,7 @@ public final class ValueJSON
 
    /**
     * Indicates if it is the{@link #NULL} value
-    * 
+    *
     * @return {@code true} if it is the{@link #NULL} value
     */
    public boolean isNull()
@@ -681,11 +730,41 @@ public final class ValueJSON
    }
 
    /**
+    * Serialize inside a stream
+    *
+    * @param bufferedWriter
+    *           Stream where write
+    * @param compact
+    *           Indicates if compact mode
+    * @throws IOException
+    *            On writing issue
+    */
+   public void serialize(final BufferedWriter bufferedWriter, final boolean compact) throws IOException
+   {
+      this.serialize(bufferedWriter, compact, 0);
+   }
+
+   /**
+    * Serialize inside a stream
+    *
+    * @param outputStream
+    *           Stream where write
+    * @param compact
+    *           Indicates if compact mode
+    * @throws IOException
+    *            On writing issue
+    */
+   public void serialize(final OutputStream outputStream, final boolean compact) throws IOException
+   {
+      this.serialize(new BufferedWriter(new OutputStreamWriter(outputStream)), compact);
+   }
+
+   /**
     * String representation <br>
     * <br>
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
-    * 
+    *
     * @return String representation
     * @see java.lang.Object#toString()
     */
@@ -697,7 +776,7 @@ public final class ValueJSON
          case ARRAY:
             return this.value.toString();
          case BOOLEAN:
-            if(((Boolean) this.value) == true)
+            if(((Boolean) this.value))
             {
                return "true";
             }

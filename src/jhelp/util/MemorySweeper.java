@@ -74,14 +74,7 @@ public final class MemorySweeper
                                                                       @Override
                                                                       protected void doVerySimpleAction()
                                                                       {
-                                                                         (new Thread()
-                                                                         {
-                                                                            @Override
-                                                                            public void run()
-                                                                            {
-                                                                               MemorySweeper.stop();
-                                                                            }
-                                                                         }).start();
+                                                                         (new Thread(MemorySweeper::stop)).start();
                                                                       }
                                                                    };
 
@@ -114,23 +107,23 @@ public final class MemorySweeper
     * 
     * @param status
     *           Exit status
-    * @param millsecond
+    * @param millisecond
     *           Time before exit in millisecond
     */
-   public static void automaticExitIn(final int status, final long millsecond)
+   public static void automaticExitIn(final int status, final long millisecond)
    {
-      ThreadManager.THREAD_MANAGER.delayedThread(MemorySweeper.EXIT_ACTION, status, millsecond);
+      ThreadManager.THREAD_MANAGER.delayedThread(MemorySweeper.EXIT_ACTION, status, millisecond);
    }
 
    /**
     * Program an automatic stop
     * 
-    * @param millsecond
+    * @param millisecond
     *           Time before stop in millisecond
     */
-   public static void automaticStopIn(final long millsecond)
+   public static void automaticStopIn(final long millisecond)
    {
-      ThreadManager.THREAD_MANAGER.delayedThread(MemorySweeper.STOP_ACTION, null, millsecond);
+      ThreadManager.THREAD_MANAGER.delayedThread(MemorySweeper.STOP_ACTION, null, millisecond);
    }
 
    /**
@@ -141,14 +134,7 @@ public final class MemorySweeper
     */
    public static void exit(final int status)
    {
-      (new Thread()
-      {
-         @Override
-         public void run()
-         {
-            MemorySweeper.realExit(status);
-         }
-      }).start();
+      (new Thread(() -> MemorySweeper.realExit(status))).start();
 
       Utilities.sleep(4096);
 
@@ -164,7 +150,7 @@ public final class MemorySweeper
 
       try
       {
-         if(MemorySweeper.launched == true)
+         if(MemorySweeper.launched)
          {
             return;
          }
@@ -193,7 +179,7 @@ public final class MemorySweeper
       try
       {
          System.gc();
-         if((MemorySweeper.launched == true) && (MemorySweeper.threadID >= 0))
+         if((MemorySweeper.launched) && (MemorySweeper.threadID >= 0))
          {
             System.gc();
             ThreadManager.THREAD_MANAGER.cancelTask(MemorySweeper.threadID);

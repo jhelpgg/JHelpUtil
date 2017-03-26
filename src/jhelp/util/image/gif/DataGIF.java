@@ -40,7 +40,7 @@ public class DataGIF
     */
    public static Dimension computeGifSize(final File file)
    {
-      if((file == null) || (file.exists() == false) || (file.isDirectory() == true) || (file.canRead() == false))
+      if((file == null) || (!file.exists()) || (file.isDirectory()) || (!file.canRead()))
       {
          return null;
       }
@@ -68,7 +68,7 @@ public class DataGIF
             {
                inputStream.close();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
@@ -129,14 +129,14 @@ public class DataGIF
    {
       final String header = UtilGIF.readString(3, inputStream);
 
-      if(GIFConstants.HEADER_GIF.equals(header) == false)
+      if(!GIFConstants.HEADER_GIF.equals(header))
       {
          throw new IOException("Invalid GIF file, wrong header : " + header);
       }
 
       this.version = UtilGIF.readString(3, inputStream);
 
-      if((GIFConstants.VERSION_87_A.equals(this.version) == false) && (GIFConstants.VERSION_89_A.equals(this.version) == false))
+      if((!GIFConstants.VERSION_87_A.equals(this.version)) && (!GIFConstants.VERSION_89_A.equals(this.version)))
       {
          throw new IOException("Invalid GIF file, wrong version : " + this.version);
       }
@@ -163,8 +163,8 @@ public class DataGIF
 
       this.globalTableColorFollow = (flags & GIFConstants.MASK_COLOR_TABLE_FOLLOW) != 0;
       this.colorResolution = ((flags & GIFConstants.MASK_COLOR_RESOLUTION) >> GIFConstants.SHIFT_COLOR_RESOLUTION) + 1;
-      this.colorOrdered = (flags & GIFConstants.MASK_GLOABAL_COLOR_TABLE_ORDERED) != 0;
-      this.globalTableSize = 1 << ((flags & GIFConstants.MASK_GLOABAL_COLOR_TABLE_SIZE) + 1);
+      this.colorOrdered = (flags & GIFConstants.MASK_GLOBAL_COLOR_TABLE_ORDERED) != 0;
+      this.globalTableSize = 1 << ((flags & GIFConstants.MASK_GLOBAL_COLOR_TABLE_SIZE) + 1);
 
       this.backgroundColorIndex = inputStream.read();
 
@@ -184,7 +184,7 @@ public class DataGIF
 
       this.globalColorTable = new GIFColorTable(this.colorResolution, this.colorOrdered, this.globalTableSize);
 
-      if(this.globalTableColorFollow == false)
+      if(!this.globalTableColorFollow)
       {
          this.globalColorTable.initializeDefault();
       }
@@ -223,10 +223,10 @@ public class DataGIF
             case BLOCK_IMAGE_DESCRIPTOR:
                imageDescriptorBlock = (ImageDescriptorBlock) block;
             break;
-            case BLOCK_EXTENTION:
-               switch(((BlockExtention) block).getSubType())
+            case BLOCK_EXTENSION:
+               switch(((BlockExtension) block).getSubType())
                {
-                  case BLOCK_EXTENTION_GRAPHIC_CONTROL:
+                  case BLOCK_EXTENSION_GRAPHIC_CONTROL:
                      graphicControlBlock = (GraphicControlBlock) block;
                   break;
                }
@@ -235,7 +235,7 @@ public class DataGIF
 
          if(imageDescriptorBlock != null)
          {
-            disposalMethod = GIFConstants.DISPSOAL_METHOD_UNSPECIFIED;
+            disposalMethod = GIFConstants.DISPOSAL_METHOD_UNSPECIFIED;
             transparencyIndex = -1;
             time = GIFConstants.DEFAULT_TIME;
             colorTable = this.globalColorTable;
@@ -291,18 +291,18 @@ public class DataGIF
 
             switch(disposalMethod)
             {
-               case DISPSOAL_METHOD_UNSPECIFIED:
-               case DISPSOAL_METHOD_NOT_DISPOSE:
+               case DISPOSAL_METHOD_UNSPECIFIED:
+               case DISPOSAL_METHOD_NOT_DISPOSE:
                   baseImage.startDrawMode();
                   baseImage.drawImage(0, 0, image);
                   baseImage.endDrawMode();
                break;
-               case DISPSOAL_METHOD_RESTORE_BACKGROUND_COLOR:
+               case DISPOSAL_METHOD_RESTORE_BACKGROUND_COLOR:
                   baseImage.startDrawMode();
                   baseImage.fillRectangle(imageX, imageY, imageWidth, imageHeight, background, false);
                   baseImage.endDrawMode();
                break;
-               case DISPSOAL_METHOD_RESTORE_PREVIOUS:
+               case DISPOSAL_METHOD_RESTORE_PREVIOUS:
                break;
             }
 

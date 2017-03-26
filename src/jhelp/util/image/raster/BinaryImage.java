@@ -54,10 +54,10 @@ public class BinaryImage
       this.height = height;
       this.foreground = 0xFFFFFFFF;
       this.background = 0xFF000000;
-      final int mult = this.width * this.height;
-      int length = mult >> 3;
+      final int size = this.width * this.height;
+      int length = size >> 3;
 
-      if((mult & 7) != 0)
+      if((size & 7) != 0)
       {
          length++;
       }
@@ -262,7 +262,7 @@ public class BinaryImage
       final int pix = p >> 3;
       final int mask = 1 << (p & 7);
 
-      if(on == true)
+      if(on)
       {
          this.data[pix] |= mask;
       }

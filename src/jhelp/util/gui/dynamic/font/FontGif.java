@@ -1,6 +1,7 @@
 /**
  * <h1>License :</h1> <br>
- * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any
+ * damage it may
  * cause.<br>
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
@@ -33,217 +34,226 @@ import jhelp.util.text.StringCutter;
  */
 public class FontGif
 {
-   /** File that describe a font */
-   private static final String      CHARACRCTERS;
-   /** Resources to access GIF images */
-   private static final Resources   RESSOURCES;
-   /** List of available font GIF names */
-   public static final List<String> FONT_GIF_NAMES;
+    /**
+     * List of available font GIF names
+     */
+    public static final  List<String> FONT_GIF_NAMES;
+    /**
+     * File that describe a font
+     */
+    private static final String       CHARACRACTERS;
+    /**
+     * Resources to access GIF images
+     */
+    private static final Resources    RESOURCES;
 
-   static
-   {
-      final List<String> names = new ArrayList<String>();
-      CHARACRCTERS = "characters.txt";
-      RESSOURCES = new Resources(FontGif.class);
+    static
+    {
+        final List<String> names = new ArrayList<String>();
+        CHARACRACTERS = "characters.txt";
+        RESOURCES = new Resources(FontGif.class);
 
-      try
-      {
-         final ResourcesSystem resourcesSystem = FontGif.RESSOURCES.obtainResourcesSystem();
-         boolean valid;
+        try
+        {
+            final ResourcesSystem resourcesSystem = FontGif.RESOURCES.obtainResourcesSystem();
+            boolean               valid;
 
-         for(final ResourceElement resourceElement : resourcesSystem.obtainList(ResourcesSystem.ROOT))
-         {
-            if(resourceElement.isDirectory() == true)
+            for (final ResourceElement resourceElement : resourcesSystem.obtainList(ResourcesSystem.ROOT))
             {
-               valid = false;
+                if (resourceElement.isDirectory())
+                {
+                    valid = false;
 
-               for(final ResourceElement element : resourcesSystem.obtainList(resourceElement))
-               {
-                  if((element.isDirectory() == false) && FontGif.CHARACRCTERS.equals(element.getName()))
-                  {
-                     valid = true;
-                     break;
-                  }
-               }
+                    for (final ResourceElement element : resourcesSystem.obtainList(resourceElement))
+                    {
+                        if ((!element.isDirectory()) && FontGif.CHARACRACTERS.equals(element.getName()))
+                        {
+                            valid = true;
+                            break;
+                        }
+                    }
 
-               if(valid == true)
-               {
-                  names.add(resourceElement.getName());
-               }
+                    if (valid)
+                    {
+                        names.add(resourceElement.getName());
+                    }
+                }
             }
-         }
-      }
-      catch(final IOException exception)
-      {
-         Debug.printException(exception);
-      }
+        }
+        catch (final IOException exception)
+        {
+            Debug.printException(exception);
+        }
 
-      Collections.sort(names);
-      FONT_GIF_NAMES = Collections.unmodifiableList(names);
-   }
-   /** List of association between a list of character and a GIF image */
-   private final List<Pair<String, GIF>> gifs;
-   /** Font height */
-   private int                           height;
-   /** Space size */
-   private int                           space;
+        Collections.sort(names);
+        FONT_GIF_NAMES = Collections.unmodifiableList(names);
+    }
 
-   /**
-    * Create a new instance of FontGif
-    *
-    * @param font
-    *           Font folder name
-    * @throws IOException
-    *            On creation issue
-    */
-   public FontGif(final String font)
-         throws IOException
-   {
-      this.gifs = new ArrayList<Pair<String, GIF>>();
-      this.parseFont(font);
-   }
+    /**
+     * List of association between a list of character and a GIF image
+     */
+    private final List<Pair<String, GIF>> gifs;
+    /**
+     * Font height
+     */
+    private       int                     height;
+    /**
+     * Space size
+     */
+    private       int                     space;
 
-   /**
-    * Parse font description
-    *
-    * @param font
-    *           Font folder
-    * @throws IOException
-    *            On parsing issue
-    */
-   private void parseFont(final String font) throws IOException
-   {
-      BufferedReader bufferedReader = null;
-      InputStream inputStream = null;
-      final String header = font + "/";
-      this.space = Integer.MAX_VALUE;
-      this.height = 0;
-      GIF gif;
+    /**
+     * Create a new instance of FontGif
+     *
+     * @param font Font folder name
+     * @throws IOException On creation issue
+     */
+    public FontGif(final String font)
+            throws IOException
+    {
+        this.gifs = new ArrayList<Pair<String, GIF>>();
+        this.parseFont(font);
+    }
 
-      try
-      {
-         bufferedReader = new BufferedReader(new InputStreamReader(FontGif.RESSOURCES.obtainResourceStream(header + FontGif.CHARACRCTERS)));
-         String line = bufferedReader.readLine();
-         int index;
-         String key, image;
+    /**
+     * Parse font description
+     *
+     * @param font Font folder
+     * @throws IOException On parsing issue
+     */
+    private void parseFont(final String font) throws IOException
+    {
+        BufferedReader bufferedReader = null;
+        InputStream    inputStream    = null;
+        final String   header         = font + "/";
+        this.space = Integer.MAX_VALUE;
+        this.height = 0;
+        GIF gif;
 
-         while(line != null)
-         {
-            if((line.length() > 0) && (line.charAt(0) != '#'))
+        try
+        {
+            bufferedReader = new BufferedReader(
+                    new InputStreamReader(FontGif.RESOURCES.obtainResourceStream(header + FontGif.CHARACRACTERS)));
+            String line = bufferedReader.readLine();
+            int    index;
+            String key, image;
+
+            while (line != null)
             {
-               index = line.indexOf('\t');
+                if ((line.length() > 0) && (line.charAt(0) != '#'))
+                {
+                    index = line.indexOf('\t');
 
-               if(index > 0)
-               {
-                  key = line.substring(0, index);
+                    if (index > 0)
+                    {
+                        key = line.substring(0, index);
 
-                  index = line.lastIndexOf('\t');
+                        index = line.lastIndexOf('\t');
 
-                  if(index > 0)
-                  {
-                     image = line.substring(index + 1);
+                        if (index > 0)
+                        {
+                            image = line.substring(index + 1);
 
-                     inputStream = FontGif.RESSOURCES.obtainResourceStream(header + image);
-                     gif = new GIF(inputStream);
-                     inputStream.close();
-                     inputStream = null;
+                            inputStream = FontGif.RESOURCES.obtainResourceStream(header + image);
+                            gif = new GIF(inputStream);
+                            inputStream.close();
+                            inputStream = null;
 
-                     this.gifs.add(new Pair<String, GIF>(key, gif));
-                     this.space = Math.min(this.space, gif.getWidth());
-                     this.height = Math.max(this.height, gif.getHeight());
-                  }
-               }
+                            this.gifs.add(new Pair<String, GIF>(key, gif));
+                            this.space = Math.min(this.space, gif.getWidth());
+                            this.height = Math.max(this.height, gif.getHeight());
+                        }
+                    }
+                }
+
+                line = bufferedReader.readLine();
             }
-
-            line = bufferedReader.readLine();
-         }
-      }
-      catch(final Exception exception)
-      {
-         throw new IOException("Failed to parse font : " + font, exception);
-      }
-      finally
-      {
-         if(bufferedReader != null)
-         {
-            try
+        }
+        catch (final Exception exception)
+        {
+            throw new IOException("Failed to parse font : " + font, exception);
+        }
+        finally
+        {
+            if (bufferedReader != null)
             {
-               bufferedReader.close();
-            }
-            catch(final Exception exception)
-            {
-            }
-         }
-
-         if(inputStream != null)
-         {
-            try
-            {
-               inputStream.close();
-            }
-            catch(final Exception exception)
-            {
-            }
-         }
-      }
-   }
-
-   /**
-    * Compute text description from a String
-    *
-    * @param text
-    *           String to get text description
-    * @return Text description
-    */
-   public GifText computeGifText(final String text)
-   {
-      int width = 0;
-      int y = 0;
-      int x, index;
-      final List<GifPosition> gifPositions = new ArrayList<GifPosition>();
-      final StringCutter stringCutter = new StringCutter(text, '\n');
-      String line = stringCutter.next();
-      char[] characters;
-      final int size = this.gifs.size();
-      Pair<String, GIF> pair;
-      GIF gif;
-
-      while(line != null)
-      {
-         x = 0;
-         characters = line.toCharArray();
-
-         for(final char character : characters)
-         {
-            gif = null;
-
-            for(index = 0; index < size; index++)
-            {
-               pair = this.gifs.get(index);
-
-               if(pair.element1.indexOf(character) >= 0)
-               {
-                  gif = pair.element2;
-                  break;
-               }
+                try
+                {
+                    bufferedReader.close();
+                }
+                catch (final Exception ignored)
+                {
+                }
             }
 
-            if(gif != null)
+            if (inputStream != null)
             {
-               gifPositions.add(new GifPosition(gif, x, y));
-               x += gif.getWidth();
+                try
+                {
+                    inputStream.close();
+                }
+                catch (final Exception ignored)
+                {
+                }
             }
-            else
+        }
+    }
+
+    /**
+     * Compute text description from a String
+     *
+     * @param text String to get text description
+     * @return Text description
+     */
+    public GifText computeGifText(final String text)
+    {
+        int                     width        = 0;
+        int                     y            = 0;
+        int                     x, index;
+        final List<GifPosition> gifPositions = new ArrayList<GifPosition>();
+        final StringCutter      stringCutter = new StringCutter(text, '\n');
+        String                  line         = stringCutter.next();
+        char[]                  characters;
+        final int               size         = this.gifs.size();
+        Pair<String, GIF>       pair;
+        GIF                     gif;
+
+        while (line != null)
+        {
+            x = 0;
+            characters = line.toCharArray();
+
+            for (final char character : characters)
             {
-               x += this.space;
+                gif = null;
+
+                for (index = 0; index < size; index++)
+                {
+                    pair = this.gifs.get(index);
+
+                    if (pair.element1.indexOf(character) >= 0)
+                    {
+                        gif = pair.element2;
+                        break;
+                    }
+                }
+
+                if (gif != null)
+                {
+                    gifPositions.add(new GifPosition(gif, x, y));
+                    x += gif.getWidth();
+                }
+                else
+                {
+                    x += this.space;
+                }
             }
-         }
 
-         width = Math.max(x, width);
-         y += this.height;
-         line = stringCutter.next();
-      }
+            width = Math.max(x, width);
+            y += this.height;
+            line = stringCutter.next();
+        }
 
-      return new GifText(width, y, gifPositions);
-   }
+        return new GifText(width, y, gifPositions);
+    }
 }

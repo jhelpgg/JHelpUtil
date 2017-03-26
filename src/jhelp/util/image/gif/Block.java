@@ -49,8 +49,8 @@ abstract class Block
          case BLOCK_IMAGE_DESCRIPTOR:
             block = new ImageDescriptorBlock(colorResolution);
          break;
-         case BLOCK_EXTENTION:
-            block = BlockExtention.readBlockExtention(inputStream);
+         case BLOCK_EXTENSION:
+            block = BlockExtension.readBlockExtention(inputStream);
          break;
          case BLOCK_END_GIF:
             block = EndBlock.END_BLOCK;

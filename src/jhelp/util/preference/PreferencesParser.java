@@ -1,5 +1,10 @@
 package jhelp.util.preference;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,190 +16,164 @@ import javax.xml.parsers.SAXParserFactory;
 import jhelp.util.debug.Debug;
 import jhelp.util.list.Pair;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
-
 /**
  * Parser for preferences
- * 
+ *
  * @author JHelp
  */
 class PreferencesParser
-      extends DefaultHandler
-      implements PreferencesFileConstants
+        extends DefaultHandler
+        implements PreferencesFileConstants
 {
-   /** Indicates if we wait first main markup */
-   private boolean                                             mainMarkup;
-   /** Preference to fill */
-   private final HashMap<String, Pair<PreferenceType, Object>> preferences;
+    /**
+     * Preference to fill
+     */
+    private final HashMap<String, Pair<PreferenceType, Object>> preferences;
+    /**
+     * Indicates if we wait first main markup
+     */
+    private       boolean                                       mainMarkup;
 
-   /**
-    * Create a new instance of PreferencesParser and fill preferences from file
-    * 
-    * @param preferencesFile
-    *           Preference file to parse
-    * @param preferences
-    *           Preferences to fill
-    */
-   PreferencesParser(final File preferencesFile, final HashMap<String, Pair<PreferenceType, Object>> preferences)
-   {
-      this.preferences = preferences;
+    /**
+     * Create a new instance of PreferencesParser and fill preferences from file
+     *
+     * @param preferencesFile Preference file to parse
+     * @param preferences     Preferences to fill
+     */
+    PreferencesParser(final File preferencesFile, final HashMap<String, Pair<PreferenceType, Object>> preferences)
+    {
+        this.preferences = preferences;
 
-      final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-      try
-      {
-         this.mainMarkup = true;
+        final SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+        try
+        {
+            this.mainMarkup = true;
 
-         final SAXParser saxParser = saxParserFactory.newSAXParser();
-         saxParser.parse(preferencesFile, this);
-      }
-      catch(final ParserConfigurationException exception)
-      {
-         Debug.printException(exception);
-      }
-      catch(final SAXException exception)
-      {
-         Debug.printException(exception);
-      }
-      catch(final IOException exception)
-      {
-         Debug.printException(exception);
-      }
-   }
+            final SAXParser saxParser = saxParserFactory.newSAXParser();
+            saxParser.parse(preferencesFile, this);
+        }
+        catch (final ParserConfigurationException | IOException | SAXException exception)
+        {
+            Debug.printException(exception);
+        }
+    }
 
-   /**
-    * Get a parameter value
-    * 
-    * @param parameter
-    *           Parameter name
-    * @param attributes
-    *           Attributes where extract the value
-    * @return Extracted value
-    * @throws SAXException
-    *            If parameter ask dosen't exists
-    */
-   private String getParameter(final String parameter, final Attributes attributes) throws SAXException
-   {
-      final String value = attributes.getValue(parameter);
+    /**
+     * Call by parser when a markup open <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param uri        URI
+     * @param localName  Local name
+     * @param qName      Q name
+     * @param attributes Attributes with parameters and corresponding value
+     * @throws SAXException If markup not valid or a parameter missing
+     * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String,
+     * org.xml.sax.Attributes)
+     */
+    @Override
+    public void startElement(final String uri, final String localName, final String qName, final Attributes attributes)
+            throws SAXException
+    {
+        final String name = (localName == null || localName.length() == 0)
+                            ? qName
+                            : localName;
 
-      if(value == null)
-      {
-         throw new SAXException("Missing the parameter " + parameter + " !");
-      }
+        if (this.mainMarkup)
+        {
+            if (!PreferencesFileConstants.MARKUP_PREFERENCES.equals(name))
+            {
+                throw new SAXException(
+                        "The first markup MUST be " + PreferencesFileConstants.MARKUP_PREFERENCES + " not " + name);
+            }
 
-      return value;
-   }
+            this.mainMarkup = false;
 
-   /**
-    * Call by parser when error happen <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param e
-    *           Error happen
-    * @throws SAXException
-    *            Not throw
-    * @see org.xml.sax.helpers.DefaultHandler#error(org.xml.sax.SAXParseException)
-    */
-   @Override
-   public void error(final SAXParseException e) throws SAXException
-   {
-      Debug.printException(e, "ERROR !!!");
-   }
+            return;
+        }
 
-   /**
-    * Call by parser when fatal error happen <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param e
-    *           Fatal error
-    * @throws SAXException
-    *            Not throw
-    * @see org.xml.sax.helpers.DefaultHandler#fatalError(org.xml.sax.SAXParseException)
-    */
-   @Override
-   public void fatalError(final SAXParseException e) throws SAXException
-   {
-      Debug.printException(e, "FATAL ERROR !!!");
-   }
+        if (!PreferencesFileConstants.MARKUP_PREFERENCE.equals(name))
+        {
+            throw new SAXException("The markup MUST be " + PreferencesFileConstants.MARKUP_PREFERENCE + " not " + name);
+        }
 
-   /**
-    * Call by parser when a markup open <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param uri
-    *           URI
-    * @param localName
-    *           Local name
-    * @param qName
-    *           Q name
-    * @param attributes
-    *           Attributes with parameters and corresponding value
-    * @throws SAXException
-    *            If markup not valid or a parameter missing
-    * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String,
-    *      org.xml.sax.Attributes)
-    */
-   @Override
-   public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException
-   {
-      final String name = (localName == null || localName.length() == 0)
-            ? qName
-            : localName;
+        final String preferenceName  = this.getParameter(PreferencesFileConstants.PARAMETER_NAME, attributes);
+        final String type            = this.getParameter(PreferencesFileConstants.PARAMETER_TYPE, attributes);
+        final String preferenceValue = this.getParameter(PreferencesFileConstants.PARAMETER_VALUE, attributes);
 
-      if(this.mainMarkup == true)
-      {
-         if(PreferencesFileConstants.MARKUP_PREFERENCES.equals(name) == false)
-         {
-            throw new SAXException("The first markup MUST be " + PreferencesFileConstants.MARKUP_PREFERENCES + " not " + name);
-         }
+        final PreferenceType preferenceType = PreferenceType.valueOf(type);
 
-         this.mainMarkup = false;
+        this.preferences.put(preferenceName,//
+                             new Pair<PreferenceType, Object>(preferenceType,
+                                                              Preferences.parse(preferenceValue, preferenceType)));
+    }
 
-         return;
-      }
+    /**
+     * Get a parameter value
+     *
+     * @param parameter  Parameter name
+     * @param attributes Attributes where extract the value
+     * @return Extracted value
+     * @throws SAXException If parameter ask doesn't exists
+     */
+    private String getParameter(final String parameter, final Attributes attributes) throws SAXException
+    {
+        final String value = attributes.getValue(parameter);
 
-      if(PreferencesFileConstants.MARKUP_PREFERENCE.equals(name) == false)
-      {
-         throw new SAXException("The markup MUST be " + PreferencesFileConstants.MARKUP_PREFERENCE + " not " + name);
-      }
+        if (value == null)
+        {
+            throw new SAXException("Missing the parameter " + parameter + " !");
+        }
 
-      final String preferenceName = this.getParameter(PreferencesFileConstants.PARAMETER_NAME, attributes);
-      final String type = this.getParameter(PreferencesFileConstants.PARAMETER_TYPE, attributes);
-      final String preferenceValue = this.getParameter(PreferencesFileConstants.PARAMETER_VALUE, attributes);
+        return value;
+    }
 
-      final PreferenceType preferenceType = PreferenceType.valueOf(type);
-      if(preferenceType == null)
-      {
-         throw new SAXException("Invalid type " + type);
-      }
+    /**
+     * Call by parser when warning happen <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param e Warning
+     * @throws SAXException Not throw
+     * @see org.xml.sax.helpers.DefaultHandler#warning(org.xml.sax.SAXParseException)
+     */
+    @Override
+    public void warning(final SAXParseException e) throws SAXException
+    {
+        Debug.printException(e, "Warning /!\\");
+    }
 
-      this.preferences.put(preferenceName,//
-            new Pair<PreferenceType, Object>(preferenceType, Preferences.parse(preferenceValue, preferenceType)));
-   }
+    /**
+     * Call by parser when error happen <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param e Error happen
+     * @throws SAXException Not throw
+     * @see org.xml.sax.helpers.DefaultHandler#error(org.xml.sax.SAXParseException)
+     */
+    @Override
+    public void error(final SAXParseException e) throws SAXException
+    {
+        Debug.printException(e, "ERROR !!!");
+    }
 
-   /**
-    * Call by parser when warning happen <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param e
-    *           Warning
-    * @throws SAXException
-    *            Not throw
-    * @see org.xml.sax.helpers.DefaultHandler#warning(org.xml.sax.SAXParseException)
-    */
-   @Override
-   public void warning(final SAXParseException e) throws SAXException
-   {
-      Debug.printException(e, "Warning /!\\");
-   }
+    /**
+     * Call by parser when fatal error happen <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param e Fatal error
+     * @throws SAXException Not throw
+     * @see org.xml.sax.helpers.DefaultHandler#fatalError(org.xml.sax.SAXParseException)
+     */
+    @Override
+    public void fatalError(final SAXParseException e) throws SAXException
+    {
+        Debug.printException(e, "FATAL ERROR !!!");
+    }
 }

@@ -33,10 +33,10 @@ public class VariableList
    public void add(final String... list)
    {
       final int nb = list.length;
-      for(int i = 0; i < nb; i++)
-      {
-         this.add(list[i]);
-      }
+       for (String aList : list)
+       {
+           this.add(aList);
+       }
    }
 
    /**
@@ -120,7 +120,7 @@ public class VariableList
          return true;
       }
 
-      if((object instanceof VariableList) == false)
+      if(!(object instanceof VariableList))
       {
          return false;
       }
@@ -156,7 +156,8 @@ public class VariableList
 
       for(int i = 0; i < size; i++)
       {
-         if(this.list.getElement(i).equals(variableList.list.getElement(i)) == false)
+         if(!this.list.getElement(i)
+                      .equals(variableList.list.getElement(i)))
          {
             return false;
          }
@@ -196,8 +197,8 @@ public class VariableList
    @Override
    public String toString()
    {
-      final StringBuffer sb = new StringBuffer(123);
-      final int nb = this.numberOfVariables();
+      final StringBuilder sb = new StringBuilder(123);
+      final int           nb = this.numberOfVariables();
       for(int i = 0; i < nb; i++)
       {
          sb.append(this.get(i).toString());

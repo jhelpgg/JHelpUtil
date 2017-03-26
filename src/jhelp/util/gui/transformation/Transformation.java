@@ -251,7 +251,7 @@ public class Transformation
     */
    public void toHorizontalEllpticArc(final double factor)
    {
-      if(UtilMath.isNul(factor) == true)
+      if(UtilMath.isNul(factor))
       {
          this.toIdentity();
          return;

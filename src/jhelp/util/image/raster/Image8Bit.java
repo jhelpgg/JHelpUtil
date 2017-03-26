@@ -370,10 +370,7 @@ public class Image8Bit
    {
       final int limit = Math.min(256 - colorIndexStart, colors.length);
 
-      for(int i = 0; i < limit; i++)
-      {
-         this.colorTable[i + colorIndexStart] = colors[i];
-      }
+      System.arraycopy(colors, 0, this.colorTable, colorIndexStart, limit);
    }
 
    /**

@@ -84,16 +84,16 @@ public class Mutex
    {
       String info;
 
-      if(Mutex.DEBUG == true)
+      if(Mutex.DEBUG)
       {
          info = this.createMutexInformation((new Throwable()).getStackTrace()[1]);
       }
 
       synchronized(this.lock)
       {
-         if(this.isLocked == true)
+         if(this.isLocked)
          {
-            if(Mutex.DEBUG == true)
+            if(Mutex.DEBUG)
             {
                Debug.println(DebugLevel.DEBUG, info, " have to wait, ", this.lastMutexInformation, " have the lock");
             }
@@ -102,14 +102,14 @@ public class Mutex
             {
                this.lock.wait();
             }
-            catch(final Exception exception)
+            catch(final Exception ignored)
             {
             }
          }
 
          this.isLocked = true;
 
-         if(Mutex.DEBUG == true)
+         if(Mutex.DEBUG)
          {
             this.lockerThreadID = this.createThreadID();
             this.lastMutexInformation = info;
@@ -141,20 +141,21 @@ public class Mutex
    {
       String info;
 
-      if(Mutex.DEBUG == true)
+      if(Mutex.DEBUG)
       {
          info = this.createMutexInformation((new Throwable()).getStackTrace()[1]);
       }
 
       synchronized(this.lock)
       {
-         if(this.isLocked == true)
+         if(this.isLocked)
          {
-            if(Mutex.DEBUG == true)
+            if(Mutex.DEBUG)
             {
                Debug.println(DebugLevel.DEBUG, info, " release lock and the owner was ", this.lastMutexInformation);
 
-               if(this.createThreadID().equals(this.lockerThreadID) == false)
+               if(!this.createThreadID()
+                       .equals(this.lockerThreadID))
                {
                   Debug.println(DebugLevel.WARNING, "Not the same thread that take the lock and release it !");
                }

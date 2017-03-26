@@ -68,14 +68,14 @@ public class StringInputStream
     * <b>Parent documentation:</b><br>
     * {@inheritDoc}
     * 
-    * @param readlimit
+    * @param readLimit
     *           Read limit
     * @see java.io.InputStream#mark(int)
     */
    @Override
-   public synchronized void mark(final int readlimit)
+   public synchronized void mark(final int readLimit)
    {
-      this.byteArrayInputStream.mark(readlimit);
+      this.byteArrayInputStream.mark(readLimit);
    }
 
    /**

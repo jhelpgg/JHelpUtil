@@ -1,11 +1,12 @@
 /**
  * <h1>License :</h1> <br>
- * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any
+ * damage it may
  * cause.<br>
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -16,238 +17,237 @@ import jhelp.util.text.UtilText;
 
 /**
  * Horizontal gradient with fixed step
- * 
+ *
  * @author JHelp
  */
 public class JHelpGradientHorizontal
-      implements JHelpPaint
+        implements JHelpPaint
 {
-   /**
-    * Represents a step
-    * 
-    * @author JHelp
-    */
-   public class Percent
-         implements Comparable<Percent>
-   {
-      /** Step color */
-      final int color;
-      /** Step percent */
-      final int percent;
+    /** Gradient steps */
+    private final SortedArray<Percent> percents;
+    /** Width of the current shape to fill */
+    private       int                  width;
+    /**
+     * Create a new instance of JHelpGradientHorizontal
+     *
+     * @param colorStart
+     *           Color at start (left)
+     * @param colorEnd
+     *           Color at end (right)
+     */
+    public JHelpGradientHorizontal(final int colorStart, final int colorEnd)
+    {
+        this.percents = new SortedArray<JHelpGradientHorizontal.Percent>(Percent.class);
 
-      /**
-       * Create a new instance of Percent
-       * 
-       * @param percent
-       *           Percent
-       * @param color
-       *           Color
-       */
-      Percent(final int percent, final int color)
-      {
-         this.percent = percent;
-         this.color = color;
-      }
+        this.percents.add(new Percent(0, colorStart));
+        this.percents.add(new Percent(100, colorEnd));
+    }
 
-      /**
-       * Compare the step with an other one.<br>
-       * It returns:
-       * <table>
-       * <tr>
-       * <th>&lt 0</th>
-       * <td>:</td>
-       * <td>If this step is before the given one</td>
-       * </tr>
-       * <tr>
-       * <th>0</th>
-       * <td>:</td>
-       * <td>If this step is equals to the given one</td>
-       * </tr>
-       * <tr>
-       * <th>&gt; 0</th>
-       * <td>:</td>
-       * <td>If this step is after to the given one</td>
-       * </tr>
-       * </table>
-       * <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       * 
-       * @param percent
-       *           Step to compare with
-       * @return Comparison result
-       * @see java.lang.Comparable#compareTo(java.lang.Object)
-       */
-      @Override
-      public int compareTo(final Percent percent)
-      {
-         return this.percent - percent.percent;
-      }
+    /**
+     * Add a color step
+     *
+     * @param percent
+     *           Percent of the step
+     * @param color
+     *           Step color
+     */
+    public void addColor(final int percent, final int color)
+    {
+        if ((percent < 0) || (percent > 100))
+        {
+            throw new IllegalArgumentException("percent must be in [0, 100] not " + percent);
+        }
 
-      /**
-       * Step color
-       * 
-       * @return Step color
-       */
-      public int getColor()
-      {
-         return this.color;
-      }
+        final Percent per = new Percent(percent, color);
 
-      /**
-       * Step percent
-       * 
-       * @return Step percent
-       */
-      public int getPercent()
-      {
-         return this.percent;
-      }
+        final int index = this.percents.indexOf(per);
+        if (index >= 0)
+        {
+            this.percents.remove(index);
+        }
 
-      /**
-       * String representation <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       * 
-       * @return String representation
-       * @see java.lang.Object#toString()
-       */
-      @Override
-      public String toString()
-      {
-         return UtilText.concatenate(this.percent, "% ", UtilText.colorText(this.color));
-      }
-   }
+        this.percents.add(per);
+    }
 
-   /** Gradient steps */
-   private final SortedArray<Percent> percents;
-   /** Width of the current shape to fill */
-   private int                        width;
+    /**
+     * Called when the gradient is about to be used <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param width
+     *           Area width
+     * @param height
+     *           Area height
+     * @see jhelp.util.gui.JHelpPaint#initializePaint(int, int)
+     */
+    @Override
+    public void initializePaint(final int width, final int height)
+    {
+        this.width = Math.max(1, width);
+    }
 
-   /**
-    * Create a new instance of JHelpGradientHorizontal
-    * 
-    * @param colorStart
-    *           Color at start (left)
-    * @param colorEnd
-    *           Color at end (right)
-    */
-   public JHelpGradientHorizontal(final int colorStart, final int colorEnd)
-   {
-      this.percents = new SortedArray<JHelpGradientHorizontal.Percent>(Percent.class);
+    /**
+     * Compute a pixel color <br>
+     * <br>
+     * <b>Parent documentation:</b><br>
+     * {@inheritDoc}
+     *
+     * @param x
+     *           X position
+     * @param y
+     *           Y position
+     * @return Computed color
+     * @see jhelp.util.gui.JHelpPaint#obtainColor(int, int)
+     */
+    @Override
+    public int obtainColor(final int x, final int y)
+    {
+        final int     xx  = (x * 100) / this.width;
+        final Percent per = new Percent(xx, 0);
 
-      this.percents.add(new Percent(0, colorStart));
-      this.percents.add(new Percent(100, colorEnd));
-   }
+        final Pair<Integer, Integer> interval = this.percents.intervalOf(per);
 
-   /**
-    * Add a color step
-    * 
-    * @param percent
-    *           Percent of the step
-    * @param color
-    *           Step color
-    */
-   public void addColor(final int percent, final int color)
-   {
-      if((percent < 0) || (percent > 100))
-      {
-         throw new IllegalArgumentException("percent must be in [0, 100] not " + percent);
-      }
+        int start = interval.element1;
+        int end   = interval.element2;
 
-      final Percent per = new Percent(percent, color);
+        if (start < 0)
+        {
+            return this.percents.getElement(0).color;
+        }
 
-      final int index = this.percents.indexOf(per);
-      if(index >= 0)
-      {
-         this.percents.remove(index);
-      }
+        if (end < 0)
+        {
+            return this.percents.getElement(start - 1).color;
+        }
 
-      this.percents.add(per);
-   }
+        if (start == end)
+        {
+            return this.percents.getElement(start).color;
+        }
 
-   /**
-    * Called when the gradient is about to be used <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param width
-    *           Area width
-    * @param height
-    *           Area height
-    * @see jhelp.util.gui.JHelpPaint#initializePaint(int, int)
-    */
-   @Override
-   public void initializePaint(final int width, final int height)
-   {
-      this.width = Math.max(1, width);
-   }
+        final int col1 = this.percents.getElement(start).color;
+        final int col2 = this.percents.getElement(end).color;
 
-   /**
-    * Compute a pixel color <br>
-    * <br>
-    * <b>Parent documentation:</b><br>
-    * {@inheritDoc}
-    * 
-    * @param x
-    *           X position
-    * @param y
-    *           Y position
-    * @return Computed color
-    * @see jhelp.util.gui.JHelpPaint#obtainColor(int, int)
-    */
-   @Override
-   public int obtainColor(final int x, final int y)
-   {
-      final int xx = (x * 100) / this.width;
-      final Percent per = new Percent(xx, 0);
+        start = this.percents.getElement(start).percent;
+        end = this.percents.getElement(end).percent;
 
-      final Pair<Integer, Integer> interval = this.percents.intervalOf(per);
+        final int length = end - start;
+        final int pos    = xx - start;
+        final int sop    = length - pos;
 
-      int start = interval.element1;
-      int end = interval.element2;
+        return ((((((col1 >> 24) & 0xFF) * sop) + (((col2 >> 24) & 0xFF) * pos)) / length) << 24) | //
+                ((((((col1 >> 16) & 0xFF) * sop) + (((col2 >> 16) & 0xFF) * pos)) / length) << 16) | //
+                ((((((col1 >> 8) & 0xFF) * sop) + (((col2 >> 8) & 0xFF) * pos)) / length) << 8) | //
+                ((((col1 & 0xFF) * sop) + ((col2 & 0xFF) * pos)) / length);
+    }
 
-      if(start < 0)
-      {
-         return this.percents.getElement(0).color;
-      }
+    /**
+     * Steps list
+     *
+     * @return Steps list
+     */
+    public Percent[] obtainPercents()
+    {
+        return this.percents.toArray();
+    }
 
-      if(end < 0)
-      {
-         return this.percents.getElement(start - 1).color;
-      }
+    /**
+     * Represents a step
+     *
+     * @author JHelp
+     */
+    public class Percent
+            implements Comparable<Percent>
+    {
+        /** Step color */
+        final int color;
+        /** Step percent */
+        final int percent;
 
-      if(start == end)
-      {
-         return this.percents.getElement(start).color;
-      }
+        /**
+         * Create a new instance of Percent
+         *
+         * @param percent
+         *           Percent
+         * @param color
+         *           Color
+         */
+        Percent(final int percent, final int color)
+        {
+            this.percent = percent;
+            this.color = color;
+        }
 
-      final int col1 = this.percents.getElement(start).color;
-      final int col2 = this.percents.getElement(end).color;
+        /**
+         * Compare the step with an other one.<br>
+         * It returns:
+         * <table>
+         * <tr>
+         * <th>&lt 0</th>
+         * <td>:</td>
+         * <td>If this step is before the given one</td>
+         * </tr>
+         * <tr>
+         * <th>0</th>
+         * <td>:</td>
+         * <td>If this step is equals to the given one</td>
+         * </tr>
+         * <tr>
+         * <th>&gt; 0</th>
+         * <td>:</td>
+         * <td>If this step is after to the given one</td>
+         * </tr>
+         * </table>
+         * <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @param percent
+         *           Step to compare with
+         * @return Comparison result
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(final Percent percent)
+        {
+            return this.percent - percent.percent;
+        }
 
-      start = this.percents.getElement(start).percent;
-      end = this.percents.getElement(end).percent;
+        /**
+         * Step color
+         *
+         * @return Step color
+         */
+        public int getColor()
+        {
+            return this.color;
+        }
 
-      final int length = end - start;
-      final int pos = xx - start;
-      final int sop = length - pos;
+        /**
+         * Step percent
+         *
+         * @return Step percent
+         */
+        public int getPercent()
+        {
+            return this.percent;
+        }
 
-      return ((((((col1 >> 24) & 0xFF) * sop) + (((col2 >> 24) & 0xFF) * pos)) / length) << 24) | //
-            ((((((col1 >> 16) & 0xFF) * sop) + (((col2 >> 16) & 0xFF) * pos)) / length) << 16) | //
-            ((((((col1 >> 8) & 0xFF) * sop) + (((col2 >> 8) & 0xFF) * pos)) / length) << 8) | //
-            ((((col1 & 0xFF) * sop) + ((col2 & 0xFF) * pos)) / length);
-   }
-
-   /**
-    * Steps list
-    * 
-    * @return Steps list
-    */
-   public Percent[] otainPercents()
-   {
-      return this.percents.toArray();
-   }
+        /**
+         * String representation <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @return String representation
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return UtilText.concatenate(this.percent, "% ", UtilText.colorText(this.color));
+        }
+    }
 }

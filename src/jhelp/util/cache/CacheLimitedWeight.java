@@ -41,7 +41,7 @@ public class CacheLimitedWeight<TYPE extends HeavyObject>
    {
       if(limitedWeightMap == null)
       {
-         throw new NullPointerException("limitedWeightMap musn't be null");
+         throw new NullPointerException("limitedWeightMap MUST NOT be null");
       }
 
       this.cache = new HashMap<String, HeavyObjectCreator<TYPE>>();
@@ -97,7 +97,7 @@ public class CacheLimitedWeight<TYPE extends HeavyObject>
          return heavy;
       }
 
-      if(this.put(key, creatorDefault) == false)
+      if(!this.put(key, creatorDefault))
       {
          return null;
       }
@@ -118,12 +118,12 @@ public class CacheLimitedWeight<TYPE extends HeavyObject>
    {
       if(key == null)
       {
-         throw new NullPointerException("key musn't be null");
+         throw new NullPointerException("key MUST NOT be null");
       }
 
       if(creator == null)
       {
-         throw new NullPointerException("creator musn't be null");
+         throw new NullPointerException("creator MUST NOT be null");
       }
 
       this.cache.put(key, creator);

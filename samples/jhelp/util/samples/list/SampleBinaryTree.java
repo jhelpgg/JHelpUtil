@@ -10,12 +10,20 @@ import jhelp.util.list.BinaryTree;
 import jhelp.util.list.Tree.TestFoundListener;
 import jhelp.util.math.UtilMath;
 
+/**
+ * Sample for binary tree
+ *
+ * @author JHelp <br>
+ */
 public class SampleBinaryTree
       implements Comparator<Integer>, TestFoundListener<Integer>
 {
 
    /**
+    * Launch the sample
+    *
     * @param args
+    *           Unused
     */
    public static void main(final String[] args)
    {
@@ -68,12 +76,36 @@ public class SampleBinaryTree
       sampleBinaryTreeFrame.setVisible(true);
    }
 
+   /**
+    * Compare 2 integers <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param integer1
+    *           First integers
+    * @param integer2
+    *           Second integer
+    * @return Comparison result
+    * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+    */
    @Override
    public int compare(final Integer integer1, final Integer integer2)
    {
       return integer1 - integer2;
    }
 
+   /**
+    * Indicates if integer is a search one <br>
+    * <br>
+    * <b>Parent documentation:</b><br>
+    * {@inheritDoc}
+    *
+    * @param integer
+    *           Integer tested
+    * @return {@code true} if integer is one search
+    * @see jhelp.util.list.Tree.TestFoundListener#isElementSearched(java.lang.Object)
+    */
    @Override
    public boolean isElementSearched(final Integer integer)
    {

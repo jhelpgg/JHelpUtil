@@ -129,7 +129,7 @@ public class Clip
          return true;
       }
 
-      if((object instanceof Clip) == false)
+      if(!(object instanceof Clip))
       {
          return false;
       }

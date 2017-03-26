@@ -29,9 +29,9 @@ public enum DebugLevel
    WARNING(1, "/!\\ WARNING /!\\ : ");
 
    /** Header */
-   private String header;
+   private final String header;
    /** Level */
-   private int    level;
+   private final int    level;
 
    /**
     * Create a new instance of DebugLevel

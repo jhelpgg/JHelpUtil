@@ -1,16 +1,25 @@
 package jhelp.util.math.matrix;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import jhelp.util.debug.Debug;
 import jhelp.util.debug.DebugLevel;
 import jhelp.util.math.UtilMath;
 import jhelp.util.math.random.JHelpRandom;
 import jhelp.util.time.TimeDebug;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+/**
+ * Matrix tests
+ *
+ * @author JHelp <br>
+ */
+@SuppressWarnings("SuspiciousNameCombination")
 public class MatrixTest
 {
+   /**
+    * Addition test
+    */
    @Test
    public void testAddition()
    {
@@ -48,6 +57,9 @@ public class MatrixTest
       Assert.assertEquals("Addition failed", expected, matrix);
    }
 
+   /**
+    * Big matrix tests
+    */
    @Test
    public void testBigMatrix()
    {
@@ -75,6 +87,9 @@ public class MatrixTest
       timeDebug.dump();
    }
 
+   /**
+    * Copy tests
+    */
    @Test
    public void testCopy()
    {
@@ -84,6 +99,9 @@ public class MatrixTest
       Assert.assertEquals("Copy different !", matrix, copy);
    }
 
+   /**
+    * Determinant tests
+    */
    @Test
    public void testDeterminant()
    {
@@ -102,6 +120,9 @@ public class MatrixTest
       Assert.assertTrue("Determinant is not 0, but " + determinant, UtilMath.equals(0, determinant));
    }
 
+   /**
+    * Determinant and adjacent coherence test
+    */
    @Test
    public void testDeterminantAdjacent()
    {
@@ -127,6 +148,9 @@ public class MatrixTest
       Assert.assertTrue(Matrix.equals(determinant1, determinant2));
    }
 
+   /**
+    * Equals tests
+    */
    @Test
    public void testEqualsObject()
    {
@@ -140,6 +164,9 @@ public class MatrixTest
       Assert.assertEquals("Third failed", matrix, second);
    }
 
+   /**
+    * Get/set tests
+    */
    @Test
    public void testGet()
    {
@@ -159,6 +186,9 @@ public class MatrixTest
       Assert.assertTrue("Value must be 10 not " + matrix.get(2, 1), UtilMath.equals(10, matrix.get(2, 1)));
    }
 
+   /**
+    * getHeight test
+    */
    @Test
    public void testGetHeight()
    {
@@ -174,6 +204,9 @@ public class MatrixTest
       }
    }
 
+   /**
+    * getWidth test
+    */
    @Test
    public void testGetWidth()
    {
@@ -189,6 +222,9 @@ public class MatrixTest
       }
    }
 
+   /**
+    * Invert tests
+    */
    @Test
    public void testInvert()
    {
@@ -226,6 +262,9 @@ public class MatrixTest
       Assert.assertTrue("Way 4", invert.multiplication(matrix).isIdentity());
    }
 
+   /**
+    * Identity tests
+    */
    @Test
    public void testIsIdentity()
    {
@@ -245,6 +284,9 @@ public class MatrixTest
       Assert.assertTrue(matrix.isIdentity());
    }
 
+   /**
+    * Multiplication tests
+    */
    @Test
    public void testMultiplication()
    {
@@ -268,19 +310,22 @@ public class MatrixTest
       second.set(1, 0, 4);
 
       Matrix result = new Matrix(2, 2);
-      result.set(0, 0, 1 * 3);
-      result.set(1, 0, 1 * 4);
+      result.set(0, 0, 3);
+      result.set(1, 0, 4);
       result.set(0, 1, 2 * 3);
       result.set(1, 1, 2 * 4);
 
       Assert.assertEquals("Multiplication failed 1", result, first.multiplication(second));
 
       result = new Matrix(1, 1);
-      result.set(0, 0, (1 * 3) + (2 * 4));
+      result.set(0, 0, (3) + (2 * 4));
 
       Assert.assertEquals("Multiplication failed 2", result, second.multiplication(first));
    }
 
+   /**
+    * Get/set tests
+    */
    @Test
    public void testSet()
    {
@@ -300,6 +345,9 @@ public class MatrixTest
       Assert.assertTrue("Value must be 10 not " + matrix.get(2, 1), UtilMath.equals(10, matrix.get(2, 1)));
    }
 
+   /**
+    * subtraction tests
+    */
    @Test
    public void testSubtraction()
    {
@@ -327,6 +375,9 @@ public class MatrixTest
       Assert.assertEquals("Subtraction failed", new Matrix(5, 4), matrix);
    }
 
+   /**
+    * Indentity tests
+    */
    @Test
    public void testToIndentity()
    {
@@ -356,6 +407,9 @@ public class MatrixTest
 
    }
 
+   /**
+    * Zero tests
+    */
    @Test
    public void testToZero()
    {
@@ -370,6 +424,9 @@ public class MatrixTest
       Assert.assertEquals("Zero failed", new Matrix(5, 3), matrix);
    }
 
+   /**
+    * Transpose tests
+    */
    @Test
    public void testTranspose()
    {

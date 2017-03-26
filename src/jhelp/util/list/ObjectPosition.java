@@ -35,6 +35,7 @@ public class ObjectPosition<OBJECT extends SizedObject>
     * @param bagHeight
     *           Bag height
     */
+   @SuppressWarnings("ConstantConditions")
    ObjectPosition(final OBJECT object, final int bagWidth, final int bagHeight)
    {
       this.index = ObjectPosition.NEXT.getAndIncrement();
@@ -72,7 +73,7 @@ public class ObjectPosition<OBJECT extends SizedObject>
                }
 
                eliminateLine = true;
-               for(int yyy = yy + 1; (yyy < bagHeight) && (eliminateLine == true); yyy++)
+               for(int yyy = yy + 1; (yyy < bagHeight) && (eliminateLine); yyy++)
                {
                   for(int xxx = xx; xxx < mx; xxx++)
                   {
@@ -83,7 +84,7 @@ public class ObjectPosition<OBJECT extends SizedObject>
                      }
                   }
 
-                  if(eliminateLine == true)
+                  if(eliminateLine)
                   {
                      for(int xxx = xx; xxx < mx; xxx++)
                      {

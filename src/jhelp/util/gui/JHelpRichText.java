@@ -1,11 +1,12 @@
 /**
  * <h1>License :</h1> <br>
- * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any
+ * damage it may
  * cause.<br>
  * You can use, modify, the code as your need for any usage. But you can't do any action that avoid me or other person use,
  * modify this code. The code is free for usage and modification, you can't change that fact.<br>
  * <br>
- * 
+ *
  * @author JHelp
  */
 package jhelp.util.gui;
@@ -27,501 +28,506 @@ import jhelp.util.text.UtilText;
 /**
  * Text with the possibility to insert some image in it.<br>
  * For example it can replace every <b>:)</b> by a picture like <img src="sourire.png" width=32 height=32/>
- * 
+ *
  * @author JHelp
  */
 public final class JHelpRichText
 {
-   /**
-    * Cache element of image. It describes how create an image
-    * 
-    * @author JHelp
-    */
-   private static class CacheImageElement
-         extends CacheElement<JHelpImage>
-   {
-      /** Image resource name */
-      private final String    resource;
-      /** Resources set where found the image */
-      private final Resources resources;
-      /** Image desired size */
-      private final int       size;
+    /** Images cache */
+    private final Cache<JHelpImage> CACHE_IMAGES = new Cache<JHelpImage>();
+    /** Resources set */
+    private final Resources           resources;
+    /** Registered associations */
+    private final SortedArray<Symbol> symbols;
+    /**
+     * Create a new instance of JHelpRichText
+     *
+     * @param resources
+     *           Resources set where find images
+     */
+    public JHelpRichText(final Resources resources)
+    {
+        if (resources == null)
+        {
+            throw new NullPointerException("resources MUST NOT be null");
+        }
 
-      /**
-       * Create a new instance of CacheImageElement
-       * 
-       * @param resources
-       *           Resources set where found the image
-       * @param resource
-       *           Image resource name
-       * @param size
-       *           Image desired size
-       */
-      public CacheImageElement(final Resources resources, final String resource, final int size)
-      {
-         this.resources = resources;
-         this.resource = resource;
-         this.size = size;
-      }
+        this.resources = resources;
+        this.symbols = new SortedArray<JHelpRichText.Symbol>(Symbol.class, true);
+    }
 
-      /**
-       * Create the image <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       * 
-       * @return Created image
-       * @see jhelp.util.cache.CacheElement#createElement()
-       */
-      @Override
-      protected JHelpImage createElement()
-      {
-         try
-         {
-            return JHelpImage.loadImageThumb(this.resources.obtainResourceStream(this.resource), this.size, this.size);
-         }
-         catch(final IOException exception)
-         {
-            Debug.printException(exception, "Failed to load resource ", this.resource);
+    /**
+     * Add/modify an association for a symbol to an image
+     *
+     * @param symbol
+     *           Symbol to associate
+     * @param resource
+     *           Image resource name
+     */
+    public void associate(final String symbol, final String resource)
+    {
+        if (symbol == null)
+        {
+            throw new NullPointerException("symbol MUST NOT be null");
+        }
 
-            return null;
-         }
-      }
-   }
+        if (resource == null)
+        {
+            throw new NullPointerException("resource MUST NOT be null");
+        }
 
-   /**
-    * Represents an association between a symbol (For example <b>:)</b> ) and an image
-    * 
-    * @author JHelp
-    */
-   private static class Symbol
-         implements Comparable<Symbol>
-   {
-      /** Image resource name */
-      private final String resource;
-      /** Symbol associated */
-      private final String symbol;
+        final Symbol symbolReal = new Symbol(symbol, resource);
 
-      /**
-       * Create a new instance of Symbol
-       * 
-       * @param symbol
-       *           The symbol
-       * @param resource
-       *           Image resource name
-       */
-      public Symbol(final String symbol, final String resource)
-      {
-         this.symbol = symbol;
-         this.resource = resource;
-      }
+        final int index = this.symbols.indexOf(symbolReal);
 
-      /**
-       * Compare with an other symbol. <br>
-       * It returns :
-       * <ul>
-       * <li><b>&lt; 0</b> : if this symbol is before the given one</li>
-       * <li><b>0</b> : if the compared symbol is the same</li>
-       * <li><b>&gt; 0</b> : if this symbol is after the given one</li>
-       * </ul>
-       * <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       * 
-       * @param symbol
-       *           Symbol to compare
-       * @return Comparison result
-       * @see java.lang.Comparable#compareTo(java.lang.Object)
-       */
-      @Override
-      public int compareTo(final Symbol symbol)
-      {
-         final int diff = symbol.symbol.length() - this.symbol.length();
+        if (index >= 0)
+        {
+            this.symbols.remove(index);
+        }
 
-         if(diff != 0)
-         {
-            return diff;
-         }
+        this.symbols.add(symbolReal);
+    }
 
-         return this.symbol.compareTo(symbol.symbol);
-      }
+    /**
+     * Create an image for draw the text with symbols replaced by corresponding image
+     *
+     * @param text
+     *           Text to convert
+     * @param font
+     *           Font to use for text
+     * @param colorText
+     *           Text color
+     * @return Created image
+     */
+    public JHelpImage createImage(final String text, final JHelpFont font, final int colorText)
+    {
+        if (text == null)
+        {
+            throw new NullPointerException("text MUST NOT be null");
+        }
 
-      /**
-       * Image resource name associated
-       * 
-       * @return Image resource name associated
-       */
-      public String getResource()
-      {
-         return this.resource;
-      }
+        if (font == null)
+        {
+            throw new NullPointerException("font MUST NOT be null");
+        }
 
-      /**
-       * Associated symbol
-       * 
-       * @return Associated symbol
-       */
-      public String getSymbol()
-      {
-         return this.symbol;
-      }
+        return this.createImage(text, font, colorText, null, null);
+    }
 
-      /**
-       * String representation <br>
-       * <br>
-       * <b>Parent documentation:</b><br>
-       * {@inheritDoc}
-       * 
-       * @return String representation
-       * @see java.lang.Object#toString()
-       */
-      @Override
-      public String toString()
-      {
-         return UtilText.concatenate(Symbol.class.getSimpleName(), " : ", this.symbol, " -> ", this.resource);
-      }
-   }
+    /**
+     * Compute image that draw the text with symbols replaced by corresponding images
+     *
+     * @param text
+     *           Text to draw
+     * @param font
+     *           Font to use for text
+     * @param colorText
+     *           Color for text (Used if paintText and texturePaint are {@code null})
+     * @param paintText
+     *           Paint for text (Used if not {@code null} and texturePaint is {@code null})
+     * @param textureText
+     *           Texture for text (Used if not {@code null})
+     * @return Created image
+     */
+    private JHelpImage createImage(final String text, final JHelpFont font, final int colorText,
+                                   final JHelpPaint paintText, final JHelpImage textureText)
+    {
+        final int                                        height      = font.getHeight();
+        int                                              imageWidth  = 0;
+        int                                              imageHeight = 0;
+        final ArrayList<Triplet<Boolean, Point, String>> elements    = new ArrayList<Triplet<Boolean, Point, String>>();
+        int                                              x           = 0;
+        int                                              y           = 0;
+        int                                              width;
+        int                                              index;
+        String                                           sym;
+        int                                              length;
+        int                                              size;
+        boolean                                          found;
+        int                                              start;
+        int                                              end;
+        String                                           part;
+        int                                              w;
+        int                                              sy;
+        JHelpMask                                        mask;
+        final StringExtractor                            lines       = new StringExtractor(text, "\n\f\r", "", "");
+        final ArrayInt                                   arrayInt    = new ArrayInt();
+        String                                           line        = lines.next();
 
-   /** Images cache */
-   private final Cache<JHelpImage>   CACHE_IMAGES = new Cache<JHelpImage>();
-   /** Resources set */
-   private final Resources           resources;
-   /** Registered associations */
-   private final SortedArray<Symbol> symbols;
+        while (line != null)
+        {
+            arrayInt.clear();
+            width = 0;
+            x = 0;
 
-   /**
-    * Create a new instance of JHelpRichText
-    * 
-    * @param resources
-    *           Resources set where find images
-    */
-   public JHelpRichText(final Resources resources)
-   {
-      if(resources == null)
-      {
-         throw new NullPointerException("resources musn't be null");
-      }
-
-      this.resources = resources;
-      this.symbols = new SortedArray<JHelpRichText.Symbol>(Symbol.class, true);
-   }
-
-   /**
-    * Compute image that draw the text with symbols replaced by corresponding images
-    * 
-    * @param text
-    *           Text to draw
-    * @param font
-    *           Font to use for text
-    * @param colorText
-    *           Color for text (Used if paintText and texturePaint are {@code null})
-    * @param paintText
-    *           Paint for text (Used if not {@code null} and texturePaint is {@code null})
-    * @param textureText
-    *           Texture for text (Used if not {@code null})
-    * @return Created image
-    */
-   private JHelpImage createImage(final String text, final JHelpFont font, final int colorText, final JHelpPaint paintText, final JHelpImage textureText)
-   {
-      final int height = font.getHeight();
-      int imageWidth = 0;
-      int imageHeight = 0;
-      final ArrayList<Triplet<Boolean, Point, String>> elements = new ArrayList<Triplet<Boolean, Point, String>>();
-      int x = 0;
-      int y = 0;
-      int width;
-      int index;
-      String sym;
-      int length;
-      int size;
-      boolean found;
-      int start;
-      int end;
-      String part;
-      int w;
-      int sy;
-      JHelpMask mask;
-      final StringExtractor lines = new StringExtractor(text, "\n\f\r", "", "");
-      final ArrayInt arrayInt = new ArrayInt();
-      String line = lines.next();
-
-      while(line != null)
-      {
-         arrayInt.clear();
-         width = 0;
-         x = 0;
-
-         for(final Symbol symbol : this.symbols)
-         {
-            sym = symbol.getSymbol();
-            length = sym.length();
-            index = line.indexOf(sym);
-
-            while(index >= 0)
+            for (final Symbol symbol : this.symbols)
             {
-               size = arrayInt.getSize();
-               found = false;
-               for(int i = 0; i < size; i += 2)
-               {
-                  if((index >= arrayInt.getInteger(i)) && (index < arrayInt.getInteger(i + 1)))
-                  {
-                     found = true;
-                     break;
-                  }
-               }
+                sym = symbol.getSymbol();
+                length = sym.length();
+                index = line.indexOf(sym);
 
-               if(found == false)
-               {
-                  arrayInt.add(index);
-                  arrayInt.add(index + length);
-               }
+                while (index >= 0)
+                {
+                    size = arrayInt.getSize();
+                    found = false;
+                    for (int i = 0; i < size; i += 2)
+                    {
+                        if ((index >= arrayInt.getInteger(i)) && (index < arrayInt.getInteger(i + 1)))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
 
-               index = line.indexOf(sym, index + length);
-            }
-         }
+                    if (!found)
+                    {
+                        arrayInt.add(index);
+                        arrayInt.add(index + length);
+                    }
 
-         arrayInt.sort();
-
-         size = arrayInt.getSize();
-         index = 0;
-         length = line.length();
-
-         for(int i = 0; i < size; i += 2)
-         {
-            start = arrayInt.getInteger(i);
-            end = arrayInt.getInteger(i + 1);
-
-            if(index < start)
-            {
-               part = line.substring(index, start);
-               elements.add(new Triplet<Boolean, Point, String>(true, new Point(x, y), part));
-
-               w = font.stringWidth(part);
-               x += w;
-               width += w;
+                    index = line.indexOf(sym, index + length);
+                }
             }
 
-            part = line.substring(start, end);
-            sy = this.symbols.indexOf(new Symbol(part, ""));
-            elements.add(new Triplet<Boolean, Point, String>(false, new Point(x, y), this.symbols.getElement(sy).getResource()));
-            x += height;
-            width += height;
-            index = end;
-         }
+            arrayInt.sort();
 
-         if(index < length)
-         {
-            part = line.substring(index, length);
-            elements.add(new Triplet<Boolean, Point, String>(true, new Point(x, y), part));
+            size = arrayInt.getSize();
+            index = 0;
+            length = line.length();
 
-            w = font.stringWidth(part);
-            width += w;
-         }
-
-         y += height;
-         imageHeight += height;
-         imageWidth = Math.max(width, imageWidth);
-         line = lines.next();
-      }
-
-      final JHelpImage result = new JHelpImage(Math.max(1, imageWidth), Math.max(1, imageHeight));
-
-      result.startDrawMode();
-
-      for(final Triplet<Boolean, Point, String> element : elements)
-      {
-         if(element.element1 == true)
-         {
-            mask = font.createMask(element.element3);
-
-            if(textureText != null)
+            for (int i = 0; i < size; i += 2)
             {
-               result.paintMask(element.element2.x, element.element2.y, mask, textureText, 0, 0, 0, true);
+                start = arrayInt.getInteger(i);
+                end = arrayInt.getInteger(i + 1);
+
+                if (index < start)
+                {
+                    part = line.substring(index, start);
+                    elements.add(new Triplet<Boolean, Point, String>(true, new Point(x, y), part));
+
+                    w = font.stringWidth(part);
+                    x += w;
+                    width += w;
+                }
+
+                part = line.substring(start, end);
+                sy = this.symbols.indexOf(new Symbol(part, ""));
+                elements.add(new Triplet<Boolean, Point, String>(false, new Point(x, y), this.symbols.getElement(sy)
+                                                                                                     .getResource()));
+
+                //noinspection SuspiciousNameCombination
+                x += height;
+                //noinspection SuspiciousNameCombination
+                width += height;
+                index = end;
             }
-            else if(paintText != null)
+
+            if (index < length)
             {
-               result.paintMask(element.element2.x, element.element2.y, mask, paintText, 0, true);
+                part = line.substring(index, length);
+                elements.add(new Triplet<Boolean, Point, String>(true, new Point(x, y), part));
+
+                w = font.stringWidth(part);
+                width += w;
+            }
+
+            y += height;
+            imageHeight += height;
+            imageWidth = Math.max(width, imageWidth);
+            line = lines.next();
+        }
+
+        final JHelpImage result = new JHelpImage(Math.max(1, imageWidth), Math.max(1, imageHeight));
+
+        result.startDrawMode();
+
+        for (final Triplet<Boolean, Point, String> element : elements)
+        {
+            if (element.element1)
+            {
+                mask = font.createMask(element.element3);
+
+                if (textureText != null)
+                {
+                    result.paintMask(element.element2.x, element.element2.y, mask, textureText, 0, 0, 0, true);
+                }
+                else if (paintText != null)
+                {
+                    result.paintMask(element.element2.x, element.element2.y, mask, paintText, 0, true);
+                }
+                else
+                {
+                    result.paintMask(element.element2.x, element.element2.y, mask, colorText, 0, true);
+                }
             }
             else
             {
-               result.paintMask(element.element2.x, element.element2.y, mask, colorText, 0, true);
+                result.drawImage(element.element2.x, element.element2.y, this.obtainImage(element.element3, height));
             }
-         }
-         else
-         {
-            result.drawImage(element.element2.x, element.element2.y, this.obtainImage(element.element3, height));
-         }
-      }
+        }
 
-      result.endDrawMode();
+        result.endDrawMode();
 
-      return result;
-   }
+        return result;
+    }
 
-   /**
-    * Obtain an image from cache
-    * 
-    * @param resource
-    *           Image resource name
-    * @param size
-    *           Image size
-    * @return The image
-    */
-   private JHelpImage obtainImage(final String resource, final int size)
-   {
-      final String key = size + ':' + resource;
+    /**
+     * Obtain an image from cache
+     *
+     * @param resource
+     *           Image resource name
+     * @param size
+     *           Image size
+     * @return The image
+     */
+    private JHelpImage obtainImage(final String resource, final int size)
+    {
+        final String key = size + ':' + resource;
 
-      JHelpImage image = this.CACHE_IMAGES.get(key);
+        JHelpImage image = this.CACHE_IMAGES.get(key);
 
-      if(image == null)
-      {
-         final CacheImageElement cacheImageElement = new CacheImageElement(this.resources, resource, size);
-         this.CACHE_IMAGES.add(key, cacheImageElement);
-         image = this.CACHE_IMAGES.get(key);
-      }
+        if (image == null)
+        {
+            final CacheImageElement cacheImageElement = new CacheImageElement(this.resources, resource, size);
+            this.CACHE_IMAGES.add(key, cacheImageElement);
+            image = this.CACHE_IMAGES.get(key);
+        }
 
-      return image;
-   }
+        return image;
+    }
 
-   /**
-    * Add/modify an association for a symbol to an image
-    * 
-    * @param symbol
-    *           Symbol to associate
-    * @param resource
-    *           Image resource name
-    */
-   public void associate(final String symbol, final String resource)
-   {
-      if(symbol == null)
-      {
-         throw new NullPointerException("symbol musn't be null");
-      }
+    /**
+     * Create an image for draw the text with symbols replaced by corresponding image
+     *
+     * @param text
+     *           Text to convert
+     * @param font
+     *           Font to use for text
+     * @param textureText
+     *           Text texture
+     * @return Created image
+     */
+    public JHelpImage createImage(final String text, final JHelpFont font, final JHelpImage textureText)
+    {
+        if (text == null)
+        {
+            throw new NullPointerException("text MUST NOT be null");
+        }
 
-      if(resource == null)
-      {
-         throw new NullPointerException("resource musn't be null");
-      }
+        if (font == null)
+        {
+            throw new NullPointerException("font MUST NOT be null");
+        }
 
-      final Symbol symbolReal = new Symbol(symbol, resource);
+        if (textureText == null)
+        {
+            throw new NullPointerException("textureText MUST NOT be null");
+        }
 
-      final int index = this.symbols.indexOf(symbolReal);
+        return this.createImage(text, font, 0, null, textureText);
+    }
 
-      if(index >= 0)
-      {
-         this.symbols.remove(index);
-      }
+    /**
+     * Create an image for draw the text with symbols replaced by corresponding image
+     *
+     * @param text
+     *           Text to convert
+     * @param font
+     *           Font to use for text
+     * @param paintText
+     *           Text paint
+     * @return Created image
+     */
+    public JHelpImage createImage(final String text, final JHelpFont font, final JHelpPaint paintText)
+    {
+        if (text == null)
+        {
+            throw new NullPointerException("text MUST NOT be null");
+        }
 
-      this.symbols.add(symbolReal);
-   }
+        if (font == null)
+        {
+            throw new NullPointerException("font MUST NOT be null");
+        }
 
-   /**
-    * Create an image for draw the text with symbols replaced by corresponding image
-    * 
-    * @param text
-    *           Text to convert
-    * @param font
-    *           Font to use for text
-    * @param colorText
-    *           Text color
-    * @return Created image
-    */
-   public JHelpImage createImage(final String text, final JHelpFont font, final int colorText)
-   {
-      if(text == null)
-      {
-         throw new NullPointerException("text musn't be null");
-      }
+        if (paintText == null)
+        {
+            throw new NullPointerException("paintText MUST NOT be null");
+        }
 
-      if(font == null)
-      {
-         throw new NullPointerException("font musn't be null");
-      }
+        return this.createImage(text, font, 0, paintText, null);
+    }
 
-      return this.createImage(text, font, colorText, null, null);
-   }
+    /**
+     * Obtain the image resource name for a symbol
+     *
+     * @param symbol
+     *           Symbol search
+     * @return Image resource name or {@code null} if symbol not registered
+     */
+    public String obtainAssociation(final String symbol)
+    {
+        final Symbol symbolReal = new Symbol(symbol, "");
 
-   /**
-    * Create an image for draw the text with symbols replaced by corresponding image
-    * 
-    * @param text
-    *           Text to convert
-    * @param font
-    *           Font to use for text
-    * @param textureText
-    *           Text texture
-    * @return Created image
-    */
-   public JHelpImage createImage(final String text, final JHelpFont font, final JHelpImage textureText)
-   {
-      if(text == null)
-      {
-         throw new NullPointerException("text musn't be null");
-      }
+        final int index = this.symbols.indexOf(symbolReal);
 
-      if(font == null)
-      {
-         throw new NullPointerException("font musn't be null");
-      }
+        if (index < 0)
+        {
+            return null;
+        }
 
-      if(textureText == null)
-      {
-         throw new NullPointerException("textureText musn't be null");
-      }
+        return this.symbols.getElement(index)
+                           .getResource();
+    }
 
-      return this.createImage(text, font, 0, null, textureText);
-   }
+    /**
+     * Cache element of image. It describes how create an image
+     *
+     * @author JHelp
+     */
+    private static class CacheImageElement
+            extends CacheElement<JHelpImage>
+    {
+        /** Image resource name */
+        private final String    resource;
+        /** Resources set where found the image */
+        private final Resources resources;
+        /** Image desired size */
+        private final int       size;
 
-   /**
-    * Create an image for draw the text with symbols replaced by corresponding image
-    * 
-    * @param text
-    *           Text to convert
-    * @param font
-    *           Font to use for text
-    * @param paintText
-    *           Text paint
-    * @return Created image
-    */
-   public JHelpImage createImage(final String text, final JHelpFont font, final JHelpPaint paintText)
-   {
-      if(text == null)
-      {
-         throw new NullPointerException("text musn't be null");
-      }
+        /**
+         * Create a new instance of CacheImageElement
+         *
+         * @param resources
+         *           Resources set where found the image
+         * @param resource
+         *           Image resource name
+         * @param size
+         *           Image desired size
+         */
+        public CacheImageElement(final Resources resources, final String resource, final int size)
+        {
+            this.resources = resources;
+            this.resource = resource;
+            this.size = size;
+        }
 
-      if(font == null)
-      {
-         throw new NullPointerException("font musn't be null");
-      }
+        /**
+         * Create the image <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @return Created image
+         * @see jhelp.util.cache.CacheElement#createElement()
+         */
+        @Override
+        protected JHelpImage createElement()
+        {
+            try
+            {
+                return JHelpImage.loadImageThumb(this.resources.obtainResourceStream(this.resource), this.size, this.size);
+            }
+            catch (final IOException exception)
+            {
+                Debug.printException(exception, "Failed to load resource ", this.resource);
 
-      if(paintText == null)
-      {
-         throw new NullPointerException("paintText musn't be null");
-      }
+                return null;
+            }
+        }
+    }
 
-      return this.createImage(text, font, 0, paintText, null);
-   }
+    /**
+     * Represents an association between a symbol (For example <b>:)</b> ) and an image
+     *
+     * @author JHelp
+     */
+    private static class Symbol
+            implements Comparable<Symbol>
+    {
+        /** Image resource name */
+        private final String resource;
+        /** Symbol associated */
+        private final String symbol;
 
-   /**
-    * Obtain the image resource name for a symbol
-    * 
-    * @param symbol
-    *           Symbol search
-    * @return Image resource name or {@code null} if symbol not registered
-    */
-   public String obtainAssociation(final String symbol)
-   {
-      final Symbol symbolReal = new Symbol(symbol, "");
+        /**
+         * Create a new instance of Symbol
+         *
+         * @param symbol
+         *           The symbol
+         * @param resource
+         *           Image resource name
+         */
+        public Symbol(final String symbol, final String resource)
+        {
+            this.symbol = symbol;
+            this.resource = resource;
+        }
 
-      final int index = this.symbols.indexOf(symbolReal);
+        /**
+         * Compare with an other symbol. <br>
+         * It returns :
+         * <ul>
+         * <li><b>&lt; 0</b> : if this symbol is before the given one</li>
+         * <li><b>0</b> : if the compared symbol is the same</li>
+         * <li><b>&gt; 0</b> : if this symbol is after the given one</li>
+         * </ul>
+         * <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @param symbol
+         *           Symbol to compare
+         * @return Comparison result
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(final Symbol symbol)
+        {
+            final int diff = symbol.symbol.length() - this.symbol.length();
 
-      if(index < 0)
-      {
-         return null;
-      }
+            if (diff != 0)
+            {
+                return diff;
+            }
 
-      return this.symbols.getElement(index).getResource();
-   }
+            return this.symbol.compareTo(symbol.symbol);
+        }
+
+        /**
+         * Image resource name associated
+         *
+         * @return Image resource name associated
+         */
+        public String getResource()
+        {
+            return this.resource;
+        }
+
+        /**
+         * Associated symbol
+         *
+         * @return Associated symbol
+         */
+        public String getSymbol()
+        {
+            return this.symbol;
+        }
+
+        /**
+         * String representation <br>
+         * <br>
+         * <b>Parent documentation:</b><br>
+         * {@inheritDoc}
+         *
+         * @return String representation
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return UtilText.concatenate(Symbol.class.getSimpleName(), " : ", this.symbol, " -> ", this.resource);
+        }
+    }
 }

@@ -5,7 +5,7 @@ import org.junit.Test;
 
 /**
  * Test of {@link StringExtractor}
- * 
+ *
  * @author JHelp
  */
 public class StringExtractorTest
@@ -52,6 +52,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose1()
    {
@@ -67,6 +70,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose2()
    {
@@ -78,6 +84,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose3()
    {
@@ -91,6 +100,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose4()
    {
@@ -104,6 +116,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose5()
    {
@@ -115,6 +130,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose6()
    {
@@ -126,6 +144,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose7()
    {
@@ -137,6 +158,9 @@ public class StringExtractorTest
       Assert.assertNull(stringExtractor.next());
    }
 
+   /**
+    * Test open/close characters
+    */
    @Test
    public void testOpenClose8()
    {

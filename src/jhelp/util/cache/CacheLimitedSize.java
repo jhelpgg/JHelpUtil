@@ -32,13 +32,13 @@ public class CacheLimitedSize<TYPE>
     * Create a new instance of CacheLimitedSize
     * 
     * @param limitedSizeMap
-    *           Type of limitor to use
+    *           Type of limitation to use
     */
    public CacheLimitedSize(final LimitedSizeHashMap<String, TYPE> limitedSizeMap)
    {
       if(limitedSizeMap == null)
       {
-         throw new NullPointerException("limitedSizeMap musn't be null");
+         throw new NullPointerException("limitedSizeMap MUST NOT be null");
       }
 
       this.cache = new HashMap<String, CacheElement<TYPE>>();
@@ -107,12 +107,12 @@ public class CacheLimitedSize<TYPE>
    {
       if(key == null)
       {
-         throw new NullPointerException("key musn't be null");
+         throw new NullPointerException("key MUST NOT be null");
       }
 
       if(elementCreator == null)
       {
-         throw new NullPointerException("elementCreator musn't be null");
+         throw new NullPointerException("elementCreator MUST NOT be null");
       }
 
       this.cache.put(key, elementCreator);
