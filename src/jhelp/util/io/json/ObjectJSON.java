@@ -1,3 +1,12 @@
+/*
+ * License :
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may cause.
+ * You can use, modify, the code as your need for any usage.
+ * But you can't do any action that avoid me or other person use, modify this code.
+ * The code is free for usage and modification, you can't change that fact.
+ * JHelp
+ */
+
 /**
  * <h1>License :</h1> <br>
  * The following code is deliver as is. I take care that code compile and work, but I am not
@@ -190,6 +199,29 @@ public class ObjectJSON
     }
 
     /**
+     * Indicates if a key exists
+     *
+     * @param key Tested key
+     * @return {@code true} if key exists
+     */
+    public boolean exists(String key)
+    {
+        return this.values.containsKey(key);
+    }
+
+    /**
+     * Indicates if a key as {@code null} value
+     *
+     * @param key Tested key
+     * @return {@code true} if key as {@code null} value
+     */
+    public boolean isNull(String key)
+    {
+        return this.values.get(key)
+                          .isNull();
+    }
+
+    /**
      * Obtain an array.<br>
      * It returns {@code null} if key not defined
      *
@@ -206,6 +238,23 @@ public class ObjectJSON
         }
 
         return json.getArray();
+    }
+
+    /**
+     * Associate key to array
+     *
+     * @param key       Key
+     * @param arrayJSON Array
+     */
+    public void put(final String key, final ArrayJSON arrayJSON)
+    {
+        if (arrayJSON == null)
+        {
+            this.put(key, ValueJSON.NULL);
+            return;
+        }
+
+        this.put(key, ValueJSON.newValue(arrayJSON));
     }
 
     /**
@@ -228,6 +277,24 @@ public class ObjectJSON
     }
 
     /**
+     * Associate key to boolean
+     *
+     * @param key   Key
+     * @param value Boolean value
+     */
+    public void put(final String key, final boolean value)
+    {
+        if (value)
+        {
+            this.put(key, ValueJSON.TRUE);
+        }
+        else
+        {
+            this.put(key, ValueJSON.FALSE);
+        }
+    }
+
+    /**
      * Obtain a double
      *
      * @param key          Key
@@ -244,6 +311,17 @@ public class ObjectJSON
         }
 
         return json.getNumber();
+    }
+
+    /**
+     * Associate key to double value
+     *
+     * @param key   Key
+     * @param value Double value
+     */
+    public void put(final String key, final double value)
+    {
+        this.put(key, ValueJSON.newValue(value));
     }
 
     /**
@@ -266,6 +344,17 @@ public class ObjectJSON
     }
 
     /**
+     * Associate key to float value
+     *
+     * @param key   Key
+     * @param value Float value
+     */
+    public void put(final String key, final float value)
+    {
+        this.put(key, ValueJSON.newValue(value));
+    }
+
+    /**
      * Obtain an integer
      *
      * @param key          Key
@@ -282,6 +371,17 @@ public class ObjectJSON
         }
 
         return (int) json.getNumber();
+    }
+
+    /**
+     * Associate key to int value
+     *
+     * @param key   Key
+     * @param value Int value
+     */
+    public void put(final String key, final int value)
+    {
+        this.put(key, ValueJSON.newValue(value));
     }
 
     /**
@@ -319,6 +419,17 @@ public class ObjectJSON
     }
 
     /**
+     * Associate key to long value
+     *
+     * @param key   Key
+     * @param value Long value
+     */
+    public void put(final String key, final long value)
+    {
+        this.put(key, ValueJSON.newValue(value));
+    }
+
+    /**
      * Obtain an object<br>
      * It return {@code null} if key not defined
      *
@@ -338,6 +449,24 @@ public class ObjectJSON
     }
 
     /**
+     * Associate key to object value
+     *
+     * @param key   Key
+     * @param value Object value
+     */
+    public void put(final String key, final ObjectJSON value)
+    {
+        if (value == null)
+        {
+            this.put(key, ValueJSON.NULL);
+        }
+        else
+        {
+            this.put(key, ValueJSON.newValue(value));
+        }
+    }
+
+    /**
      * Obtain a String
      *
      * @param key          Key
@@ -354,6 +483,24 @@ public class ObjectJSON
         }
 
         return json.getString();
+    }
+
+    /**
+     * Associate key to String value
+     *
+     * @param key   Key
+     * @param value String value
+     */
+    public void put(final String key, final String value)
+    {
+        if (value == null)
+        {
+            this.put(key, ValueJSON.NULL);
+        }
+        else
+        {
+            this.put(key, ValueJSON.newValue(value));
+        }
     }
 
     /**

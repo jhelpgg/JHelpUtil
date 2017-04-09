@@ -1,3 +1,12 @@
+/*
+ * License :
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may cause.
+ * You can use, modify, the code as your need for any usage.
+ * But you can't do any action that avoid me or other person use, modify this code.
+ * The code is free for usage and modification, you can't change that fact.
+ * JHelp
+ */
+
 /**
  * <h1>License :</h1> <br>
  * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any
@@ -20,6 +29,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
@@ -281,14 +291,30 @@ public final class UtilGUI
 
         if (component instanceof Container)
         {
-            final Container container = (Container) component;
-            if (container.getComponentCount() < 1)
+            final Container     container     = (Container) component;
+            final LayoutManager layoutManager = container.getLayout();
+            Dimension           dimension     = null;
+
+            if (layoutManager != null)
             {
-                return new Dimension(100, 100);
+                dimension = layoutManager.preferredLayoutSize(container);
             }
 
-            return container.getLayout()
-                            .preferredLayoutSize(container);
+
+            if (container.getComponentCount() < 1 || dimension == null)
+            {
+                dimension = component.getMaximumSize();
+
+                if (dimension == null)
+                {
+                    return new Dimension(128, 128);
+                }
+
+                return new Dimension(Math.max(128, dimension.width), Math.max(128, dimension.height));
+            }
+
+            return dimension;
+
         }
 
         return component.getMaximumSize();
@@ -309,14 +335,28 @@ public final class UtilGUI
 
         if (component instanceof Container)
         {
-            final Container container = (Container) component;
-            if (container.getComponentCount() < 1)
+            final Container     container     = (Container) component;
+            final LayoutManager layoutManager = container.getLayout();
+            Dimension           dimension     = null;
+
+            if (layoutManager != null)
             {
-                return new Dimension(1, 1);
+                dimension = layoutManager.preferredLayoutSize(container);
             }
 
-            return container.getLayout()
-                            .minimumLayoutSize(container);
+            if (container.getComponentCount() < 1 || dimension == null)
+            {
+                dimension = component.getMinimumSize();
+
+                if (dimension == null)
+                {
+                    return new Dimension(1, 1);
+                }
+
+                return new Dimension(Math.max(1, dimension.width), Math.max(1, dimension.height));
+            }
+
+            return dimension;
         }
 
         return component.getMinimumSize();
@@ -337,14 +377,28 @@ public final class UtilGUI
 
         if (component instanceof Container)
         {
-            final Container container = (Container) component;
-            if (container.getComponentCount() < 1)
+            final Container     container     = (Container) component;
+            final LayoutManager layoutManager = container.getLayout();
+            Dimension           dimension     = null;
+
+            if (layoutManager != null)
             {
-                return new Dimension(10, 10);
+                dimension = layoutManager.preferredLayoutSize(container);
             }
 
-            return container.getLayout()
-                            .preferredLayoutSize(container);
+            if (container.getComponentCount() < 1 || dimension == null)
+            {
+                dimension = component.getPreferredSize();
+
+                if (dimension == null)
+                {
+                    return new Dimension(16, 16);
+                }
+
+                return new Dimension(Math.max(16, dimension.width), Math.max(16, dimension.height));
+            }
+
+            return dimension;
         }
 
         return component.getPreferredSize();
@@ -409,8 +463,7 @@ public final class UtilGUI
     /**
      * Compute the key code to use for short cut that use a given character.<br>
      * It is possible to use {@link #CHARACTER_DELETE} or {@link #CHARACTER_ESCAPE} character if you want build short cut
-     * for
-     * respectively delete key, escape key
+     * for respectively delete key, escape key
      *
      * @param character Character to compute the key code to use
      * @return Computed key code
@@ -538,7 +591,7 @@ public final class UtilGUI
     }
 
     /**
-     * Give the relative of a component for an other one
+     * Give the relative position of a component for an other one
      *
      * @param component Component to search its position
      * @param parent    A component ancestor
@@ -964,8 +1017,7 @@ public final class UtilGUI
      * Simulate mouse wheel move
      *
      * @param tick Number of "notches" to move the mouse wheel Negative values indicate movement up/away from the user,
-     *             positive
-     *             values indicate movement down/towards the user.
+     *             positive values indicate movement down/towards the user.
      */
     public static void simulateMouseWhell(final int tick)
     {

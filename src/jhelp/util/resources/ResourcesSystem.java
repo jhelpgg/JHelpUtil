@@ -1,3 +1,12 @@
+/*
+ * License :
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may cause.
+ * You can use, modify, the code as your need for any usage.
+ * But you can't do any action that avoid me or other person use, modify this code.
+ * The code is free for usage and modification, you can't change that fact.
+ * JHelp
+ */
+
 package jhelp.util.resources;
 
 import java.io.File;
@@ -217,6 +226,35 @@ public class ResourcesSystem
         }
 
         return this.resources.obtainResourceStream(resourceFile.getPath());
+    }
+
+    /**
+     * Obtain element at given path
+     *
+     * @param path Path element
+     * @return The element
+     */
+    public ResourceElement obtainElement(String path)
+    {
+        String[]        paths           = path.split("/");
+        ResourceElement resourceElement = ROOT;
+
+        for (String name : paths)
+        {
+            if (name.length() > 0)
+            {
+                for (ResourceElement element : this.obtainList(resourceElement))
+                {
+                    if (name.equals(element.getName()))
+                    {
+                        resourceElement = element;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return resourceElement;
     }
 
     /**

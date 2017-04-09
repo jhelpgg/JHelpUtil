@@ -1,3 +1,12 @@
+/*
+ * License :
+ * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any damage it may cause.
+ * You can use, modify, the code as your need for any usage.
+ * But you can't do any action that avoid me or other person use, modify this code.
+ * The code is free for usage and modification, you can't change that fact.
+ * JHelp
+ */
+
 /**
  * <h1>License :</h1> <br>
  * The following code is deliver as is. I take care that code compile and work, but I am not responsible about any
@@ -132,6 +141,114 @@ public class ArrayJSON
         this.values.add(value);
     }
 
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final boolean value)
+    {
+        if (value)
+        {
+            this.values.add(ValueJSON.TRUE);
+        }
+        else
+        {
+            this.values.add(ValueJSON.FALSE);
+        }
+    }
+
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final int value)
+    {
+        this.values.add(ValueJSON.newValue(value));
+    }
+
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final long value)
+    {
+        this.values.add(ValueJSON.newValue(value));
+    }
+
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final float value)
+    {
+        this.values.add(ValueJSON.newValue(value));
+    }
+
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final double value)
+    {
+        this.values.add(ValueJSON.newValue(value));
+    }
+
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final String value)
+    {
+        if (value == null)
+        {
+            this.values.add(ValueJSON.NULL);
+        }
+        else
+        {
+            this.values.add(ValueJSON.newValue(value));
+        }
+    }
+
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final ObjectJSON value)
+    {
+        if (value == null)
+        {
+            this.values.add(ValueJSON.NULL);
+        }
+        else
+        {
+            this.values.add(ValueJSON.newValue(value));
+        }
+    }
+
+    /**
+     * Add value in the array
+     *
+     * @param value Value to add
+     */
+    public void addValue(final ArrayJSON value)
+    {
+        if (value == null)
+        {
+            this.values.add(ValueJSON.NULL);
+        }
+        else
+        {
+            this.values.add(ValueJSON.newValue(value));
+        }
+    }
+
     /***
      * Clear the array
      */
@@ -149,6 +266,132 @@ public class ArrayJSON
     public ValueJSON getValue(final int index)
     {
         return this.values.get(index);
+    }
+
+    /**
+     * Boolean value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public boolean getBoolean(int index)
+    {
+        return this.values.get(index)
+                          .getBoolean();
+    }
+
+    /**
+     * Integer value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public int getInt(int index)
+    {
+        return (int) this.values.get(index)
+                                .getNumber();
+    }
+
+    /**
+     * Long value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public long getLong(int index)
+    {
+        return (long) this.values.get(index)
+                                 .getNumber();
+    }
+
+    /**
+     * Float value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public float getFloat(int index)
+    {
+        return (float) this.values.get(index)
+                                  .getNumber();
+    }
+
+    /**
+     * Double value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public double getDouble(int index)
+    {
+        return this.values.get(index)
+                          .getNumber();
+    }
+
+    /**
+     * String value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public String getString(int index)
+    {
+        ValueJSON valueJSON = this.values.get(index);
+
+        if (valueJSON.isNull())
+        {
+            return null;
+        }
+
+        return valueJSON.getString();
+    }
+
+    /**
+     * Object JSON value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public ObjectJSON getObject(int index)
+    {
+        ValueJSON valueJSON = this.values.get(index);
+
+        if (valueJSON.isNull())
+        {
+            return null;
+        }
+
+        return valueJSON.getObject();
+    }
+
+    /**
+     * Array JSON value
+     *
+     * @param index Value index
+     * @return The value
+     */
+    public ArrayJSON getArray(int index)
+    {
+        ValueJSON valueJSON = this.values.get(index);
+
+        if (valueJSON.isNull())
+        {
+            return null;
+        }
+
+        return valueJSON.getArray();
+    }
+
+    /**
+     * Indicates if a element is {@code null}
+     *
+     * @param index Element idex
+     * @return {@code true} if element is {@code null}
+     */
+    public boolean isNull(int index)
+    {
+        return this.values.get(index)
+                          .isNull();
     }
 
     /**
